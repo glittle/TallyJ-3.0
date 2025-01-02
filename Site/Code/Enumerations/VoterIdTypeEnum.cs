@@ -4,10 +4,10 @@ namespace TallyJ.Code.Enumerations
 {
   public class VoterIdTypeEnum : BaseEnumeration<VoterIdTypeEnum, string>
   {
-    public static readonly VoterIdTypeEnum Email = new VoterIdTypeEnum("E", "Email Address", "email", "an email");
-    public static readonly VoterIdTypeEnum Phone = new VoterIdTypeEnum("P", "Phone Number", "text message", "a text message");
-    public static readonly VoterIdTypeEnum Kiosk = new VoterIdTypeEnum("K", "Kiosk Code", "kiosk code", "");
-    public static readonly VoterIdTypeEnum _unknown = new VoterIdTypeEnum("X", "(Unknown)", "unknown", "unknown");
+    public static readonly VoterIdTypeEnum Email = new("E", "Email Address", "email", "an email");
+    public static readonly VoterIdTypeEnum Phone = new("P", "Phone Number", "text message", "a text message");
+    public static readonly VoterIdTypeEnum Kiosk = new("K", "Kiosk Code", "kiosk code", "");
+    public static readonly VoterIdTypeEnum _unknown = new("X", "(Unknown)", "unknown", "unknown");
 
     static VoterIdTypeEnum()
     {

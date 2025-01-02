@@ -4,47 +4,65 @@ using UnityContainerExtensions = Microsoft.Practices.Unity.Configuration.UnityCo
 
 namespace TallyJ.Code.UnityRelated
 {
-	///<summary>Service locator for dependency injection .</summary>
-	public class UnityInstance
-	{
-		///<summary>Dpendency Injection container.</summary>
-		static UnityInstance()
-		{
-			Container = new UnityContainer();
-			try
-			{
-				UnityContainerExtensions.LoadConfiguration(Container);
-			}
-			catch (ArgumentNullException e)
-			{
-				if (e.ParamName.Equals("section", StringComparison.OrdinalIgnoreCase))
-				{
-					throw new Exception("The neccesary configuration for Unity has not been added to the web.config file.");
-				}
-			}
-		}
+  ///<summary>Service locator for dependency injection .</summary>
+  public class UnityInstance
+  {
+    ///<summary>Dpendency Injection container.</summary>
+    static UnityInstance()
+    {
+      Container = new UnityContainer();
+      try
+      {
+        UnityContainerExtensions.LoadConfiguration(Container);
+      }
+      catch (ArgumentNullException e)
+      {
+        if (e.ParamName.Equals("section", StringComparison.OrdinalIgnoreCase))
+        {
+          throw new Exception("The necessary configuration for Unity has not been added to the web.config file.");
+        }
+      }
+    }
 
-		/// <summary>
-		/// Current container
-		/// </summary>
-		public static UnityContainer Container { get; private set; }
+    /// <summary>
+    /// Current container
+    /// </summary>
+    public static UnityContainer Container { get; private set; }
 
-		/// <summary>Get the implementer of the named interface</summary>
-		/// <typeparam name="TService">Interface</typeparam>
-		public static TService Resolve<TService>()
-		{
-			return Container.Resolve<TService>();
-		}
+    /// <summary>Get the implementer of the named interface</summary>
+    /// <typeparam name="TService">Interface</typeparam>
+    public static TService Resolve<TService>()
+    {
+      return Container.Resolve<TService>();
+    }
 
-		/// <summary>Get the implementer of the named interface</summary>
-		/// <typeparam name="TService">Interface</typeparam>
-		public static TService Resolve<TService>(params ResolverOverride[] overrides)
-		{
-			return Container.Resolve<TService>(overrides);
-		}
+    /// <summary>Get the implementer of the named interface</summary>
+    /// <typeparam name="TService">Interface</typeparam>
+    public static TService Resolve<TService>(params ResolverOverride[] overrides)
+    {
+      return Container.Resolve<TService>(overrides);
+    }
 
-    public static void Offer<TService>(TService service) {
+    public static void Offer<TService>(TService service)
+    {
       Container.RegisterInstance(service);
     }
-	}
+
+    public static void Reset()
+    {
+      Container.Dispose();
+      Container = new UnityContainer();
+      try
+      {
+        UnityContainerExtensions.LoadConfiguration(Container);
+      }
+      catch (ArgumentNullException e)
+      {
+        if (e.ParamName.Equals("section", StringComparison.OrdinalIgnoreCase))
+        {
+          throw new Exception("The necessary configuration for Unity has not been added to the web.config file.");
+        }
+      }
+    }
+  }
 }

@@ -22,7 +22,7 @@ namespace TallyJ.CoreModels.Helper
 {
   public class TwilioHelper : MessageHelperBase
   {
-    private static Regex PhoneNumberChecker => new Regex(@"\+[0-9]{4,15}");
+    private static Regex PhoneNumberChecker => new(@"\+[0-9]{4,15}");
 
     public bool SendVoterSmsTestMessage(string phone, out string error)
     {

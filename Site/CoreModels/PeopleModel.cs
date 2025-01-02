@@ -267,7 +267,8 @@ namespace TallyJ.CoreModels
         person.Phone,
         person.C_FullName,
         person.VotingMethod,
-        person.RegistrationLog
+        person.RegistrationLog,
+        person.KioskCode
       };
     }
 
@@ -290,17 +291,17 @@ namespace TallyJ.CoreModels
     }
 
 
-    public JsonResult SavePerson(Person personFromInput)
+    public JsonResult SavePerson(Person incomingPerson)
     {
       if (UserSession.CurrentElectionStatus == ElectionTallyStatusEnum.Finalized)
         return new { Message = UserSession.FinalizedNoChangesMessage }.AsJsonResult();
 
-      var personInDatastore = PeopleInElection.SingleOrDefault(p => p.C_RowId == personFromInput.C_RowId);
+      var personInDatastore = PeopleInElection.SingleOrDefault(p => p.C_RowId == incomingPerson.C_RowId);
       var changed = false;
 
       if (personInDatastore == null)
       {
-        if (personFromInput.C_RowId != -1)
+        if (incomingPerson.C_RowId != -1)
           return new
           {
             Message = "Unknown ID"
@@ -324,13 +325,13 @@ namespace TallyJ.CoreModels
         Db.Person.Attach(personInDatastore);
       }
 
-      var beforeChanges = personInDatastore.GetAllProperties();
+      var originalValues = personInDatastore.GetAllProperties();
 
-      if (personFromInput.IneligibleReasonGuid == Guid.Empty) personFromInput.IneligibleReasonGuid = null;
+      if (incomingPerson.IneligibleReasonGuid == Guid.Empty) incomingPerson.IneligibleReasonGuid = null;
 
-      if (personFromInput.Phone != null)
+      if (incomingPerson.Phone != null)
         //check via Twilio to ensure real number?
-        if (!new Regex(@"\+[0-9]{4,15}").IsMatch(personFromInput.Phone))
+        if (!new Regex(@"\+[0-9]{4,15}").IsMatch(incomingPerson.Phone))
           return new
           {
             Message = "Invalid phone number. Must start with + and only contain digits."
@@ -339,8 +340,8 @@ namespace TallyJ.CoreModels
 
       if (personInDatastore.VotingMethod == VotingMethodEnum.Online.Value)
       {
-        if (personInDatastore.Email != personFromInput.Email
-            || personInDatastore.Phone != personFromInput.Phone)
+        if (personInDatastore.Email != incomingPerson.Email
+            || personInDatastore.Phone != incomingPerson.Phone)
         {
           // can't allow email or phone to be changed if they have already voted online
           return new
@@ -353,19 +354,19 @@ namespace TallyJ.CoreModels
       var editableFields = new
       {
         // personFromInput.AgeGroup,
-        personFromInput.BahaiId,
-        personFromInput.FirstName,
-        personFromInput.IneligibleReasonGuid,
-        personFromInput.LastName,
-        personFromInput.OtherInfo,
-        personFromInput.OtherLastNames,
-        personFromInput.OtherNames,
-        personFromInput.Area,
-        personFromInput.Email,
-        personFromInput.Phone
+        incomingPerson.BahaiId,
+        incomingPerson.FirstName,
+        incomingPerson.IneligibleReasonGuid,
+        incomingPerson.LastName,
+        incomingPerson.OtherInfo,
+        incomingPerson.OtherLastNames,
+        incomingPerson.OtherNames,
+        incomingPerson.Area,
+        incomingPerson.Email,
+        incomingPerson.Phone
       }.GetAllPropertyInfos().Select(pi => pi.Name).ToArray();
 
-      changed = personFromInput.CopyPropertyValuesTo(personInDatastore, editableFields) || changed;
+      changed = incomingPerson.CopyPropertyValuesTo(personInDatastore, editableFields) || changed;
 
       changed = ApplyVoteReasonFlags(personInDatastore) || changed;
 
@@ -380,7 +381,7 @@ namespace TallyJ.CoreModels
         catch (Exception e)
         {
           // revert person object back to what it was
-          beforeChanges.CopyPropertyValuesTo(personInDatastore);
+          originalValues.CopyPropertyValuesTo(personInDatastore);
 
           if (e.GetAllMsgs(";").Contains("IX_PersonEmail"))
             return new
@@ -616,11 +617,11 @@ namespace TallyJ.CoreModels
           Online = useOnline && (p.VotingMethod == VotingMethodEnum.Online || p.VotingMethod == VotingMethodEnum.Kiosk),
           HasOnline = useOnline && p.HasOnlineBallot.GetValueOrDefault(),
           CanBeOnline = useOnline &&
-                        (p.VotingMethod == VotingMethodEnum.Online 
-                         || p.VotingMethod == VotingMethodEnum.Kiosk 
+                        (p.VotingMethod == VotingMethodEnum.Online
+                         || p.VotingMethod == VotingMethodEnum.Kiosk
                          || p.HasOnlineBallot.GetValueOrDefault()
-                         || p.Email.HasContent() 
-                         || p.KioskCode.HasContent() 
+                         || p.Email.HasContent()
+                         || p.KioskCode.HasContent()
                          || p.Phone.HasContent()
                          ), // consider VotingMethod in case email/phone removed after
           OnlineProcessed = onlineProcessed.Contains(p.PersonGuid),
@@ -903,6 +904,7 @@ namespace TallyJ.CoreModels
     /// <param name="votingMethodRemoved"></param>
     public void UpdateFrontDeskListing(Person person, bool votingMethodRemoved)
     {
+      if (person == null) throw new ApplicationException("Person is null");
       var updateInfo = new
       {
         PersonLines = FrontDeskPersonLines(new List<Person> { person }),

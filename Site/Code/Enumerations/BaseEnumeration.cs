@@ -58,41 +58,19 @@ namespace TallyJ.Code.Enumerations
       Text = text;
     }
 
-    public Type ReturnedType
-    {
-      get { return typeof (TSelf); }
-    }
+    // public Type ReturnedType => typeof (TSelf);
 
-    public bool IsMutable
-    {
-      get { return false; }
-    }
+    public static int Count => BaseItems.Count;
 
-    public static int Count
-    {
-      get { return BaseItems.Count; }
-    }
+    public static TSelf Default => _defaultItem;
 
-    public static TSelf Default
-    {
-      get { return _defaultItem; }
-    }
+    public string DisplayText => Text;
 
-    public string DisplayText
-    {
-      get { return Text; }
-    }
+    public IList<TSelf> Items => BaseItems;
 
-    #region IEnumeration<TSelf,TValue> Members
+    public TValue Value { get; }
 
-    public IList<TSelf> Items
-    {
-      get { return BaseItems; }
-    }
-
-    public TValue Value { get; private set; }
-
-    public string Text { get; private set; }
+    public string Text { get; }
 
     // public abstract IList<TSelf> Items { get; }
 
@@ -101,9 +79,8 @@ namespace TallyJ.Code.Enumerations
       return Value.ToString();
     }
 
-    public string QuotedForJavascript => $"'{Value}'";
+    // public string QuotedForJavascript => $"'{Value}'";
 
-    #endregion
 
     public static implicit operator string(BaseEnumeration<TSelf, TValue> self)
     {
@@ -139,15 +116,15 @@ namespace TallyJ.Code.Enumerations
       return original;
     }
 
-    public object Assemble(object cached, object owner)
-    {
-      return cached;
-    }
+    // public object Assemble(object cached, object owner)
+    // {
+    //   return cached;
+    // }
 
-    public object Disassemble(object value)
-    {
-      return value;
-    }
+    // public object Disassemble(object value)
+    // {
+    //   return value;
+    // }
 
     protected static void Add(TSelf item)
     {

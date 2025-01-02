@@ -122,13 +122,14 @@
       <td>
         <div class="nameInfo">
           <input type="text" id="txtName" data-name="Name">
-          <span>Displayed for tellers and voters. May be viewed by individuals not in your community, so it would be good to include your community name.</span>
+          <span>Displayed for tellers and voters and on some reports. May be viewed by individuals not in your community, so it would be good to include your community name.</span>
         </div>
       </td>
     </tr>
     <tr>
       <th>
-        Date of Election<span class="ui-icon ui-icon-info" id="qTipDate"></span>
+        <span>Date of Election</span>
+        <span class="ui-icon ui-icon-info" id="qTipDate"></span>
       </th>
       <td>
         <input type="text" id="txtDate" data-name="DateOfElection" placeholder="yyyy-mm-dd">
@@ -285,7 +286,7 @@
           <el-checkbox label="@VotingMethodEnum.MailedIn.Value">@VotingMethodEnum.MailedIn.DisplayText</el-checkbox>
           <el-checkbox label="@VotingMethodEnum.CalledIn.Value">@VotingMethodEnum.CalledIn.DisplayText</el-checkbox>
           <el-checkbox :disabled="true" class="partialDisable" label="@VotingMethodEnum.Online.Value">@VotingMethodEnum.Online.DisplayText *</el-checkbox>
-          <el-checkbox label="@VotingMethodEnum.Kiosk.Value">Online @VotingMethodEnum.Kiosk.DisplayText</el-checkbox>
+          <el-checkbox :disabled="!useOnline" class="kioskCb" label="@VotingMethodEnum.Kiosk.Value">Online @VotingMethodEnum.Kiosk.DisplayText *</el-checkbox>
           <el-checkbox :disabled="true" class="partialDisable" label="@VotingMethodEnum.Imported.Value">@VotingMethodEnum.Imported.DisplayText **</el-checkbox>
           <el-checkbox label="@VotingMethodEnum.Custom1.Value">
             <el-input size="small"
@@ -418,7 +419,7 @@
         <input type="text" v-model="election.EmailFromName" v-on:change="saveNeeded">
       </td>
       <td>
-        This will be name with the From address. Use your name, another person's name, or the name of an agency that will
+        This will be the name on the From address. Use your name, another person's name, or the name of an agency that will
         be recognized by voters so that the email is not rejected as spam!
       </td>
     </tr>

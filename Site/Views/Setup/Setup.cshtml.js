@@ -127,7 +127,7 @@
             this.election.OnlineWhenClose = null;
             this.election.OnlineCloseIsEstimate = null;
             this.election.OnlineSelectionProcess = null;
-            this.votingMethodsArray = this.votingMethodsArray.filter(s => s !== 'O');
+            this.votingMethodsArray = this.votingMethodsArray.filter(s => s !== 'O' && s !== 'K');
           }
         },
         flags: function (a, b) {

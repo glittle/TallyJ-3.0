@@ -2,101 +2,102 @@
 @using TallyJ.Code.Session
 @model ElectionsListViewModel
 @{
-  ViewBag.Title = "Elections";
-  ViewBag.Message = "Select or create an election";
-  ViewBag.HideMenus = "true";
+    ViewBag.Title = "Elections";
+    ViewBag.Message = "Select or create an election";
+    ViewBag.HideMenus = "true";
 
-  ContextItems.AddJavascriptForPage("electionListPage.electionsUrl={0};".FilledWith(Url.Action("Index", "Elections").QuotedForJavascript()));
-  ContextItems.AddJavascriptForPage("electionListPage.loadElectionUrl={0};".FilledWith(Url.Action("LoadV2Election", "Dashboard").QuotedForJavascript()));
-  ContextItems.AddJavascriptForPage("electionListPage.moreStaticUrl={0};".FilledWith(Url.Action("MoreInfoStatic", "Dashboard").QuotedForJavascript()));
-  ContextItems.AddJavascriptForPage("electionListPage.moreLiveUrl={0};".FilledWith(Url.Action("MoreInfoLive", "Dashboard").QuotedForJavascript()));
-  ContextItems.AddJavascriptForPage("electionListPage.reloadAllUrl={0};".FilledWith(Url.Action("ReloadElections", "Dashboard").QuotedForJavascript()));
-  var electionsInfo = Model.GetMyElectionsInfo(true).ToList();
-  ContextItems.AddJavascriptForPage("electionListPage.elections={0};".FilledWith(electionsInfo.SerializedAsJsonString()));
-  ContextItems.AddJavascriptForPage("electionListPage.importHubUrl={0};".FilledWith(Url.Action("JoinImportHub", "Elections").QuotedForJavascript()));
-  ContextItems.AddJavascriptForPage("electionListPage.updateListingUrl={0};".FilledWith(Url.Action("Index").QuotedForJavascript()));
+    ContextItems.AddJavascriptForPage("electionListPage.electionsUrl={0};".FilledWith(Url.Action("Index", "Elections").QuotedForJavascript()));
+    ContextItems.AddJavascriptForPage("electionListPage.loadElectionUrl={0};".FilledWith(Url.Action("LoadV2Election", "Dashboard").QuotedForJavascript()));
+    ContextItems.AddJavascriptForPage("electionListPage.moreStaticUrl={0};".FilledWith(Url.Action("MoreInfoStatic", "Dashboard").QuotedForJavascript()));
+    ContextItems.AddJavascriptForPage("electionListPage.moreLiveUrl={0};".FilledWith(Url.Action("MoreInfoLive", "Dashboard").QuotedForJavascript()));
+    ContextItems.AddJavascriptForPage("electionListPage.reloadAllUrl={0};".FilledWith(Url.Action("ReloadElections", "Dashboard").QuotedForJavascript()));
+    var electionsInfo = Model.GetMyElectionsInfo(true).ToList();
+    ContextItems.AddJavascriptForPage("electionListPage.elections={0};".FilledWith(electionsInfo.SerializedAsJsonString()));
+    ContextItems.AddJavascriptForPage("electionListPage.importHubUrl={0};".FilledWith(Url.Action("JoinImportHub", "Elections").QuotedForJavascript()));
+    ContextItems.AddJavascriptForPage("electionListPage.updateListingUrl={0};".FilledWith(Url.Action("Index").QuotedForJavascript()));
 }
+
 @section featured {
 }
+
 <hgroup class="title">
-  <h1>@ViewBag.Title.</h1>
-  <h2>@ViewBag.Message</h2>
+    <h1>@ViewBag.Title.</h1>
+    <h2>@ViewBag.Message</h2>
 </hgroup>
 <div id="electionListPage" v-cloak :class="{reloading: reloading}">
-  <button class="reloadAll" v-on:click.passive="reloadAll">Reload All</button>
-  @if (electionsInfo.Count > 0)
-  {
-    <div class="h3button">
-      <h3>Your Elections</h3>
-      <button v-on:click.passive="refreshLive">Refresh Registration and Ballot Counts</button>
-      @*<el-switch v-model="showTest"
+    <button class="reloadAll" v-on:click.passive="reloadAll">Reload All</button>
+    @if (electionsInfo.Count > 0)
+    {
+        <div class="h3button">
+            <h3>Your Elections ({{topList.length}})</h3>
+            <button v-on:click.passive="refreshLive">Refresh Counts of Registrations and Ballots</button>
+            @*<el-switch v-model="showTest"
                    class="showTest"
         active-text="Show Test Elections"
         active-color="#ff4949"
         inactive-text="Hide Test Elections"
         inactive-color="#13ce66"
                    ></el-switch>*@
-      <div class="topNum">{{numForVoting}} open for voting</div>
-      <div class="topNum">{{numForTellers}} open for tellers<span class="ui-icon ui-icon-info" id="qTipTellers"></span></div>
-    </div>
-
-    <div class="currentElections">
-      <span v-if="loaded && !topList.length" class="NoneFound">None found</span>
-      <election-detail v-for="e in topList"
-                       :e="e"
-                       :ref="'e-' + e.ElectionGuid"
-                       :exporting="exporting"
-                       :deleting="deleting"
-                       :key="e.ElectionGuid"></election-detail>
-    </div>
-
-  }
-  @if (UserSession.IsKnownTeller)
-  {
-    <h3 class="MakeNew">Preparing for a new Election?</h3>
-    <ul class="MakeNewList">
-      <li>
-        Start a new election:
-        <button type="button" class="btn  btn-primary"
-                v-on:click.passive="createElection"
-                id="btnCreate">
-          New Election
-        </button>
-      </li>
-      <li>
-        <form name="formLoadFile" id="formLoadFile">
-          <label for="loadFile">Or, load a previously saved Election file:</label>
-          <input id="loadFile"
-                 name="loadFile"
-                 v-on:change="upload2"
-                 type="file" />
-        </form>
-        <div class="loadingLog" v-if="loadingElection">
-          <div v-html="log"></div>
-          <div v-html="tempLog"></div>
+            <div class="topNum">{{numForVoting}} open for voting</div>
+            <div class="topNum">{{numForTellers}} open for tellers<span class="ui-icon ui-icon-info" id="qTipTellers"></span></div>
         </div>
-      </li>
-    </ul>
-  }
-  else if (electionsInfo.Count == 0)
-  {
-    <p>Sorry, no elections found. Please Log Out and try again.</p>
-  }
 
-  @if (UserSession.IsSysAdmin)
-  {
-    <p>@Html.ActionLink("Sys Admin", "Index", "SysAdmin")</p>
-  }
-  <p>@Html.ActionLink("Log Out", "Logoff", "Account")</p>
-  <p>Logged in account: <span title="@UserSession.UserGuid">@UserSession.LoginId</span> (@UserSession.AdminAccountEmail)</p>
+        <div class="currentElections">
+            <span v-if="loaded && !topList.length" class="NoneFound">None found</span>
+            <election-detail v-for="e in topList"
+                             :e="e"
+                             :ref="'e-' + e.ElectionGuid"
+                             :exporting="exporting"
+                             :deleting="deleting"
+                             :key="e.ElectionGuid">
+            </election-detail>
+        </div>
+    }
+    @if (UserSession.IsKnownTeller)
+    {
+        <h3 class="MakeNew">Preparing for a new Election?</h3>
+        <ul class="MakeNewList">
+            <li>
+                Start a new election:
+                <button type="button" class="btn  btn-primary"
+                        v-on:click.passive="createElection"
+                        id="btnCreate">
+                    New Election
+                </button>
+            </li>
+            <li>
+                <form name="formLoadFile" id="formLoadFile">
+                    <label for="loadFile">Or, load a previously saved Election file:</label>
+                    <input id="loadFile"
+                           name="loadFile"
+                           v-on:change="upload2"
+                           type="file"/>
+                </form>
+                <div class="loadingLog" v-if="loadingElection">
+                    <div v-html="log"></div>
+                    <div v-html="tempLog"></div>
+                </div>
+            </li>
+        </ul>
+    }
+    else if (electionsInfo.Count == 0)
+    {
+        <p>Sorry, no elections found. Please Log Out and try again.</p>
+    }
+
+    @if (UserSession.IsSysAdmin)
+    {
+        <p>@Html.ActionLink("Sys Admin", "Index", "SysAdmin")</p>
+    }
+    <p>@Html.ActionLink("Log Out", "Logoff", "Account")</p>
+    <p>Logged in account: <span title="@UserSession.UserGuid">@UserSession.LoginId</span> (@UserSession.AdminAccountEmail)</p>
 </div>
 
 
-
 <template id="election-detail">
-  <div class="Election"
-       :id="e.ElectionGuid"
-       :class="{
+    <div class="Election"
+         :id="e.ElectionGuid"
+         :class="{
            current: e.IsCurrent,
            TestElection: e.IsTest,
            SingleName: e.IsSingleNameElection,
@@ -104,187 +105,193 @@
            deleting: e.ElectionGuid === deleting,
            noOnline: !e.OnlineEnabled
            }">
-    <div class="electionDetail">
-      <div class="Detail1" :title="e.ElectionGuid">
-        <span class="dateDisplay">{{e.dateDisplay}}</span>
-        <span v-if="e.IsTest" class="Test">TEST</span>
-        <span v-else class="NotTest">MAIN</span>
-        {{e.nameDisplay}}
-      </div>
-      <div class="Detail2">
-        <div>
-          <span>{{e.Type}} {{e.Mode}}</span>
-        </div>
-        <div>
-          <span class="numToElect" v-text="e.numToElect"></span>
-          <span class="numVoters" v-text="e.numVoters"></span>
-          <span class="numVoters" v-text="e.registered"></span>
-          <span v-if="!e.IsSingleNameElection"
-                class="numBallots"
-                v-text="e.numBallots">
-          </span>
-        </div>
-      </div>
+        <div class="electionDetail">
+            <div class="Detail1" :title="e.ElectionGuid">
+                <span v-if="e.IsTest" class="Test">TEST</span>
+                @*<span v-else class="NotTest">MAIN</span>*@
+                {{e.nameDisplay}}
+            </div>
+            <div class="Detail2">
+                <div>
+                    <span>{{e.Type}} {{e.Mode}}</span>
+                    <span class="dateDisplay"> - {{e.dateDisplay}}</span>
+                </div>
+                <div>
+                    <span class="numToElect" v-text="e.numToElect"></span>
+                    <span class="numVoters" v-text="e.numVoters"></span>
+                    <span class="numVoters" v-text="e.registered"></span>
+                    <span v-if="!e.IsSingleNameElection"
+                          class="numBallots"
+                          v-text="e.numBallots">
+                    </span>
+                </div>
+            </div>
 
-      <div class="row tellers">
-        <span class="tellerStatus">
-          Tellers
-        </span>
-        <i class="el-icon-s-opportunity" v-if="e.ElectionPasscode" :title="'Access code: ' + e.ElectionPasscode"></i>
-        <span class="names">
-          ({{e.tellers.length}}) {{e.tellers.join(', ')}}
-        </span>
-      </div>
+            <div class="row tellers">
+                <span class="tellerStatus">
+                    Tellers
+                </span>
+                <i class="el-icon-info" v-if="e.ElectionPasscode" :title="'Access code:\n' + e.ElectionPasscode"></i>
+                <span class="names">
+                    ({{e.tellers.length}}) {{e.tellers.join(', ')}}
+                </span>
+            </div>
 
-      <div class="row onlineInfo" v-if="e.OnlineEnabled">
-        Online Voting
-        <div>
-          <div v-html="onlineOpenText"></div>
-          <div v-html="onlineCloseText"></div>
+            <div class="row onlineInfo" v-if="e.OnlineEnabled">
+                Online Voting
+                <div>
+                    <div v-html="onlineOpenText"></div>
+                    <div v-html="onlineCloseText"></div>
+                </div>
+            </div>
+
+            <div class="row ballotInfo" v-if="e.OnlineEnabled">
+                Online Ballots
+                <div>
+                    <div v-html="onlineVoteCounts"></div>
+                </div>
+            </div>
+
         </div>
-      </div>
-
-      <div class="row ballotInfo" v-if="e.OnlineEnabled">
-        Online Ballots
-        <div>
-          <div v-html="onlineVoteCounts"></div>
+        <div class="statusBlocks">
+            <div class="statusVoters statusBlock">
+                <div class="statusCircle" :class="[e.voterStatusCircleClass]"></div>
+                <div class="statusLabel">
+                    <div>Online Voting</div>
+                    <div v-text="e.voterStatus"></div>
+                    <div v-text="e.openCloseTime"></div>
+                </div>
+            </div>
+            <div class="statusTellers statusBlock">
+                <div class="statusCircle red" :class="{green: e.openForTellers}"></div>
+                <div class="statusLabel" :title="tellerToggleTitle">
+                    <div>Tellers</div>
+                    <el-switch v-model="e.pendingOpenForTellers"
+                               :disabled="!e.ElectionPasscode"
+                               v-on:change="updateListing">
+                    </el-switch>
+                    <div v-html="e.openForTellers ? 'Open' : 'Closed'"></div>
+                    <div v-if="!e.ElectionPasscode" class="noCode">(No Code)</div>
+                </div>
+            </div>
         </div>
-      </div>
-
-    </div>
-    <div class="statusBlocks">
-      <div class="statusVoters statusBlock">
-        <div class="statusCircle" :class="[e.voterStatusCircleClass]"></div>
-        <div class="statusLabel">
-          <div>Online Voting</div>
-          <div v-text="e.voterStatus"></div>
-          <div v-text="e.openCloseTime"></div>
+        <div class="rightSide">
+            <div class="tallyStatus" :class="e.TallyStatus">{{e.TallyStatusDisplay}}</div>
+            <el-button v-on:click.passive="selectElection(e)"
+                       type="primary"
+                       size="small"
+                       v-text="e.IsCurrent ? 'Re-enter' : 'Enter'"
+                       class="btnSelectElection">
+            </el-button>
+            <div class="other">
+                <div class="otherToggle" v-on:click.passive="showOtherButtons = !showOtherButtons">Other Actions...</div>
+                <div class="otherButtons" v-if="showOtherButtons">
+                    <el-button v-on:click.passive="exportElection"
+                               size="micro"
+                               type="info"
+                               :class="{active: exporting === e.ElectionGuid}"
+                               title="Export and download the complete election to a file on your computer">
+                        Save to File
+                    </el-button>
+                    <el-button v-on:click.passive="deleteElection"
+                               size="micro"
+                               type="warning"
+                               :class="{active: deleting === e.ElectionGuid}"
+                               :title="e.childElections && e.childElections.length ? 'Delete sub elections first' : 'Delete the election from this system'">
+                        Delete
+                    </el-button>
+                </div>
+            </div>
+            <div class="showUsers">
+                <button class="btn btn-mini" v-on:click.passive="e.showUsers = !e.showUsers" v-text="(e.showUsers ? 'Hide': ('Show' )) + ' Full Tellers' + ' (' + (e.users.length) + ')'"></button>@*+ (e.isOwner ? '/Add' : '')*@
+            </div>
         </div>
-      </div>
-      <div class="statusTellers statusBlock">
-        <div class="statusCircle red" :class="{green: e.openForTellers}"></div>
-        <div class="statusLabel" :title="tellerToggleTitle">
-          <div>Tellers</div>
-          <el-switch v-model="e.pendingOpenForTellers"
-                     :disabled="!e.ElectionPasscode"
-                     v-on:change="updateListing">
-          </el-switch>
-          <div v-html="e.openForTellers ? 'Open' : 'Closed'"></div>
-        </div>
-      </div>
-    </div>
-    <div class="rightSide">
-      <div class="tallyStatus" :class="e.TallyStatus">{{e.TallyStatusDisplay}}</div>
-      <el-button v-on:click.passive="selectElection(e)"
-                 type="primary"
-                 size="small"
-                 v-text="e.IsCurrent ? 'Re-enter' : 'Enter'"
-                 class="btnSelectElection">
-      </el-button>
-      <div class="other">
-        <div class="otherToggle" v-on:click.passive="showOtherButtons = !showOtherButtons">Other Actions...</div>
-        <div class="otherButtons" v-if="showOtherButtons">
-          <el-button v-on:click.passive="exportElection"
-                     size="micro"
-                     type="info"
-                     :class="{active: exporting === e.ElectionGuid}"
-                     title="Export and download the complete election to a file on your computer">
-            Save to File
-          </el-button>
-          <el-button v-on:click.passive="deleteElection"
-                     size="micro"
-                     type="warning"
-                     :class="{active: deleting === e.ElectionGuid}"
-                     :title="e.childElections && e.childElections.length ? 'Delete sub elections first' : 'Delete the election from this system'">
-            Delete
-          </el-button>
-        </div>
-      </div>
-      <div class="showUsers">
-        <button class="btn btn-mini" v-on:click.passive="e.showUsers = !e.showUsers" v-text="(e.showUsers ? 'Hide': ('Show' + (e.isOwner ? '/Add' : ''))) + ' Full Tellers' + ' (' + (e.users.length) + ')'"></button>
-      </div>
-    </div>
 
-    <div class="users" v-if="e.showUsers">
-      <el-table :data="e.users"
-                size="mini"
-                data-key="C_RowId">
-        <el-table-column label="Admin Login ID" prop="UserName" sortable width="100"></el-table-column>
-        <el-table-column label="Email" prop="Email" sortable show-overflow-tooltip></el-table-column>
-        <el-table-column label="Role" prop="Role" sortable width="80"></el-table-column>
-        <el-table-column label="Invited" prop="InviteEmail" sortable show-overflow-tooltip></el-table-column>
-        <el-table-column label="When Invited" prop="inviteWhen" sortable></el-table-column>
-        <el-table-column label="Last activity" prop="lastActivityDate" sortable></el-table-column>
-        <el-table-column label="Action" width="80" align="center">
-          <template slot-scope="scope">
-            <button class="btn btn-mini"
-                    v-if="e.isOwner && !scope.row.isCurrentUser"
-                    :disabled="!!scope.row.selected"
-                    v-on:click.passive="selectUser(scope.row)">
-              Edit
-            </button>
-          </template>
-        </el-table-column>
-      </el-table>
+        <div class="users" v-if="e.showUsers">
+            <el-table :data="e.users"
+                      size="mini"
+                      data-key="C_RowId">
+                <el-table-column label="Admin Login ID" prop="UserName" sortable width="100"></el-table-column>
+                <el-table-column label="Email" prop="Email" sortable show-overflow-tooltip></el-table-column>
+                <el-table-column label="Role" prop="Role" sortable width="80"></el-table-column>
+                <el-table-column label="Invited" prop="InviteEmail" sortable show-overflow-tooltip></el-table-column>
+                <el-table-column label="When Invited" prop="inviteWhen" sortable></el-table-column>
+                <el-table-column label="Last activity" prop="lastActivityDate" sortable></el-table-column>
+                <el-table-column label="Action" width="80" align="center">
+                    <template slot-scope="scope">
+                        <button class="btn btn-mini"
+                                v-if="e.isOwner && !scope.row.isCurrentUser"
+                                :disabled="!!scope.row.selected"
+                                v-on:click.passive="selectUser(scope.row)">
+                            Edit
+                        </button>
+                    </template>
+                </el-table-column>
+            </el-table>
 
 
-
-      <el-form :model="form"
-               ref="form"
-               class="userForm"
-               label-width="120px"
-               v-if="showForm">
-        <h3>Add/Edit Full Teller</h3>
-        <div>
-          <p>
-            A "full" teller has all the technical capabilities to completely manage the election.
-            You, as the owner, can use this to add additional or local head tellers or technical assistants.
-            The new full teller will need to register for an admin account using exactly the same email address as entered here.
-          </p>
-          <p>Regular "guest" tellers join via the "Assist as a Teller" option and do not have their own password and should NOT be added here.</p>
-        </div>
-        <el-form-item label="Email Address"
-                      prop="email"
-                      :rules="[
+            <el-form :model="form"
+                     ref="form"
+                     class="userForm"
+                     label-width="120px"
+                     v-if="showForm">
+                <h3>Add/Edit Full Teller</h3>
+                <div>
+                    <p>
+                        A "full" teller has all the technical capabilities to completely manage the election.
+                        You, as the owner, can use this to add additional or local head tellers or technical assistants.
+                        The new full teller will need to register for an admin account using exactly the same email address as entered here.
+                    </p>
+                    <p>Regular "guest" tellers join via the "Assist as a Teller" option and do not have their own password and should NOT be added here.</p>
+                </div>
+                <el-form-item label="Email Address"
+                              prop="email"
+                              :rules="[
                    { required: true, message: 'Please input email address', trigger: 'blur' },
                     { type: 'email', message: 'Please input correct email address', trigger: ['blur', 'change'] }
                  ]">
-          <el-input :disabled="!addingNew" v-model="form.email"></el-input>
-        </el-form-item>
+                    <el-input :disabled="!addingNew" v-model="form.email"></el-input>
+                </el-form-item>
 
-        <el-form-item>
-          <el-button :disabled="!addingNew"
-                     type="primary"
-                     size="mini"
-                     v-on:click.passive="processForm">Invite to this Election</el-button>
+                <el-form-item>
+                    <el-button :disabled="!addingNew"
+                               type="primary"
+                               size="mini"
+                               v-on:click.passive="processForm">
+                        Invite to this Election
+                    </el-button>
 
-          <el-button v-if="selectedUser && selectedUser.InviteEmail"
-                     type="primary"
-                     size="mini"
-                     v-on:click.passive="sendInvitation">Resend Email Notification</el-button>
+                    <el-button v-if="selectedUser && selectedUser.InviteEmail"
+                               type="primary"
+                               size="mini"
+                               v-on:click.passive="sendInvitation">
+                        Resend Email Notification
+                    </el-button>
 
-          <el-popconfirm title="Are you sure to remove this teller? Please note that only takes effect when they are not active in the election."
-                         v-if="!addingNew"
-                         confirm-button-text='Yes, remove them'
-                         v-on:confirm="removeUser">
-            <el-button slot="reference" type="warning" size="mini">Remove from this Election</el-button>
-          </el-popconfirm>
+                    <el-popconfirm title="Are you sure to remove this teller? Please note that only takes effect when they are not active in the election."
+                                   v-if="!addingNew"
+                                   confirm-button-text='Yes, remove them'
+                                   v-on:confirm="removeUser">
+                        <el-button slot="reference" type="warning" size="mini">Remove from this Election</el-button>
+                    </el-popconfirm>
 
 
-          <el-button size="mini" v-on:click.passive="closeForm">Close</el-button>
+                    <el-button size="mini" v-on:click.passive="closeForm">Close</el-button>
 
-        </el-form-item>
-      </el-form>
+                </el-form-item>
+            </el-form>
 
-      <el-button v-if="e.isOwner"
-                 type="primary"
-                 plain
-                 class="addNew"
-                 size="mini"
-                 v-on:click.passive="openForAdd">Add new Full Teller</el-button>
+            <el-button v-if="e.isOwner"
+                       type="primary"
+                       plain
+                       class="addNew"
+                       size="mini"
+                       v-on:click.passive="openForAdd">
+                Add new Full Teller
+            </el-button>
+
+        </div>
+
 
     </div>
-
-
-  </div>
 </template>

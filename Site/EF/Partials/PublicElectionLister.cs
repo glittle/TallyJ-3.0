@@ -1,8 +1,7 @@
 using System;
 using System.Linq;
 using TallyJ.Code;
-using TallyJ.Code.Data;
-using TallyJ.Code.UnityRelated;
+using TallyJ.Code.Session;
 
 namespace TallyJ.EF
 {
@@ -80,14 +79,10 @@ namespace TallyJ.EF
         .FirstOrDefault(e => e.ElectionGuid == electionGuid
                              && e.ListForPublic.HasValue
                              && e.ListForPublic.Value);
-      return election == null ? null : election.ElectionPasscode;
+      return election?.ElectionPasscode;
     }
 
-    protected ITallyJDbContext Db
-    {
-      get { return _db ?? (_db = UnityInstance.Resolve<IDbContextFactory>().GetNewDbContext); }
-      set { _db = value; }
-    }
+    protected ITallyJDbContext Db => _db ??= UserSession.GetNewDbContext;
 
     /// <summary>
     /// Refresh the list and return it.

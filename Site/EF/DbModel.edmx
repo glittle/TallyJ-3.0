@@ -4,7 +4,7 @@
   <edmx:Runtime>
     <!-- SSDL content -->
     <edmx:StorageModels>
-    <Schema Namespace="TallyJ2dModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012.Azure" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+    <Schema Namespace="TallyJModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012.Azure" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
         <EntityType Name="AspNetRoles">
           <Key>
             <PropertyRef Name="Id" />
@@ -500,7 +500,7 @@ warning 6035: The relationship 'FK_Vote_Person1' has columns that are not part o
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <EntityContainer Name="TallyJ2dModelStoreContainer">
+        <EntityContainer Name="TallyJModelStoreContainer">
           <EntitySet Name="AspNetRoles" EntityType="Self.AspNetRoles" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="AspNetUserClaims" EntityType="Self.AspNetUserClaims" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="AspNetUserLogins" EntityType="Self.AspNetUserLogins" Schema="dbo" store:Type="Tables" />
@@ -552,50 +552,50 @@ warning 6035: The relationship 'FK_Vote_Person1' has columns that are not part o
       </Schema></edmx:StorageModels>
     <!-- CSDL content -->
     <edmx:ConceptualModels>
-      <Schema Namespace="TallyJ2dModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
-        <EntityContainer Name="TallyJ2dEntities" annotation:LazyLoadingEnabled="true">
-          <EntitySet Name="Users" EntityType="TallyJ2dModel.Users" />
-          <EntitySet Name="ImportFile" EntityType="TallyJ2dModel.ImportFile" />
-          <EntitySet Name="JoinElectionUser" EntityType="TallyJ2dModel.JoinElectionUser" />
-          <EntitySet Name="Message" EntityType="TallyJ2dModel.Message" />
-          <EntitySet Name="Result" EntityType="TallyJ2dModel.Result" />
-          <EntitySet Name="ResultTie" EntityType="TallyJ2dModel.ResultTie" />
-          <AssociationSet Name="FK_JoinElectionUser_Users" Association="TallyJ2dModel.FK_JoinElectionUser_Users">
+      <Schema Namespace="TallyJModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+        <EntityContainer Name="TallyJEntities" annotation:LazyLoadingEnabled="true">
+          <EntitySet Name="Users" EntityType="TallyJModel.Users" />
+          <EntitySet Name="ImportFile" EntityType="TallyJModel.ImportFile" />
+          <EntitySet Name="JoinElectionUser" EntityType="TallyJModel.JoinElectionUser" />
+          <EntitySet Name="Message" EntityType="TallyJModel.Message" />
+          <EntitySet Name="Result" EntityType="TallyJModel.Result" />
+          <EntitySet Name="ResultTie" EntityType="TallyJModel.ResultTie" />
+          <AssociationSet Name="FK_JoinElectionUser_Users" Association="TallyJModel.FK_JoinElectionUser_Users">
             <End Role="Users" EntitySet="Users" />
             <End Role="JoinElectionUser" EntitySet="JoinElectionUser" />
           </AssociationSet>
-          <EntitySet Name="Location" EntityType="TallyJ2dModel.Location" />
-          <EntitySet Name="Teller" EntityType="TallyJ2dModel.Teller" />
-          <EntitySet Name="ResultSummary" EntityType="TallyJ2dModel.ResultSummary" />
-          <EntitySet Name="Memberships" EntityType="TallyJ2dModel.Memberships" />
-          <AssociationSet Name="MembershipUser" Association="TallyJ2dModel.MembershipUser">
+          <EntitySet Name="Location" EntityType="TallyJModel.Location" />
+          <EntitySet Name="Teller" EntityType="TallyJModel.Teller" />
+          <EntitySet Name="ResultSummary" EntityType="TallyJModel.ResultSummary" />
+          <EntitySet Name="Memberships" EntityType="TallyJModel.Memberships" />
+          <AssociationSet Name="MembershipUser" Association="TallyJModel.MembershipUser">
             <End Role="Users" EntitySet="Users" />
             <End Role="Memberships" EntitySet="Memberships" />
           </AssociationSet>
-          <EntitySet Name="AspNetRoles" EntityType="TallyJ2dModel.AspNetRoles" />
-          <EntitySet Name="AspNetUserClaims" EntityType="TallyJ2dModel.AspNetUserClaims" />
-          <EntitySet Name="AspNetUserLogins" EntityType="TallyJ2dModel.AspNetUserLogins" />
-          <EntitySet Name="AspNetUsers" EntityType="TallyJ2dModel.AspNetUsers" />
-          <AssociationSet Name="FK_dbo_AspNetUserClaims_dbo_AspNetUsers_UserId" Association="TallyJ2dModel.FK_dbo_AspNetUserClaims_dbo_AspNetUsers_UserId">
+          <EntitySet Name="AspNetRoles" EntityType="TallyJModel.AspNetRoles" />
+          <EntitySet Name="AspNetUserClaims" EntityType="TallyJModel.AspNetUserClaims" />
+          <EntitySet Name="AspNetUserLogins" EntityType="TallyJModel.AspNetUserLogins" />
+          <EntitySet Name="AspNetUsers" EntityType="TallyJModel.AspNetUsers" />
+          <AssociationSet Name="FK_dbo_AspNetUserClaims_dbo_AspNetUsers_UserId" Association="TallyJModel.FK_dbo_AspNetUserClaims_dbo_AspNetUsers_UserId">
             <End Role="AspNetUsers" EntitySet="AspNetUsers" />
             <End Role="AspNetUserClaims" EntitySet="AspNetUserClaims" />
           </AssociationSet>
-          <AssociationSet Name="FK_dbo_AspNetUserLogins_dbo_AspNetUsers_UserId" Association="TallyJ2dModel.FK_dbo_AspNetUserLogins_dbo_AspNetUsers_UserId">
+          <AssociationSet Name="FK_dbo_AspNetUserLogins_dbo_AspNetUsers_UserId" Association="TallyJModel.FK_dbo_AspNetUserLogins_dbo_AspNetUsers_UserId">
             <End Role="AspNetUsers" EntitySet="AspNetUsers" />
             <End Role="AspNetUserLogins" EntitySet="AspNetUserLogins" />
           </AssociationSet>
-          <AssociationSet Name="AspNetUserRoles" Association="TallyJ2dModel.AspNetUserRoles">
+          <AssociationSet Name="AspNetUserRoles" Association="TallyJModel.AspNetUserRoles">
             <End Role="AspNetRoles" EntitySet="AspNetRoles" />
             <End Role="AspNetUsers" EntitySet="AspNetUsers" />
           </AssociationSet>
-          <EntitySet Name="Ballot" EntityType="TallyJ2dModel.Ballot" />
-          <EntitySet Name="Vote" EntityType="TallyJ2dModel.Vote" />
-          <EntitySet Name="Person" EntityType="TallyJ2dModel.Person" />
-          <EntitySet Name="OnlineVotingInfo" EntityType="TallyJ2dModel.OnlineVotingInfo" />
-          <EntitySet Name="C_Log" EntityType="TallyJ2dModel.C_Log" />
-          <EntitySet Name="SmsLog" EntityType="TallyJ2dModel.SmsLog" />
-          <EntitySet Name="OnlineVoter" EntityType="TallyJ2dModel.OnlineVoter" />
-          <EntitySet Name="Election" EntityType="TallyJ2dModel.Election" />
+          <EntitySet Name="Ballot" EntityType="TallyJModel.Ballot" />
+          <EntitySet Name="Vote" EntityType="TallyJModel.Vote" />
+          <EntitySet Name="Person" EntityType="TallyJModel.Person" />
+          <EntitySet Name="OnlineVotingInfo" EntityType="TallyJModel.OnlineVotingInfo" />
+          <EntitySet Name="C_Log" EntityType="TallyJModel.C_Log" />
+          <EntitySet Name="SmsLog" EntityType="TallyJModel.SmsLog" />
+          <EntitySet Name="OnlineVoter" EntityType="TallyJModel.OnlineVoter" />
+          <EntitySet Name="Election" EntityType="TallyJModel.Election" />
         </EntityContainer>
         <EntityType Name="Users">
           <Key>
@@ -681,8 +681,8 @@ warning 6035: The relationship 'FK_Vote_Person1' has columns that are not part o
           <Property Name="IsResolved" Type="Boolean" />
         </EntityType>
         <Association Name="FK_JoinElectionUser_Users">
-          <End Type="TallyJ2dModel.Users" Role="Users" Multiplicity="1" />
-          <End Type="TallyJ2dModel.JoinElectionUser" Role="JoinElectionUser" Multiplicity="*" />
+          <End Type="TallyJModel.Users" Role="Users" Multiplicity="1" />
+          <End Type="TallyJModel.JoinElectionUser" Role="JoinElectionUser" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="Users">
               <PropertyRef Name="UserId" />
@@ -769,8 +769,8 @@ warning 6035: The relationship 'FK_Vote_Person1' has columns that are not part o
           <Property Name="Comment" Type="String" MaxLength="256" FixedLength="false" Unicode="true" />
         </EntityType>
         <Association Name="MembershipUser">
-          <End Type="TallyJ2dModel.Users" Role="Users" Multiplicity="1" />
-          <End Type="TallyJ2dModel.Memberships" Role="Memberships" Multiplicity="0..1" />
+          <End Type="TallyJModel.Users" Role="Users" Multiplicity="1" />
+          <End Type="TallyJModel.Memberships" Role="Memberships" Multiplicity="0..1" />
           <ReferentialConstraint>
             <Principal Role="Users">
               <PropertyRef Name="UserId" />
@@ -786,7 +786,7 @@ warning 6035: The relationship 'FK_Vote_Person1' has columns that are not part o
           </Key>
           <Property Name="Id" Type="String" Nullable="false" MaxLength="128" FixedLength="false" Unicode="true" />
           <Property Name="Name" Type="String" Nullable="false" MaxLength="256" FixedLength="false" Unicode="true" />
-          <NavigationProperty Name="AspNetUsers" Relationship="TallyJ2dModel.AspNetUserRoles" FromRole="AspNetRoles" ToRole="AspNetUsers" />
+          <NavigationProperty Name="AspNetUsers" Relationship="TallyJModel.AspNetUserRoles" FromRole="AspNetRoles" ToRole="AspNetUsers" />
         </EntityType>
         <EntityType Name="AspNetUserClaims">
           <Key>
@@ -796,7 +796,7 @@ warning 6035: The relationship 'FK_Vote_Person1' has columns that are not part o
           <Property Name="UserId" Type="String" Nullable="false" MaxLength="128" FixedLength="false" Unicode="true" />
           <Property Name="ClaimType" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
           <Property Name="ClaimValue" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
-          <NavigationProperty Name="AspNetUsers" Relationship="TallyJ2dModel.FK_dbo_AspNetUserClaims_dbo_AspNetUsers_UserId" FromRole="AspNetUserClaims" ToRole="AspNetUsers" />
+          <NavigationProperty Name="AspNetUsers" Relationship="TallyJModel.FK_dbo_AspNetUserClaims_dbo_AspNetUsers_UserId" FromRole="AspNetUserClaims" ToRole="AspNetUsers" />
         </EntityType>
         <EntityType Name="AspNetUserLogins">
           <Key>
@@ -807,7 +807,7 @@ warning 6035: The relationship 'FK_Vote_Person1' has columns that are not part o
           <Property Name="LoginProvider" Type="String" Nullable="false" MaxLength="128" FixedLength="false" Unicode="true" />
           <Property Name="ProviderKey" Type="String" Nullable="false" MaxLength="128" FixedLength="false" Unicode="true" />
           <Property Name="UserId" Type="String" Nullable="false" MaxLength="128" FixedLength="false" Unicode="true" />
-          <NavigationProperty Name="AspNetUsers" Relationship="TallyJ2dModel.FK_dbo_AspNetUserLogins_dbo_AspNetUsers_UserId" FromRole="AspNetUserLogins" ToRole="AspNetUsers" />
+          <NavigationProperty Name="AspNetUsers" Relationship="TallyJModel.FK_dbo_AspNetUserLogins_dbo_AspNetUsers_UserId" FromRole="AspNetUserLogins" ToRole="AspNetUsers" />
         </EntityType>
         <EntityType Name="AspNetUsers">
           <Key>
@@ -825,15 +825,15 @@ warning 6035: The relationship 'FK_Vote_Person1' has columns that are not part o
           <Property Name="LockoutEnabled" Type="Boolean" Nullable="false" />
           <Property Name="AccessFailedCount" Type="Int32" Nullable="false" />
           <Property Name="UserName" Type="String" Nullable="false" MaxLength="256" FixedLength="false" Unicode="true" />
-          <NavigationProperty Name="AspNetUserClaims" Relationship="TallyJ2dModel.FK_dbo_AspNetUserClaims_dbo_AspNetUsers_UserId" FromRole="AspNetUsers" ToRole="AspNetUserClaims" />
-          <NavigationProperty Name="AspNetUserLogins" Relationship="TallyJ2dModel.FK_dbo_AspNetUserLogins_dbo_AspNetUsers_UserId" FromRole="AspNetUsers" ToRole="AspNetUserLogins" />
-          <NavigationProperty Name="AspNetRoles" Relationship="TallyJ2dModel.AspNetUserRoles" FromRole="AspNetUsers" ToRole="AspNetRoles" />
+          <NavigationProperty Name="AspNetUserClaims" Relationship="TallyJModel.FK_dbo_AspNetUserClaims_dbo_AspNetUsers_UserId" FromRole="AspNetUsers" ToRole="AspNetUserClaims" />
+          <NavigationProperty Name="AspNetUserLogins" Relationship="TallyJModel.FK_dbo_AspNetUserLogins_dbo_AspNetUsers_UserId" FromRole="AspNetUsers" ToRole="AspNetUserLogins" />
+          <NavigationProperty Name="AspNetRoles" Relationship="TallyJModel.AspNetUserRoles" FromRole="AspNetUsers" ToRole="AspNetRoles" />
         </EntityType>
         <Association Name="FK_dbo_AspNetUserClaims_dbo_AspNetUsers_UserId">
-          <End Type="TallyJ2dModel.AspNetUsers" Role="AspNetUsers" Multiplicity="1">
+          <End Type="TallyJModel.AspNetUsers" Role="AspNetUsers" Multiplicity="1">
             <OnDelete Action="Cascade" />
           </End>
-          <End Type="TallyJ2dModel.AspNetUserClaims" Role="AspNetUserClaims" Multiplicity="*" />
+          <End Type="TallyJModel.AspNetUserClaims" Role="AspNetUserClaims" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="AspNetUsers">
               <PropertyRef Name="Id" />
@@ -844,10 +844,10 @@ warning 6035: The relationship 'FK_Vote_Person1' has columns that are not part o
           </ReferentialConstraint>
         </Association>
         <Association Name="FK_dbo_AspNetUserLogins_dbo_AspNetUsers_UserId">
-          <End Type="TallyJ2dModel.AspNetUsers" Role="AspNetUsers" Multiplicity="1">
+          <End Type="TallyJModel.AspNetUsers" Role="AspNetUsers" Multiplicity="1">
             <OnDelete Action="Cascade" />
           </End>
-          <End Type="TallyJ2dModel.AspNetUserLogins" Role="AspNetUserLogins" Multiplicity="*" />
+          <End Type="TallyJModel.AspNetUserLogins" Role="AspNetUserLogins" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="AspNetUsers">
               <PropertyRef Name="Id" />
@@ -858,8 +858,8 @@ warning 6035: The relationship 'FK_Vote_Person1' has columns that are not part o
           </ReferentialConstraint>
         </Association>
         <Association Name="AspNetUserRoles">
-          <End Type="TallyJ2dModel.AspNetRoles" Role="AspNetRoles" Multiplicity="*" />
-          <End Type="TallyJ2dModel.AspNetUsers" Role="AspNetUsers" Multiplicity="*" />
+          <End Type="TallyJModel.AspNetRoles" Role="AspNetRoles" Multiplicity="*" />
+          <End Type="TallyJModel.AspNetUsers" Role="AspNetUsers" Multiplicity="*" />
         </Association>
         <EntityType Name="Ballot">
           <Key>
@@ -1032,9 +1032,9 @@ warning 6035: The relationship 'FK_Vote_Person1' has columns that are not part o
     <!-- C-S mapping content -->
     <edmx:Mappings>
       <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
-        <EntityContainerMapping StorageEntityContainer="TallyJ2dModelStoreContainer" CdmEntityContainer="TallyJ2dEntities">
+        <EntityContainerMapping StorageEntityContainer="TallyJModelStoreContainer" CdmEntityContainer="TallyJEntities">
           <EntitySetMapping Name="Users">
-            <EntityTypeMapping TypeName="TallyJ2dModel.Users">
+            <EntityTypeMapping TypeName="TallyJModel.Users">
               <MappingFragment StoreEntitySet="Users">
                 <ScalarProperty Name="LastActivityDate" ColumnName="LastActivityDate" />
                 <ScalarProperty Name="IsAnonymous" ColumnName="IsAnonymous" />
@@ -1045,7 +1045,7 @@ warning 6035: The relationship 'FK_Vote_Person1' has columns that are not part o
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="ImportFile">
-            <EntityTypeMapping TypeName="TallyJ2dModel.ImportFile">
+            <EntityTypeMapping TypeName="TallyJModel.ImportFile">
               <MappingFragment StoreEntitySet="ImportFile">
                 <ScalarProperty Name="Contents" ColumnName="Contents" />
                 <ScalarProperty Name="Messages" ColumnName="Messages" />
@@ -1065,7 +1065,7 @@ warning 6035: The relationship 'FK_Vote_Person1' has columns that are not part o
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="JoinElectionUser">
-            <EntityTypeMapping TypeName="TallyJ2dModel.JoinElectionUser">
+            <EntityTypeMapping TypeName="TallyJModel.JoinElectionUser">
               <MappingFragment StoreEntitySet="JoinElectionUser">
                 <ScalarProperty Name="InviteWhen" ColumnName="InviteWhen" />
                 <ScalarProperty Name="InviteEmail" ColumnName="InviteEmail" />
@@ -1077,7 +1077,7 @@ warning 6035: The relationship 'FK_Vote_Person1' has columns that are not part o
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="Message">
-            <EntityTypeMapping TypeName="TallyJ2dModel.Message">
+            <EntityTypeMapping TypeName="TallyJModel.Message">
               <MappingFragment StoreEntitySet="Message">
                 <ScalarProperty Name="AsOf" ColumnName="AsOf" />
                 <ScalarProperty Name="C_RowVersion" ColumnName="_RowVersion" />
@@ -1089,7 +1089,7 @@ warning 6035: The relationship 'FK_Vote_Person1' has columns that are not part o
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="Result">
-            <EntityTypeMapping TypeName="TallyJ2dModel.Result">
+            <EntityTypeMapping TypeName="TallyJModel.Result">
               <MappingFragment StoreEntitySet="Result">
                 <ScalarProperty Name="ForceShowInOther" ColumnName="ForceShowInOther" />
                 <ScalarProperty Name="RankInExtra" ColumnName="RankInExtra" />
@@ -1110,7 +1110,7 @@ warning 6035: The relationship 'FK_Vote_Person1' has columns that are not part o
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="ResultTie">
-            <EntityTypeMapping TypeName="TallyJ2dModel.ResultTie">
+            <EntityTypeMapping TypeName="TallyJModel.ResultTie">
               <MappingFragment StoreEntitySet="ResultTie">
                 <ScalarProperty Name="IsResolved" ColumnName="IsResolved" />
                 <ScalarProperty Name="NumInTie" ColumnName="NumInTie" />
@@ -1123,7 +1123,7 @@ warning 6035: The relationship 'FK_Vote_Person1' has columns that are not part o
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="Location">
-            <EntityTypeMapping TypeName="TallyJ2dModel.Location">
+            <EntityTypeMapping TypeName="TallyJModel.Location">
               <MappingFragment StoreEntitySet="Location">
                 <ScalarProperty Name="BallotsCollected" ColumnName="BallotsCollected" />
                 <ScalarProperty Name="SortOrder" ColumnName="SortOrder" />
@@ -1139,7 +1139,7 @@ warning 6035: The relationship 'FK_Vote_Person1' has columns that are not part o
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="Teller">
-            <EntityTypeMapping TypeName="TallyJ2dModel.Teller">
+            <EntityTypeMapping TypeName="TallyJModel.Teller">
               <MappingFragment StoreEntitySet="Teller">
                 <ScalarProperty Name="C_RowVersion" ColumnName="_RowVersion" />
                 <ScalarProperty Name="IsHeadTeller" ColumnName="IsHeadTeller" />
@@ -1151,7 +1151,7 @@ warning 6035: The relationship 'FK_Vote_Person1' has columns that are not part o
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="ResultSummary">
-            <EntityTypeMapping TypeName="TallyJ2dModel.ResultSummary">
+            <EntityTypeMapping TypeName="TallyJModel.ResultSummary">
               <MappingFragment StoreEntitySet="ResultSummary">
                 <ScalarProperty Name="ImportedBallots" ColumnName="ImportedBallots" />
                 <ScalarProperty Name="Custom3Ballots" ColumnName="Custom3Ballots" />
@@ -1178,7 +1178,7 @@ warning 6035: The relationship 'FK_Vote_Person1' has columns that are not part o
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="Memberships">
-            <EntityTypeMapping TypeName="TallyJ2dModel.Memberships">
+            <EntityTypeMapping TypeName="TallyJModel.Memberships">
               <MappingFragment StoreEntitySet="Memberships">
                 <ScalarProperty Name="Comment" ColumnName="Comment" />
                 <ScalarProperty Name="FailedPasswordAnswerAttemptWindowsStart" ColumnName="FailedPasswordAnswerAttemptWindowsStart" />
@@ -1203,7 +1203,7 @@ warning 6035: The relationship 'FK_Vote_Person1' has columns that are not part o
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="AspNetRoles">
-            <EntityTypeMapping TypeName="TallyJ2dModel.AspNetRoles">
+            <EntityTypeMapping TypeName="TallyJModel.AspNetRoles">
               <MappingFragment StoreEntitySet="AspNetRoles">
                 <ScalarProperty Name="Name" ColumnName="Name" />
                 <ScalarProperty Name="Id" ColumnName="Id" />
@@ -1211,7 +1211,7 @@ warning 6035: The relationship 'FK_Vote_Person1' has columns that are not part o
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="AspNetUserClaims">
-            <EntityTypeMapping TypeName="TallyJ2dModel.AspNetUserClaims">
+            <EntityTypeMapping TypeName="TallyJModel.AspNetUserClaims">
               <MappingFragment StoreEntitySet="AspNetUserClaims">
                 <ScalarProperty Name="ClaimValue" ColumnName="ClaimValue" />
                 <ScalarProperty Name="ClaimType" ColumnName="ClaimType" />
@@ -1221,7 +1221,7 @@ warning 6035: The relationship 'FK_Vote_Person1' has columns that are not part o
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="AspNetUserLogins">
-            <EntityTypeMapping TypeName="TallyJ2dModel.AspNetUserLogins">
+            <EntityTypeMapping TypeName="TallyJModel.AspNetUserLogins">
               <MappingFragment StoreEntitySet="AspNetUserLogins">
                 <ScalarProperty Name="UserId" ColumnName="UserId" />
                 <ScalarProperty Name="ProviderKey" ColumnName="ProviderKey" />
@@ -1230,7 +1230,7 @@ warning 6035: The relationship 'FK_Vote_Person1' has columns that are not part o
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="AspNetUsers">
-            <EntityTypeMapping TypeName="TallyJ2dModel.AspNetUsers">
+            <EntityTypeMapping TypeName="TallyJModel.AspNetUsers">
               <MappingFragment StoreEntitySet="AspNetUsers">
                 <ScalarProperty Name="UserName" ColumnName="UserName" />
                 <ScalarProperty Name="AccessFailedCount" ColumnName="AccessFailedCount" />
@@ -1247,7 +1247,7 @@ warning 6035: The relationship 'FK_Vote_Person1' has columns that are not part o
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
-          <AssociationSetMapping Name="AspNetUserRoles" TypeName="TallyJ2dModel.AspNetUserRoles" StoreEntitySet="AspNetUserRoles">
+          <AssociationSetMapping Name="AspNetUserRoles" TypeName="TallyJModel.AspNetUserRoles" StoreEntitySet="AspNetUserRoles">
             <EndProperty Name="AspNetUsers">
               <ScalarProperty Name="Id" ColumnName="UserId" />
             </EndProperty>
@@ -1256,7 +1256,7 @@ warning 6035: The relationship 'FK_Vote_Person1' has columns that are not part o
             </EndProperty>
           </AssociationSetMapping>
           <EntitySetMapping Name="Ballot">
-            <EntityTypeMapping TypeName="TallyJ2dModel.Ballot">
+            <EntityTypeMapping TypeName="TallyJModel.Ballot">
               <MappingFragment StoreEntitySet="Ballot">
                 <ScalarProperty Name="C_RowVersion" ColumnName="_RowVersion" />
                 <ScalarProperty Name="Teller2" ColumnName="Teller2" />
@@ -1272,7 +1272,7 @@ warning 6035: The relationship 'FK_Vote_Person1' has columns that are not part o
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="Vote">
-            <EntityTypeMapping TypeName="TallyJ2dModel.Vote">
+            <EntityTypeMapping TypeName="TallyJModel.Vote">
               <MappingFragment StoreEntitySet="Vote">
                 <ScalarProperty Name="OnlineVoteRaw" ColumnName="OnlineVoteRaw" />
                 <ScalarProperty Name="PersonCombinedInfo" ColumnName="PersonCombinedInfo" />
@@ -1288,7 +1288,7 @@ warning 6035: The relationship 'FK_Vote_Person1' has columns that are not part o
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="Person">
-            <EntityTypeMapping TypeName="TallyJ2dModel.Person">
+            <EntityTypeMapping TypeName="TallyJModel.Person">
               <MappingFragment StoreEntitySet="Person">
                 <ScalarProperty Name="KioskCode" ColumnName="KioskCode" />
                 <ScalarProperty Name="UnitName" ColumnName="UnitName" />
@@ -1327,7 +1327,7 @@ warning 6035: The relationship 'FK_Vote_Person1' has columns that are not part o
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="OnlineVotingInfo">
-            <EntityTypeMapping TypeName="TallyJ2dModel.OnlineVotingInfo">
+            <EntityTypeMapping TypeName="TallyJModel.OnlineVotingInfo">
               <MappingFragment StoreEntitySet="OnlineVotingInfo">
                 <ScalarProperty Name="NotifiedAboutOpening" ColumnName="NotifiedAboutOpening" />
                 <ScalarProperty Name="HistoryStatus" ColumnName="HistoryStatus" />
@@ -1343,7 +1343,7 @@ warning 6035: The relationship 'FK_Vote_Person1' has columns that are not part o
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="C_Log">
-            <EntityTypeMapping TypeName="TallyJ2dModel.C_Log">
+            <EntityTypeMapping TypeName="TallyJModel.C_Log">
               <MappingFragment StoreEntitySet="_Log">
                 <ScalarProperty Name="HostAndVersion" ColumnName="HostAndVersion" />
                 <ScalarProperty Name="Details" ColumnName="Details" />
@@ -1357,7 +1357,7 @@ warning 6035: The relationship 'FK_Vote_Person1' has columns that are not part o
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="SmsLog">
-            <EntityTypeMapping TypeName="TallyJ2dModel.SmsLog">
+            <EntityTypeMapping TypeName="TallyJModel.SmsLog">
               <MappingFragment StoreEntitySet="SmsLog">
                 <ScalarProperty Name="ErrorCode" ColumnName="ErrorCode" />
                 <ScalarProperty Name="LastDate" ColumnName="LastDate" />
@@ -1372,7 +1372,7 @@ warning 6035: The relationship 'FK_Vote_Person1' has columns that are not part o
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="OnlineVoter">
-            <EntityTypeMapping TypeName="TallyJ2dModel.OnlineVoter">
+            <EntityTypeMapping TypeName="TallyJModel.OnlineVoter">
               <MappingFragment StoreEntitySet="OnlineVoter">
                 <ScalarProperty Name="VerifyAttemptsStart" ColumnName="VerifyAttemptsStart" />
                 <ScalarProperty Name="VerifyAttempts" ColumnName="VerifyAttempts" />
@@ -1390,7 +1390,7 @@ warning 6035: The relationship 'FK_Vote_Person1' has columns that are not part o
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="Election">
-            <EntityTypeMapping TypeName="TallyJ2dModel.Election">
+            <EntityTypeMapping TypeName="TallyJModel.Election">
               <MappingFragment StoreEntitySet="Election">
                 <ScalarProperty Name="Flags" ColumnName="Flags" />
                 <ScalarProperty Name="VotingMethods" ColumnName="VotingMethods" />

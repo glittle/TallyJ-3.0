@@ -968,24 +968,14 @@ namespace TallyJ.Code.Helpers
 
     private class MetaphoneData
     {
-      private readonly StringBuilder _primary = new StringBuilder(5);
-      private readonly StringBuilder _secondary = new StringBuilder(5);
-
-      #region Properties
+      private readonly StringBuilder _primary = new(5);
+      private readonly StringBuilder _secondary = new(5);
 
       private bool Alternative { get; set; }
 
-      internal int PrimaryLength
-      {
-        get { return _primary.Length; }
-      }
+      internal int PrimaryLength => _primary.Length;
 
-      internal int SecondaryLength
-      {
-        get { return _secondary.Length; }
-      }
-
-      #endregion
+      internal int SecondaryLength => _secondary.Length;
 
       internal void Add(string main)
       {

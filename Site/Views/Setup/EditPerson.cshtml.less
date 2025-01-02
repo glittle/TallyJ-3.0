@@ -1,7 +1,7 @@
 ﻿.text20 {
   width: 70px;
 }
-
+ 
 .text50 {
   width: 150px;
 }
@@ -22,12 +22,12 @@
   display: none;
   width: fit-content;
   color: darkblue;
-  border: darkblue 1px solid;
+  border: darkblue 1px dashed;
   padding: 3px 6px 4px 6px;
   border-radius: 3px;
   font-family: monospace;
-  letter-spacing: 2px;
-  font-size: 0.85rem;
+  letter-spacing: 5px;
+  font-size: 2rem;
   margin: 5px 0 5px 1px;
 
   &.used {
@@ -43,9 +43,9 @@
 }
 
 .votingRelated {
-  margin: 25px 0 5px -10px;
-  border: 1px solid #ccc;
-  padding: 0px 10px 10px;
+  margin: 10px 0;
+  border: 1px solid #aaa;
+  padding: 0px 10px 0px;
 
   table {
     th {
@@ -72,20 +72,23 @@
         }
       }
     }
+  }
 
-    tr.kiosk {
-      button[disabled] {
-        cursor: not-allowed;
-        opacity: 0.5;
-      }
-
+  &.kiosk {
+    table {
       th {
-        padding-top: 15px;
+        vertical-align: middle;
       }
     }
   }
 }
 
+.kiosk {
+      button[disabled] {
+        cursor: not-allowed;
+        opacity: 0.5;
+      }
+}
 
 #btnSave {
   margin-top: 20px;
@@ -141,6 +144,10 @@
       visibility: visible;
     }
   }
+}
+
+.CannotReceiveVotesSample {
+  text-decoration: line-through;
 }
 
 #trDelete div {

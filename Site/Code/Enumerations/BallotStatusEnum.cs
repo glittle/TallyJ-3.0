@@ -6,14 +6,14 @@ namespace TallyJ.Code.Enumerations
 {
   public class BallotStatusEnum : BaseEnumeration<BallotStatusEnum, string>
   {
-    public static readonly BallotStatusEnum Ok = new BallotStatusEnum("Ok", "Ok");
-    public static readonly BallotStatusEnum Review = new BallotStatusEnum("Review", "Needs Review");
-    public static readonly BallotStatusEnum Verify = new BallotStatusEnum("Verify", "Needs Verification");
-    public static readonly BallotStatusEnum TooMany = new BallotStatusEnum("TooMany", "Too Many");
-    public static readonly BallotStatusEnum TooFew = new BallotStatusEnum("TooFew", "Too Few");
-    public static readonly BallotStatusEnum Dup = new BallotStatusEnum("Dup", "Duplicate names");
-    public static readonly BallotStatusEnum Empty = new BallotStatusEnum("Empty", "Empty");
-    public static readonly BallotStatusEnum OnlineRaw = new BallotStatusEnum("Raw", "Raw - Teller to Finish");
+    public static readonly BallotStatusEnum Ok = new("Ok", "Ok");
+    public static readonly BallotStatusEnum Review = new("Review", "Needs Review");
+    public static readonly BallotStatusEnum Verify = new("Verify", "Needs Verification");
+    public static readonly BallotStatusEnum TooMany = new("TooMany", "Too Many");
+    public static readonly BallotStatusEnum TooFew = new("TooFew", "Too Few");
+    public static readonly BallotStatusEnum Dup = new("Dup", "Duplicate names");
+    public static readonly BallotStatusEnum Empty = new("Empty", "Empty");
+    public static readonly BallotStatusEnum OnlineRaw = new("Raw", "Raw - Teller to Finish");
 
     static BallotStatusEnum()
     {

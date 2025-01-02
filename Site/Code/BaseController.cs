@@ -1,26 +1,21 @@
 using System;
-using System.Diagnostics;
 using System.Web.Mvc;
-using TallyJ.Code.Data;
 using TallyJ.Code.Session;
-using TallyJ.Code.UnityRelated;
 using TallyJ.CoreModels;
 using TallyJ.EF;
 
-namespace TallyJ.Code
+namespace TallyJ.Code;
+
+public abstract class BaseController : Controller
 {
-  public abstract class BaseController : Controller
+  private ITallyJDbContext _db;
+
+  /// <summary>Access to the database</summary>
+  protected ITallyJDbContext Db => _db ??= UserSession.GetNewDbContext;
+
+  protected override IAsyncResult BeginExecuteCore(AsyncCallback callback, object state)
   {
-    ITallyJDbContext _db;
-
-    protected override IAsyncResult BeginExecuteCore(AsyncCallback callback, object state)
-    {
-      new ComputerModel().RefreshLastContact();
-      //Debug.WriteLine(System.Threading.Thread.CurrentThread.ManagedThreadId);
-      return base.BeginExecuteCore(callback, state);
-    }
-
-    /// <summary>Access to the database</summary>
-    protected ITallyJDbContext Db => _db ?? (_db = UnityInstance.Resolve<IDbContextFactory>().GetNewDbContext);
+    new ComputerModel().RefreshLastContact();
+    return base.BeginExecuteCore(callback, state);
   }
 }

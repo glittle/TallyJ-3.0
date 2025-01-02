@@ -1033,8 +1033,8 @@ function CallAjaxHandler(handlerUrl,
   };
 
   if (form) {
-    options.data = form;
-    // options.contentType = "application/x-www-form-urlencoded";
+    options.data = JSON.stringify(form);
+    options.contentType = "application/json; charset=utf-8";
   }
   if (waitForResponse) {
     options.async = false;

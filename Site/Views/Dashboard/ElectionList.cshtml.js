@@ -204,7 +204,7 @@
           return users;
         },
         refreshLive() {
-          this.getMoreLive(this.currentElectionGuids);
+          this.getMoreLive(this.electionGuids);
         },
         getMoreLive(electionGuids) {
           // dynamically changing during an election

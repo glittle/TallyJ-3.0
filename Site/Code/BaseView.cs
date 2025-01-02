@@ -22,10 +22,7 @@ namespace TallyJ.Code
         /// <summary>
         ///     Access to the database
         /// </summary>
-        public ITallyJDbContext DbContext
-        {
-            get { return _db ?? (_db = UnityInstance.Resolve<IDbContextFactory>().GetNewDbContext); }
-        }
+        public ITallyJDbContext DbContext => _db ??= UserSession.GetNewDbContext;
 
         public string ControllerActionNames
         {

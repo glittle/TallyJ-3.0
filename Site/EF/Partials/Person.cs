@@ -8,6 +8,7 @@ using TallyJ.Code;
 namespace TallyJ.EF
 {
   [MetadataType(typeof(PersonMetadata))]
+  [DebuggerDisplay("{FullName}")]
   public partial class Person : IIndexedForCaching
   {
     enum ExtraSettingKey

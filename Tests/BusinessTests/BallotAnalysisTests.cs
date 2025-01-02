@@ -90,43 +90,55 @@ namespace Tests.BusinessTests
   public class BallotAnalysisTests
   {
     private AnalyzerFakes _fakes;
-    private List<Person> _samplePeople;
     private ITallyJDbContext Db;
-    private Guid _electionGuid;
 
-    private List<Person> SamplePeople
-    {
-      get { return _samplePeople; }
-    }
+    private List<Person> SamplePeople { get; set; }
 
     [TestInitialize]
     public void Init()
     {
+      UnityInstance.Reset();
+      ElectionTestHelper.Reset();
+
+
       _fakes = new AnalyzerFakes();
       Db = _fakes.DbContext;
       Db.ForTests();
       UnityInstance.Offer(Db);
 
-      _electionGuid = Guid.NewGuid();
-      SessionKey.CurrentElectionGuid.SetInSession(_electionGuid);
-      ElectionTestHelper.SaveElectionGuidForTests(_electionGuid);
+      new Election
+      {
+        NumberToElect = 1,
+        NumberExtra = 0
+      }.ForTests();
+
+      // _electionGuid = Guid.NewGuid();
+      // SessionKey.CurrentElectionGuid.SetInSession(_electionGuid);
+      // ElectionTestHelper.SaveElectionGuidForTests(_electionGuid);
+      
+      AddSamplePeople();
+    }
+
+    public void AddSamplePeople()
+    {
+      SamplePeople =
+      [
+        new Person {}.ForTests(),
+        new Person {}.ForTests(),
+        new Person {}.ForTests(),
+        new Person {}.ForTests(),
+        new Person {}.ForTests(),
+      ];
 
       SessionKey.CurrentComputer.SetInSession(new Computer
       {
         ComputerGuid = Guid.NewGuid(),
         ComputerCode = "TEST",
-        ElectionGuid = _electionGuid
+        ElectionGuid = ElectionTestHelper.ElectionGuid
       });
-
-      _samplePeople = new List<Person>
-      {
-        new Person {}.ForTests(),
-        new Person {}.ForTests(),
-        new Person {}.ForTests(),
-        new Person {}.ForTests(),
-        new Person {}.ForTests(),
-      };
     }
+
+
 
     [TestMethod]
     public void CorrectNumberOfVotes_Test()

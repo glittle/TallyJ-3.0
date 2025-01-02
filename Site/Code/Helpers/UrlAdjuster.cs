@@ -7,9 +7,9 @@ namespace TallyJ.Code.Helpers
   /// </summary>
   public class UrlAdjuster
     {
-        private readonly Regex _rCss = new Regex(@"^(.*\.css)(-\d*)$", RegexOptions.IgnoreCase);
+        private readonly Regex _rCss = new(@"^(.*\.css)(-\d*)$", RegexOptions.IgnoreCase);
         //private readonly Regex _rLess = new Regex(@"^(.*\.less)(-\d*)$", RegexOptions.IgnoreCase);
-        private readonly Regex _rJs = new Regex(@"^(.*\.js)(-\d*)$", RegexOptions.IgnoreCase);
+        private readonly Regex _rJs = new(@"^(.*\.js)(-\d*)$", RegexOptions.IgnoreCase);
 
         private readonly string _url;
         private string _adjustedUrl;

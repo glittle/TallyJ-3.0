@@ -41,7 +41,7 @@
     <span class="template">{VoterContact}</span> <span class="templateComment">(their email or phone number, as appropriate)</span>,
     <span class="template">{hostSite}</span> <span class="templateComment">(a link to TallyJ)</span>.
   </p>
-  <p v-if="@(((election.ElectionType == ElectionTypeEnum.Lsa || election.ElectionType == ElectionTypeEnum.Lsa2) && election.ElectionMode == ElectionModeEnum.Normal).QuotedForJavascript())">
+  <p v-if="@(((election.ElectionType == ElectionTypeEnum.LSA || election.ElectionType == ElectionTypeEnum.LSA2) && election.ElectionMode == ElectionModeEnum.Normal).QuotedForJavascript())">
     Remember! For a Local Spiritual Assembly, the election must be held on the first day of Riḍván (the 13th day of Jalál / Glory),
     so the online portion of the election would need to closed sometime on or before that date.
   </p>

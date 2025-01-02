@@ -9,18 +9,18 @@ namespace TallyJ.Code.Enumerations
 {
   public class VotingMethodEnum : BaseEnumeration<VotingMethodEnum, string>
   {
-    public static readonly VotingMethodEnum InPerson = new VotingMethodEnum("P", "In Person");
-    public static readonly VotingMethodEnum DroppedOff = new VotingMethodEnum("D", "Dropped Off");
-    public static readonly VotingMethodEnum MailedIn = new VotingMethodEnum("M", "Mailed In");
-    public static readonly VotingMethodEnum CalledIn = new VotingMethodEnum("C", "Called In");
+    public static readonly VotingMethodEnum InPerson = new("P", "In Person");
+    public static readonly VotingMethodEnum DroppedOff = new("D", "Dropped Off");
+    public static readonly VotingMethodEnum MailedIn = new("M", "Mailed In");
+    public static readonly VotingMethodEnum CalledIn = new("C", "Called In");
     // public static readonly VotingMethodEnum Registered = new VotingMethodEnum("R", "Registered");
-    public static readonly VotingMethodEnum Online = new VotingMethodEnum("O", "Online");
-    public static readonly VotingMethodEnum Kiosk = new VotingMethodEnum("K", "Kiosk");
-    public static readonly VotingMethodEnum Imported = new VotingMethodEnum("I", "Imported");
-    public static readonly VotingMethodEnum Custom1 = new VotingMethodEnum("1", "Custom1");
-    public static readonly VotingMethodEnum Custom2 = new VotingMethodEnum("2", "Custom2");
-    public static readonly VotingMethodEnum Custom3 = new VotingMethodEnum("3", "Custom3");
-    public static readonly VotingMethodEnum Unknown = new VotingMethodEnum("U", "Unknown");
+    public static readonly VotingMethodEnum Online = new("O", "Online");
+    public static readonly VotingMethodEnum Kiosk = new("K", "Kiosk");
+    public static readonly VotingMethodEnum Imported = new("I", "Imported");
+    public static readonly VotingMethodEnum Custom1 = new("1", "Custom1");
+    public static readonly VotingMethodEnum Custom2 = new("2", "Custom2");
+    public static readonly VotingMethodEnum Custom3 = new("3", "Custom3");
+    public static readonly VotingMethodEnum Unknown = new("U", "Unknown");
 
     static VotingMethodEnum()
     {

@@ -85,7 +85,7 @@
       panel = local.hostPanel;
     }
 
-    clearKioskCode();
+    clearKioskCode(personProperties.Voter?.KioskCode);
 
     $('#btnDelete').attr('title', personProperties.C_RowId);
     // console.log(person, canDelete);
@@ -151,6 +151,14 @@
   };
 
   function saveChanges() {
+    var errors = [];
+
+    var phoneInput = local.hostPanel.find('input[data-name="Phone"]');
+    var validationMessage = phoneInput[0].validationMessage;
+    if (validationMessage) {
+      errors.push('Phone Number: ' + validationMessage);
+    }
+
     var form = {};
     var inputs = local.hostPanel.find(':input[data-name]');
     inputs.each(function () {
@@ -167,16 +175,8 @@
       form[input.data('name')] = value;
     });
 
-    var errors = [];
-
     if (!form.FirstName || !form.LastName) {
       errors.push('First and Last names are required.');
-    }
-
-    var phoneInput = local.hostPanel.find('input[data-name="Phone"]');
-    var validationMessage = phoneInput[0].validationMessage;
-    if (validationMessage) {
-      errors.push('Phone Number: ' + validationMessage);
     }
 
     if (errors.length) {
@@ -259,9 +259,14 @@
       });
   }
 
-  function clearKioskCode() {
-    $('.kioskCode').hide();
-    $('.kioskNote').hide();
+  function clearKioskCode(code) {
+    if (code) {
+      $('.kioskNote').show();
+      $('.kioskCode').text(code).show();
+    } else {
+      $('.kioskCode').hide();
+      $('.kioskNote').hide();
+    }
   }
 
   function showVotingMethod(code, log) {
@@ -286,14 +291,14 @@
     var div = $('.showVotingMethod');
     if (!code) {
       div.text('-');
-      $('tr.kiosk').show(); // if there
+      $('.kiosk').show(); // if there
       $('.forDelete').show();
       return;
     }
 
     var msg = peoplePage && peoplePage.methods[code] || code;
     div.text(msg);
-    $('tr.kiosk').hide(); // if there
+    $('.kiosk').hide(); // if there
     $('.forDelete').hide();
 
     // apply rule

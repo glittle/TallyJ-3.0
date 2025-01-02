@@ -1,5 +1,3 @@
-//using Microsoft.Owin.Security.Provider;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using TallyJ.Code;
@@ -9,9 +7,6 @@ using TallyJ.Code.Session;
 using TallyJ.CoreModels.Helper;
 using TallyJ.EF;
 using TallyJ.CoreModels.Hubs;
-using TallyJ.Code.UnityRelated;
-using System.Data.Entity.Infrastructure;
-using TallyJ.Code.Data;
 
 namespace TallyJ.CoreModels
 {
@@ -31,15 +26,6 @@ namespace TallyJ.CoreModels
     private const int ThresholdForCloseVote = 3;
     protected readonly Savers Savers;
 
-    //private readonly Func<int> _saveChanges;
-    //private List<Ballot> _fakeBallots;
-    private Election _election;
-    //private List<Person> _fakePeople;
-    //private List<ResultSummary> _fakeResultSummaries;
-    //private List<ResultTie> _fakeResultTies;
-    //private List<Result> _fakeResults;
-    //private List<VoteInfo> _fakeVoteinfos;
-    //private List<Vote> _fakeVotes;
     protected IStatusUpdateHub _hub;
     private List<Result> _results;
     private List<ResultSummary> _resultSummaries;
@@ -53,13 +39,13 @@ namespace TallyJ.CoreModels
 
     protected ElectionAnalyzerCore()
     {
-      _election = UserSession.CurrentElection;
+      TargetElection = UserSession.CurrentElection;
       _hub = new AnalyzeHub();
       Savers = new Savers(Db);
     }
     protected ElectionAnalyzerCore(Election election, IStatusUpdateHub hub = null)
     {
-      _election = election;
+      TargetElection = election;
       _hub = hub ?? new AnalyzeHub();
       Savers = new Savers(Db);
     }
@@ -68,13 +54,13 @@ namespace TallyJ.CoreModels
     {
       IsFaked = true;
 
-      _election = UserSession.CurrentElection;
+      TargetElection = UserSession.CurrentElection;
       _hub = fakes.FakeHub;
       Db = fakes.DbContext;
       Savers = new Savers(Db);
     }
 
-    public IStatusUpdateHub AnalyzeHub { get { return _hub; } }
+    public IStatusUpdateHub AnalyzeHub => _hub;
 
     public bool IsFaked { get; private set; }
 
@@ -330,13 +316,7 @@ namespace TallyJ.CoreModels
 
 
     /// <Summary>Current Results records</Summary>
-    public List<Person> People
-    {
-      get
-      {
-        return _people ?? (_people = new PersonCacher(Db).AllForThisElection);
-      }
-    }
+    public List<Person> People => _people ??= new PersonCacher(Db).AllForThisElection;
 
     /// <Summary>Current Results records</Summary>
     public List<ResultTie> ResultTies
@@ -348,18 +328,15 @@ namespace TallyJ.CoreModels
       }
     }
 
-    internal Election TargetElection
-    {
-      get { return _election; }
-    }
+    internal Election TargetElection { get; }
 
     /// <Summary>Votes are loaded, in case DB updates are required.</Summary>
     public List<Vote> Votes
     {
-      get { return _votes ?? (_votes = new VoteCacher(Db).AllForThisElection); }
+      get => _votes ??= new VoteCacher(Db).AllForThisElection;
+      set => throw new System.NotImplementedException();
     }
 
-    #region IElectionAnalyzer Members
 
     public List<Ballot> Ballots
     {
@@ -510,7 +487,7 @@ namespace TallyJ.CoreModels
       }
     }
 
-    #endregion
+    
 
     public void FinalizeSummaries()
     {

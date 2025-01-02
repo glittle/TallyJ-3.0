@@ -91,9 +91,9 @@ namespace TallyJ.Controllers
 
           var claims = new List<Claim>
           {
-            new Claim("UserName", model.UserName),
-            new Claim("UniqueID", "A:" + model.UserName),
-            new Claim("IsKnownTeller", "true")
+            new("UserName", model.UserName),
+            new("UniqueID", "A:" + model.UserName),
+            new("IsKnownTeller", "true")
           };
 
           UserSession.IsKnownTeller = true;
@@ -216,9 +216,9 @@ namespace TallyJ.Controllers
          
           var claims = new List<Claim>
           {
-            new Claim("UserName", model.UserName),
-            new Claim("UniqueID", "A:" + model.UserName),
-            new Claim("IsKnownTeller", "true")
+            new("UserName", model.UserName),
+            new("UniqueID", "A:" + model.UserName),
+            new("IsKnownTeller", "true")
           };
 
           UserSession.IsKnownTeller = true;

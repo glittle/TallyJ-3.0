@@ -667,7 +667,7 @@ namespace TallyJ.CoreModels
       UserSession.ResetWhenSwitchingElections();
 
 
-      var electionType = ElectionTypeEnum.Lsa.ToString();
+      var electionType = ElectionTypeEnum.LSA.ToString();
       var electionMode = ElectionModeEnum.Normal.ToString();
 
       var rules = GetRules(electionType, electionMode);

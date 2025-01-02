@@ -19,7 +19,7 @@ public class ImportCsvModel : DataConnectedModel
 {
   private const string FileTypeCsv = "CSV";
   private readonly string _mappingSymbol = char.ConvertFromUtf32(29); // random unusual character - also in JS
-  private Dictionary<string, int> _dict;
+  private readonly Dictionary<string, int> _dict;
 
   public ImportCsvModel()
   {
@@ -51,7 +51,6 @@ public class ImportCsvModel : DataConnectedModel
     }
   }
 
-  public int NumberOfPeople => new PersonCacher(Db).AllForThisElection.Count;
 
   public string ProcessUpload(out int rowId)
   {
@@ -174,8 +173,10 @@ public class ImportCsvModel : DataConnectedModel
 
     var firstDataRow = importFile.FirstDataRow.AsInt();
     if (firstDataRow > 2)
+    {
       // 1-based... headers on line 1, data on line 2. If 2 or less, ignore it.
       fileString = fileString.GetLinesAfterSkipping(firstDataRow - 2);
+    }
 
     var textReader = new StringReader(fileString);
     var csv = new CsvReader.CsvReader(textReader, true)
@@ -290,11 +291,13 @@ public class ImportCsvModel : DataConnectedModel
 
     var columnsToRead = file.ColumnsToRead;
     if (columnsToRead == null)
+    {
       return new
       {
         failed = true,
         result = new[] { "Mapping not defined" }
       }.AsJsonResult();
+    }
 
     var start = DateTime.Now;
     var fileString = file.Contents.AsString(file.CodePage);
@@ -302,10 +305,14 @@ public class ImportCsvModel : DataConnectedModel
     var firstDataRow = file.FirstDataRow.AsInt();
     var numFirstRowsToSkip = firstDataRow - 2;
     if (numFirstRowsToSkip > 0)
+    {
       // 1 based... headers on line 1, data on line 2. If 2 or less, ignore it.
       fileString = fileString.GetLinesAfterSkipping(numFirstRowsToSkip);
+    }
     else
+    {
       numFirstRowsToSkip = 1;
+    }
 
     // for some files, CRLF is seen as two lines
     fileString = fileString.Replace("\r\n", "\r");
@@ -334,17 +341,21 @@ public class ImportCsvModel : DataConnectedModel
 
     var mappedFields = dbFields.Where(f => validMappings.Select(m => m[1]).Contains(f)).ToList();
     if (!mappedFields.Contains("LastName"))
+    {
       return new
       {
         failed = true,
-        result = new[] { "Last Name must be mapped" }
+        result = new[] { "Last Name must be included" }
       }.AsJsonResult();
+    }
     if (!mappedFields.Contains("FirstName"))
+    {
       return new
       {
         failed = true,
-        result = new[] { "First Name must be mapped" }
+        result = new[] { "First Name must be included" }
       }.AsJsonResult();
+    }
 
     var phoneNumberChecker = new Regex(@"\+[0-9]{4,15}");
     var phoneNumberCleaner = new Regex(@"[^\+0-9]");
@@ -403,7 +414,8 @@ public class ImportCsvModel : DataConnectedModel
         string value;
         try
         {
-          value = csv[csvColumnName] ?? "";
+          // remove any hard spaces and trim
+          value = (csv[csvColumnName] ?? "").Replace('\u00A0', ' ').Trim();
         }
         catch (Exception e)
         {
@@ -413,7 +425,7 @@ public class ImportCsvModel : DataConnectedModel
           break;
         }
 
-        _dict.TryGetValue(dbFieldName, out int maxSize);
+        _dict.TryGetValue(dbFieldName, out var maxSize);
         if (value.Length > maxSize)
         {
           result.Add($"~E Line {currentLineNum} - {dbFieldName} is too long. Max length is {maxSize}.");
@@ -430,7 +442,6 @@ public class ImportCsvModel : DataConnectedModel
         {
           case "IneligibleReasonGuid":
             // match value to the list of Enums
-            value = value.Trim();
             if (value.HasContent())
             {
               if (value == "Eligible")
@@ -452,9 +463,13 @@ public class ImportCsvModel : DataConnectedModel
                   result.Add($"~E Line {currentLineNum} - Invalid Eligibility Status reason: {rawValue}");
 
                   if (unexpectedReasons.ContainsKey(value))
+                  {
                     unexpectedReasons[value] += 1;
+                  }
                   else
+                  {
                     unexpectedReasons.Add(value, 1);
+                  }
                 }
               }
             }
@@ -462,7 +477,7 @@ public class ImportCsvModel : DataConnectedModel
             break;
           case "FirstName":
           case "LastName":
-            if (value.Trim() == "")
+            if (value == "")
             {
               result.Add($"~E Line {currentLineNum} - \"{csvColumnName}\" is required");
               requiredWarningGiven = true;
@@ -478,8 +493,6 @@ public class ImportCsvModel : DataConnectedModel
             person.SetPropertyValue(dbFieldName, value);
             break;
         }
-
-        ;
 
         valuesSet = valuesSet || value.HasContent();
 
@@ -583,66 +596,66 @@ public class ImportCsvModel : DataConnectedModel
           result.Add($"~I Line {currentLineNum} - Ignoring blank line");
           addRow = false;
         }
-      }
-      else if (requiredFieldsFound != numRequiredFields || errorInRow)
-      {
-        addRow = false;
-        rowsWithErrors++;
-
-        if (requiredFieldsFound != numRequiredFields && !requiredWarningGiven)
-        {
-          result.Add($"~E Line {currentLineNum} - A required field is missing");
-          requiredWarningGiven = true;
-        }
-      }
-
-      if (doDupQuery)
-      {
-        var duplicates = duplicateInFileSearch.Select(p => p.TempImportLineNum).Distinct().ToList();
-        if (duplicates.Any())
+        else if (requiredFieldsFound != numRequiredFields || errorInRow)
         {
           addRow = false;
+          rowsWithErrors++;
 
-          if (duplicates.All(n => n == -1))
+          if (requiredFieldsFound != numRequiredFields && !requiredWarningGiven)
           {
-            result.Add(
-              $"~I Line {currentLineNum} - {person.FirstName} {person.LastName} - skipped - Matching person found in existing records");
-          }
-          else
-          {
-            peopleSkipped++;
-            foreach (var n in duplicates.Where(n => n > 0))
-              result.Add(
-                $"~E Line {currentLineNum} - {person.FirstName} {person.LastName} - Duplicate person found on line {n}");
+            result.Add($"~E Line {currentLineNum} - A required field is missing");
+            requiredWarningGiven = true;
           }
         }
-      }
+
+        if (doDupQuery)
+        {
+          var duplicates = duplicateInFileSearch.Select(p => p.TempImportLineNum).Distinct().ToList();
+          if (duplicates.Any())
+          {
+            addRow = false;
+
+            if (duplicates.All(n => n == -1))
+            {
+              result.Add(
+                $"~I Line {currentLineNum} - {person.FirstName} {person.LastName} - skipped - Matching person found in existing records");
+            }
+            else
+            {
+              peopleSkipped++;
+              foreach (var n in duplicates.Where(n => n > 0))
+                result.Add(
+                  $"~E Line {currentLineNum} - {person.FirstName} {person.LastName} - Duplicate person found on line {n}");
+            }
+          }
+        }
 
 
-      if (addRow)
-      {
-        //get ready for DB
-        person.ElectionGuid = UserSession.CurrentElectionGuid;
-        person.PersonGuid = Guid.NewGuid();
+        if (addRow)
+        {
+          //get ready for DB
+          person.ElectionGuid = UserSession.CurrentElectionGuid;
+          person.PersonGuid = Guid.NewGuid();
 
-        personModel.SetCombinedInfoAtStart(person);
-        personModel.ApplyVoteReasonFlags(person);
+          personModel.SetCombinedInfoAtStart(person);
+          personModel.ApplyVoteReasonFlags(person);
 
-        peopleToLoad.Add(person);
+          peopleToLoad.Add(person);
 
-        // result.Add($"~I Line {currentLineNum} - {person.FirstName} {person.LastName}");  -- not good for large lists!
+          // result.Add($"~I Line {currentLineNum} - {person.FirstName} {person.LastName}");  -- not good for large lists!
 
-        peopleAdded++;
-      }
+          peopleAdded++;
+        }
 
-      currentPeople.Add(person);
+        currentPeople.Add(person);
 
-      if (currentLineNum % 100 == 0) hub.ImportInfo(currentLineNum, peopleAdded);
+        if (currentLineNum % 100 == 0) hub.ImportInfo(currentLineNum, peopleAdded);
 
-      if (result.Count(s => s.StartsWith("~E")) == 10)
-      {
-        result.Add("~E Import aborted after 10 errors");
-        break;
+        if (result.Count(s => s.StartsWith("~E")) == 10)
+        {
+          result.Add("~E Import aborted after 10 errors");
+          break;
+        }
       }
     }
 
@@ -753,6 +766,8 @@ public class ImportCsvModel : DataConnectedModel
       return msg;
     }
   }
+
+  public int NumberOfPeople => new PersonCacher(Db).AllForThisElection.Count;
 
   public JsonResult SaveCodePage(int id, int codepage)
   {

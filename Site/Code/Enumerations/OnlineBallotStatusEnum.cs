@@ -6,10 +6,10 @@ namespace TallyJ.Code.Enumerations
 {
   public class OnlineBallotStatusEnum : BaseEnumeration<OnlineBallotStatusEnum, string>
   {
-    public static readonly OnlineBallotStatusEnum New = new OnlineBallotStatusEnum("New", "New");
-    public static readonly OnlineBallotStatusEnum Draft = new OnlineBallotStatusEnum("Draft", "Draft");
-    public static readonly OnlineBallotStatusEnum Submitted = new OnlineBallotStatusEnum("Submitted", "Submitted");
-    public static readonly OnlineBallotStatusEnum Processed = new OnlineBallotStatusEnum("Processed", "Processed by tellers");
+    public static readonly OnlineBallotStatusEnum New = new("New", "New");
+    public static readonly OnlineBallotStatusEnum Draft = new("Draft", "Draft");
+    public static readonly OnlineBallotStatusEnum Submitted = new("Submitted", "Submitted");
+    public static readonly OnlineBallotStatusEnum Processed = new("Processed", "Processed by tellers");
 
     static OnlineBallotStatusEnum()
     {

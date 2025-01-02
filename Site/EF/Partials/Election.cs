@@ -59,7 +59,9 @@ public partial class Election : IIndexedForCaching
     set
     {
       if (value != null && !Enum.IsDefined(typeof(BallotProcessEnum), value))
+      {
         throw new ApplicationException("Invalid process key: " + value);
+      }
 
       SetExtraSetting(ExtraSettingKey.BP, value);
     }

@@ -7,6 +7,7 @@ using System.Linq;
 using System.Net;
 using System.Reflection;
 using System.Web;
+using System.Web.Configuration;
 using System.Web.Hosting;
 using System.Web.Mvc;
 using System.Web.Routing;
@@ -88,7 +89,7 @@ public class MvcApplication : HttpApplication
   {
     var siteInfo = new SiteInfo();
     if (siteInfo.CurrentDataSource == DataSource.SharedSql) FixUpConnectionString();
-    // Database.SetInitializer(new MigrateDatabaseToLatestVersion<TallyJ2dEntities, Configuration>());
+    // Database.SetInitializer(new MigrateDatabaseToLatestVersion<TallyJEntities, Configuration>());
     RegisterDefaultRoute(RouteTable.Routes,
       siteInfo.CurrentHostMode == HostMode.SelfHostCassini ? "Dashboard" : "Public");
 
@@ -310,7 +311,7 @@ public class MvcApplication : HttpApplication
 
   private void FixUpConnectionString()
   {
-    var cnString = ConfigurationManager.ConnectionStrings["MainConnection3"];
+    var cnString = WebConfigurationManager.ConnectionStrings["MainConnection3"];
     if (cnString == null) return;
 
     var fi = typeof(ConfigurationElement).GetField("_bReadOnly", BindingFlags.Instance | BindingFlags.NonPublic);

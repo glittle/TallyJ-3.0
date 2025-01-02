@@ -18,42 +18,52 @@ namespace Tests.BusinessTests
   {
     private AnalyzerFakes _fakes;
     private ITallyJDbContext Db;
-    private Guid _electionGuid;
 
     private List<Person> SamplePeople { get; set; }
 
     [TestInitialize]
     public void Init()
     {
+      UnityInstance.Reset();
+      ElectionTestHelper.Reset();
+
       _fakes = new AnalyzerFakes();
       Db = _fakes.DbContext;
       Db.ForTests();
       UnityInstance.Offer(Db);
 
-      _electionGuid = Guid.NewGuid();
+      // ForTests adds to Db
 
-      SessionKey.CurrentElectionGuid.SetInSession(_electionGuid);
-      ElectionTestHelper.SaveElectionGuidForTests(_electionGuid);
+      // _electionGuid = Guid.NewGuid();
+      //
+      // SessionKey.CurrentPeopleElectionGuid.SetInSession(_electionGuid);
+      // SessionKey.CurrentElectionGuid.SetInSession(_electionGuid);
+      // ElectionTestHelper.SaveElectionGuidForTests(_electionGuid);
 
-      SessionKey.CurrentComputer.SetInSession(new Computer
-      {
-        ComputerGuid = Guid.NewGuid(),
-        ComputerCode = "TEST",
-        ElectionGuid = _electionGuid
-      });
+     
+    }
 
-      SamplePeople = new List<Person>
-      {
+    public void AfterElectionCreated()
+    {
+      UserSession.CurrentElectionGuid = ElectionTestHelper.ElectionGuid;
+
+      SamplePeople = [
         new Person {FirstName = "a0", CombinedInfo="abc", CombinedInfoAtStart="abc", VotingMethod = VotingMethodEnum.InPerson}.ForTests(),
-        new Person {FirstName = "a1", }.ForTests(),
+        new Person {FirstName = "a1" }.ForTests(),
         new Person {FirstName = "a2", }.ForTests(),
         new Person {FirstName = "a3", }.ForTests(),
         new Person {FirstName = "a4", }.ForTests(),
         new Person {FirstName = "a5", IneligibleReasonGuid = IneligibleReasonEnum.Ineligible_Moved_elsewhere_recently}.ForTests(),
         new Person {FirstName = "a6", IneligibleReasonGuid = IneligibleReasonEnum.IneligiblePartial1_Older_Youth}.ForTests(),
         new Person {FirstName = "a7", IneligibleReasonGuid = IneligibleReasonEnum.Ineligible_Resides_elsewhere}.ForTests(),
-      };
-     
+      ];
+
+      SessionKey.CurrentComputer.SetInSession(new Computer
+      {
+        ComputerGuid = Guid.NewGuid(),
+        ComputerCode = "TEST",
+        ElectionGuid =  ElectionTestHelper.ElectionGuid
+      });
     }
 
     [TestMethod]
@@ -65,6 +75,8 @@ namespace Tests.BusinessTests
         NumberExtra = 0,
         // CanReceive = ElectionModel.CanVoteOrReceive.All
       }.ForTests();
+
+      AfterElectionCreated();
 
       var ballots = new[]
       {
@@ -120,6 +132,8 @@ namespace Tests.BusinessTests
         // CanReceive = ElectionModel.CanVoteOrReceive.All
       }.ForTests();
 
+      AfterElectionCreated();
+
       var ballots = new[]
       {
         new Ballot().ForTests()
@@ -163,6 +177,8 @@ namespace Tests.BusinessTests
         // CanReceive = ElectionModel.CanVoteOrReceive.All
       }.ForTests();
 
+      AfterElectionCreated();
+
       var ballots = new[]
       {
         new Ballot().ForTests()
@@ -205,6 +221,8 @@ namespace Tests.BusinessTests
         NumberExtra = 0,
         // CanReceive = ElectionModel.CanVoteOrReceive.All
       }.ForTests();
+
+      AfterElectionCreated();
 
       var ballots = new[]
       {
@@ -256,6 +274,8 @@ namespace Tests.BusinessTests
         // CanReceive = ElectionModel.CanVoteOrReceive.All
       }.ForTests();
 
+      AfterElectionCreated();
+
       var ballots = new[]
       {
         new Ballot().ForTests()
@@ -306,6 +326,8 @@ namespace Tests.BusinessTests
         // CanReceive = ElectionModel.CanVoteOrReceive.All
       }.ForTests();
 
+      AfterElectionCreated();
+
       var ballots = new[]
       {
         new Ballot().ForTests()
@@ -353,6 +375,8 @@ namespace Tests.BusinessTests
         NumberToElect = 3,
         NumberExtra = 0
       }.ForTests();
+
+      AfterElectionCreated();
 
       var ballots = new[]
       {
@@ -425,6 +449,8 @@ namespace Tests.BusinessTests
         NumberExtra = 0
       }.ForTests();
 
+      AfterElectionCreated();
+
       var ballots = new[]
       {
         new Ballot().ForTests(),
@@ -489,6 +515,8 @@ namespace Tests.BusinessTests
         NumberToElect = 2,
         NumberExtra = 2
       }.ForTests();
+
+      AfterElectionCreated();
 
       var ballots = new[]
       {
@@ -603,10 +631,11 @@ namespace Tests.BusinessTests
     {
       new Election
       {
-        ElectionGuid = _electionGuid,
         NumberToElect = 2,
         NumberExtra = 2
       }.ForTests();
+
+      AfterElectionCreated();
 
       var ballots = new[]
       {
@@ -703,6 +732,8 @@ namespace Tests.BusinessTests
         NumberToElect = 2,
         NumberExtra = 2
       }.ForTests();
+
+      AfterElectionCreated();
 
       var ballots = new[]
       {
@@ -830,6 +861,8 @@ namespace Tests.BusinessTests
         NumberToElect = 2,
         NumberExtra = 2
       }.ForTests();
+
+      AfterElectionCreated();
 
       var ballots = new[]
       {
@@ -961,6 +994,8 @@ namespace Tests.BusinessTests
         NumberToElect = 2,
         NumberExtra = 2
       }.ForTests();
+
+      AfterElectionCreated();
 
       var ballots = new[]
       {
@@ -1102,10 +1137,12 @@ namespace Tests.BusinessTests
     {
       new Election
       {
-        ElectionType = ElectionTypeEnum.Nsa,
+        ElectionType = ElectionTypeEnum.NSA,
         ElectionMode = ElectionModeEnum.Normal,
         NumberToElect = 2,
       }.ForTests();
+
+      AfterElectionCreated();
 
       var ballots = new[]
       {
@@ -1168,14 +1205,16 @@ namespace Tests.BusinessTests
     {
       new Election
       {
-        ElectionType = ElectionTypeEnum.Nsa,
+        ElectionType = ElectionTypeEnum.NSA,
         ElectionMode = ElectionModeEnum.Normal,
         NumberToElect = 2,
       }.ForTests();
 
+      AfterElectionCreated();
+
       new Election
       {
-        ElectionType = ElectionTypeEnum.Nsa,
+        ElectionType = ElectionTypeEnum.NSA,
         ElectionMode = ElectionModeEnum.Normal,
         NumberToElect = 2,
       }.ForTestsPersonElection();

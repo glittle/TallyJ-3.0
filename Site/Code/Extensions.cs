@@ -1050,6 +1050,7 @@ namespace TallyJ.Code
 
     public static string FilteredStackTrace(this string stackTrace)
     {
+      if (stackTrace == null) return "(No stacktrace)";
       var parts = stackTrace.Split(new[] { '\n', '\r' }).Where(s => !string.IsNullOrEmpty(s)).Reverse().ToList();
       var newParts = new List<string>();
       var foundOurCode = false;

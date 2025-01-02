@@ -6,9 +6,9 @@ namespace TallyJ.Code.Enumerations
 {
   public class ElectionModeEnum : BaseEnumeration<ElectionModeEnum, string>
   {
-    public static readonly ElectionModeEnum Normal = new ElectionModeEnum("N", "Normal Election", true);
-    public static readonly ElectionModeEnum Tie = new ElectionModeEnum("T", "Tie-Break");
-    public static readonly ElectionModeEnum ByElection = new ElectionModeEnum("B", "By-election");
+    public static readonly ElectionModeEnum Normal = new("N", "Normal Election", true);
+    public static readonly ElectionModeEnum Tie = new("T", "Tie-Break");
+    public static readonly ElectionModeEnum ByElection = new("B", "By-election");
 
     static ElectionModeEnum()
     {

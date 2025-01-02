@@ -1,7 +1,5 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using System.Web;
 using TallyJ.EF;
 
@@ -15,12 +13,12 @@ namespace TallyJ.Code.Enumerations
     //<option value="Report">Reports Ready to Announce!</option>
 
 
-    public static readonly ElectionTallyStatusEnum NotStarted = new ElectionTallyStatusEnum("NotStarted", "Setting Up", true);
-    public static readonly ElectionTallyStatusEnum NamesReady = new ElectionTallyStatusEnum("NamesReady", "Gathering Ballots", true);
-    public static readonly ElectionTallyStatusEnum Tallying = new ElectionTallyStatusEnum("Tallying", "Processing Ballots", true);
+    public static readonly ElectionTallyStatusEnum NotStarted = new("NotStarted", "Setting Up", true);
+    public static readonly ElectionTallyStatusEnum NamesReady = new("NamesReady", "Gathering Ballots", true);
+    public static readonly ElectionTallyStatusEnum Tallying = new("Tallying", "Processing Ballots", true);
     //public static readonly ElectionTallyStatusEnum Reviewing = new ElectionTallyStatusEnum("Reviewing", "Reviewing", false);
     //public static readonly ElectionTallyStatusEnum TieBreakNeeded = new ElectionTallyStatusEnum("TieBreakNeeded", "Tie-Break Required");
-    public static readonly ElectionTallyStatusEnum Finalized = new ElectionTallyStatusEnum("Finalized", "Finalized", true);
+    public static readonly ElectionTallyStatusEnum Finalized = new("Finalized", "Finalized", true);
     public bool Visible { get; private set; }
 
     static ElectionTallyStatusEnum()

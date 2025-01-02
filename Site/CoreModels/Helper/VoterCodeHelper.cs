@@ -105,7 +105,7 @@ namespace TallyJ.CoreModels.Helper
         if (message.HasContent())
           _voterCodeHub.SetStatus(_hubKey, "Error: " + message.CleanedForErrorMessages());
         else
-          _voterCodeHub.SetStatus(_hubKey, "Your login code has been sent.");
+          _voterCodeHub.SetStatus(_hubKey, null, "emailSent");
 
         method = type;
       }
@@ -395,10 +395,10 @@ namespace TallyJ.CoreModels.Helper
         var uniqueId = "V:" + voterId;
         var claims = new List<Claim>
         {
-          new Claim("UniqueID", uniqueId),
-          new Claim("VoterId", voterId),
-          new Claim("VoterIdType", voterIdType),
-          new Claim("IsVoter", "true")
+          new("UniqueID", uniqueId),
+          new("VoterId", voterId),
+          new("VoterIdType", voterIdType),
+          new("IsVoter", "true")
         };
 
         var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationType);
