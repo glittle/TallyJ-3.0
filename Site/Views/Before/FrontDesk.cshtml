@@ -55,6 +55,14 @@
           </li>
           break;
       }
+
+      if (currentElection.FlagsList.Any())
+      {
+        <li>
+          If using "Checklist" items, the "Attendance Checklists" report provides a way to view and report on checked items.
+        </li>
+      }
+
     }
   </ol>
 </div>
@@ -206,10 +214,10 @@
     <p>{BahaiId}</p>
     @if (currentElection.FlagsList.Count > 0)
     {
-        <div class="flags">
+      <div class="flags">
         @foreach (var flag in currentElection.FlagsList)
         {
-            <div data-vm="flag-@flag" class="Btn Flag flag-@flag {flag-@flag}">@flag</div>
+          <div data-vm="flag-@flag" class="Btn Flag flag-@flag {flag-@flag}">@flag</div>
         }
       </div>
     }

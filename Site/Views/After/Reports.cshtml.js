@@ -74,9 +74,10 @@
 
     //    var contents = 'data:text/csv;charset=utf-8,\uFEFF' + encodeURIComponent(lines.join('\r\n'));
     var crlf = '\r\n';
-    var contents = 'data:text/csv;charset=utf-8,\uFEFF' + lines.join(crlf) + crlf;
+    var contents = 'data:text/csv;charset=utf-8,' + encodeURIComponent(lines.join(crlf) + crlf);
 
     var link = document.createElement('a');
+    link.style.display = 'none';
     link.setAttribute('href', contents);
     link.setAttribute('download', local.currentTitle + (btn.data('file') || '') + '.csv');
     link.click();

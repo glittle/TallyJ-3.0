@@ -152,15 +152,7 @@
     <tr><th>Other Info</th><td></td><td>Other distinguishing information to identify this person.</td></tr>
   </table>
 </div>
-<div class="fieldSelector">
-  <div class="numFound">Number of columns found in this CSV file: <span id="numColumns">-</span></div>
-  @*<button type="button" id="btnPrepareFields">
-      Re-analyze the file and get column names
-    </button>*@
-  <div id="fieldSelector">
-  </div>
-  <div id="mappingError"></div>
-</div>
+
 <p class="aboutEligibility">
   To set the "Eligibility Status" of anyone being imported, map a column to the Eligibility Status field.
   Any value in this column must <strong>exactly</strong> match one of the reasons below to be recognized. (Click a Reason to copy it.).
@@ -177,15 +169,14 @@
       <h3>Recommended Status Settings</h3>
       <dl>
         <dt>For a local Assembly election</dt>
-        <dd>All voters should be blank</dd>
-        <dd>Others (youth, moved recently, etc) should have an appropriate status reason.</dd>
+        <dd>All adult voters should be blank</dd>
+        <dd>Older youth  voters should set to: <strong>Youth aged 18/19/20</strong></dd>
+        <dd>Others (youth, moved recently, etc.) should have an appropriate status reason.</dd>
         <dt>For a tie-break election</dt>
         <dd>Set those being voted for to blank</dd>
-        <dd>All others should have a status of: <strong>Tie-break: Not tied</strong></dd>
+        <dd>Other adult voters should have a status of: <strong>Tie-break: Not tied</strong></dd>
         <dt>For a by-election</dt>
         <dd>Set those serving on the Institution to: <strong>By-election: On Institution already</strong></dd>
-        <dd>All other voters should be blank</dd>
-        <dd>All others should have a status of: <strong>Not in this local unit</strong></dd>
         <dt>For a National Convention or 2<sup>nd</sup> stage local Assembly election</dt>
         <dd>Delegates should be blank</dd>
         <dd>People that can be voted for (but are not delegates) should have a status of: <strong>Not a delegate in this election</strong></dd>
