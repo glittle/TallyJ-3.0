@@ -222,10 +222,10 @@
           phone: '',
           phoneMethod: '',
           sending: false,
-          sent: false,
+          //          sent: false,
           status: '',
-          twilioStatus: '',
-          twilioCallDone: false,
+          sendingStatus: '',
+          //          twilioCallDone: false,
           connectedToHub: false,
           hubKey: '',
           smsAvailable: publicInterface.smsAvailable,
@@ -238,21 +238,21 @@
         okayToSend: function () {
           return !!this[this.mode]; // something entered - should validate
         },
-//        codePrompt: function () {
-//          var msg;
-//          switch (this.phoneMethod) {
-//            case 'voice':
-//              msg = this.twilioCallDone ? 'Call completed' : 'Calling your phone...';
-//              break;
-//            case 'sms':
-//              msg = ''; // live updates will show the status
-//              break;
-//            default:
-//              msg = '?';
-//              break;
-//          }
-//          return msg;
-//        }
+        //        codePrompt: function () {
+        //          var msg;
+        //          switch (this.phoneMethod) {
+        //            case 'voice':
+        //              msg = this.twilioCallDone ? 'Call completed' : 'Calling your phone...';
+        //              break;
+        //            case 'sms':
+        //              msg = ''; // live updates will show the status
+        //              break;
+        //            default:
+        //              msg = '?';
+        //              break;
+        //          }
+        //          return msg;
+        //        }
       },
       watch: {
         //        phone(a, b) {
@@ -277,6 +277,7 @@
       methods: {
         chooseMethod: function (mode) {
           this.mode = mode;
+          this.status = '';
           this.joinHub();
           setTimeout(() => $('.voterLogin input').focus(), 0);
         },
@@ -337,29 +338,34 @@
 
           var hub = $.connection.voterCodeHubCore;
 
-          hub.client.setStatus = function (message, twilioStatus) {
-            console.log('signalR: voterCodeHub status', message, twilioStatus);
-            if (twilioStatus) {
-              switch (twilioStatus) {
+          hub.client.setStatus = function (message, sendingStatus) {
+            console.log('signalR: voterCodeHub status', message, sendingStatus);
+            if (sendingStatus) {
+              vue.showCodeInput = true;
+              //              vue.sent = false;
+
+              switch (sendingStatus) {
                 case 'completed':
-                  vue.twilioStatus = '';
-                  vue.status = 'Call completed';
-                  vue.twilioCallDone = true;
+                  vue.sendingStatus = 'Call completed';
+                  //                  vue.sent = false;
+                  //                  vue.twilioCallDone = true;
                   break;
                 case 'delivered':
-                  vue.twilioStatus = '';
-                  vue.status = 'SMS sent';
-                  vue.twilioCallDone = true;
+                  vue.sendingStatus = 'SMS sent. Enter the code below:';
+                  //                  vue.twilioCallDone = true;
+                  break;
+                case 'emailSent':
+                  vue.sendingStatus = 'Email sent. Enter the code below:';
+                  //                  vue.twilioCallDone = true;
                   break;
                 default:
-                  vue.twilioStatus = message;
+                  vue.sendingStatus = message;
                   break;
               }
-              vue.showCodeInput = true;
-              vue.sent = true;
             } else {
               vue.status = message;
-              vue.twilioStatus = '';
+              vue.sendingStatus = '';
+              //              vue.sent = false;
             }
           };
 
@@ -407,8 +413,7 @@
                 // hub will update
                 console.log('issued');
 
-                vue.status = '';
-                vue.sent = true; //testing
+                //                vue.sent = true; //testing
                 vue.sending = false; // testing
                 setTimeout(() => {
                   $('.voterLogin .pendingCode input').focus();
@@ -416,7 +421,7 @@
                 }, 100);
 
               } else {
-                vue.status = info.Message;
+                vue.sendingStatus = info.Message;
               }
             });
         },
