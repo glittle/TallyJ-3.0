@@ -78,6 +78,26 @@
     }
   }
 
+  /**
+   * Applies the specified values to the inputs within a given panel based on the provided person properties.
+   * Optionally clears all input fields or only applies the specified properties.
+   *
+   * @param {jQuery} panel - The jQuery object representing the panel containing input fields.
+   * @param {Object} personProperties - An object containing properties to be applied to the inputs.
+   * @param {boolean} clearAll - A flag indicating whether to clear all input fields or only apply specified properties.
+   *
+   * @throws {TypeError} Throws an error if the panel is not a jQuery object.
+   *
+   * @example
+   * // Example usage:
+   * applyValues($('#myPanel'), { Voter: { KioskCode: '12345' }, C_RowId: 'abc123' }, true);
+   *
+   * @description
+   * This function first checks if a panel is provided; if not, it uses a previously stored panel.
+   * It then clears the kiosk code if applicable and sets the title attribute of the delete button.
+   * Depending on the clearAll flag, it either clears all inputs or applies only the specified properties from personProperties.
+   * Additionally, it manages visibility of voting-related elements based on properties and initializes event handlers for specific inputs.
+   */
   function applyValues(panel, personProperties, clearAll) {
     if (panel) {
       local.hostPanel = panel;
