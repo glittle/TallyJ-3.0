@@ -42,9 +42,9 @@ public partial class Election : IIndexedForCaching
   private Dictionary<ExtraSettingKey, string> _extraDict;
 
   public string EmailFromAddressWithDefault =>
-    EmailFromAddress ?? AppSettings["SmtpDefaultFromAddress"] ?? "noreply@tallyj.com";
+    EmailFromAddress ?? SettingsHelper.Get("SmtpDefaultFromAddress", "noreply@tallyj.com");
 
-  public string EmailFromNameWithDefault => EmailFromName ?? AppSettings["SmtpDefaultFromName"] ?? "TallyJ System";
+  public string EmailFromNameWithDefault => EmailFromName ?? SettingsHelper.Get("SmtpDefaultFromName", "TallyJ System");
 
 
   /// <summary>
