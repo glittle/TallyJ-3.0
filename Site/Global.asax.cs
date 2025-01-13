@@ -317,7 +317,7 @@ public class MvcApplication : HttpApplication
     var fi = typeof(ConfigurationElement).GetField("_bReadOnly", BindingFlags.Instance | BindingFlags.NonPublic);
     fi.SetValue(cnString, false);
 
-    cnString.ConnectionString = cnString.ConnectionString + ";MultipleActiveResultSets=True";
+    cnString.ConnectionString += ";MultipleActiveResultSets=True";
   }
 
   public static void RegisterGlobalFilters(GlobalFilterCollection filters)
