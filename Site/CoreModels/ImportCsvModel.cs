@@ -277,6 +277,20 @@ public class ImportCsvModel : DataConnectedModel
     return new { Message = "", Status = fileInfo.ProcessingStatus }.AsJsonResult();
   }
 
+  /// <summary>
+  /// Imports data from a specified file and processes it into the database.
+  /// </summary>
+  /// <param name="rowId">The identifier of the row in the import file to be processed.</param>
+  /// <returns>A JsonResult containing the result of the import operation, including any error messages or success notifications.</returns>
+  /// <remarks>
+  /// This method retrieves an import file based on the provided row ID and the current election context. 
+  /// It checks for the existence of the file and the necessary column mappings required for processing. 
+  /// The method reads the contents of the file, skipping any specified header rows, and processes each record in the CSV format. 
+  /// It validates required fields such as "FirstName" and "LastName", checks for duplicates, and ensures that phone numbers and emails are correctly formatted. 
+  /// If any errors are encountered during processing, they are collected and returned in the result. 
+  /// The method also handles bulk insertion of valid records into the database and logs the import process.
+  /// The final result includes a summary of processed records, any errors encountered, and the total time taken for the import.
+  /// </remarks>
   public JsonResult Import(int rowId)
   {
     var file =
