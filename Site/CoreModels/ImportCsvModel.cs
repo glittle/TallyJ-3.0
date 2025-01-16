@@ -683,6 +683,8 @@ public class ImportCsvModel : DataConnectedModel
 
     new PersonCacher().DropThisCache();
 
+    hub.ImportInfo(currentLineNum, peopleAdded);
+
     result.AddRange(new[]
     {
       "---------",
