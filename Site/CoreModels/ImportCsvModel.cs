@@ -596,66 +596,66 @@ public class ImportCsvModel : DataConnectedModel
           result.Add($"~I Line {currentLineNum} - Ignoring blank line");
           addRow = false;
         }
-        else if (requiredFieldsFound != numRequiredFields || errorInRow)
+      }
+      else if (requiredFieldsFound != numRequiredFields || errorInRow)
+      {
+        addRow = false;
+        rowsWithErrors++;
+
+        if (requiredFieldsFound != numRequiredFields && !requiredWarningGiven)
+        {
+          result.Add($"~E Line {currentLineNum} - A required field is missing");
+          requiredWarningGiven = true;
+        }
+      }
+
+      if (doDupQuery)
+      {
+        var duplicates = duplicateInFileSearch.Select(p => p.TempImportLineNum).Distinct().ToList();
+        if (duplicates.Any())
         {
           addRow = false;
-          rowsWithErrors++;
 
-          if (requiredFieldsFound != numRequiredFields && !requiredWarningGiven)
+          if (duplicates.All(n => n == -1))
           {
-            result.Add($"~E Line {currentLineNum} - A required field is missing");
-            requiredWarningGiven = true;
+            result.Add(
+              $"~I Line {currentLineNum} - {person.FirstName} {person.LastName} - skipped - Matching person found in existing records");
           }
-        }
-
-        if (doDupQuery)
-        {
-          var duplicates = duplicateInFileSearch.Select(p => p.TempImportLineNum).Distinct().ToList();
-          if (duplicates.Any())
+          else
           {
-            addRow = false;
-
-            if (duplicates.All(n => n == -1))
-            {
+            peopleSkipped++;
+            foreach (var n in duplicates.Where(n => n > 0))
               result.Add(
-                $"~I Line {currentLineNum} - {person.FirstName} {person.LastName} - skipped - Matching person found in existing records");
-            }
-            else
-            {
-              peopleSkipped++;
-              foreach (var n in duplicates.Where(n => n > 0))
-                result.Add(
-                  $"~E Line {currentLineNum} - {person.FirstName} {person.LastName} - Duplicate person found on line {n}");
-            }
+                $"~E Line {currentLineNum} - {person.FirstName} {person.LastName} - Duplicate person found on line {n}");
           }
         }
+      }
 
 
-        if (addRow)
-        {
-          //get ready for DB
-          person.ElectionGuid = UserSession.CurrentElectionGuid;
-          person.PersonGuid = Guid.NewGuid();
+      if (addRow)
+      {
+        //get ready for DB
+        person.ElectionGuid = UserSession.CurrentElectionGuid;
+        person.PersonGuid = Guid.NewGuid();
 
-          personModel.SetCombinedInfoAtStart(person);
-          personModel.ApplyVoteReasonFlags(person);
+        personModel.SetCombinedInfoAtStart(person);
+        personModel.ApplyVoteReasonFlags(person);
 
-          peopleToLoad.Add(person);
+        peopleToLoad.Add(person);
 
-          // result.Add($"~I Line {currentLineNum} - {person.FirstName} {person.LastName}");  -- not good for large lists!
+        // result.Add($"~I Line {currentLineNum} - {person.FirstName} {person.LastName}");  -- not good for large lists!
 
-          peopleAdded++;
-        }
+        peopleAdded++;
+      }
 
-        currentPeople.Add(person);
+      currentPeople.Add(person);
 
-        if (currentLineNum % 100 == 0) hub.ImportInfo(currentLineNum, peopleAdded);
+      if (currentLineNum % 100 == 0) hub.ImportInfo(currentLineNum, peopleAdded);
 
-        if (result.Count(s => s.StartsWith("~E")) == 10)
-        {
-          result.Add("~E Import aborted after 10 errors");
-          break;
-        }
+      if (result.Count(s => s.StartsWith("~E")) == 10)
+      {
+        result.Add("~E Import aborted after 10 errors");
+        break;
       }
     }
 
