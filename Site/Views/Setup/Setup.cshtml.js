@@ -1,3 +1,15 @@
+/**
+ * Initializes the index page for the election setup.
+ * This function sets up the necessary data structures, event listeners,
+ * and Vue instance to manage the election setup process.
+ *
+ * @returns {Object} The public interface for the setup page, containing methods and properties.
+ * @throws {Error} Throws an error if the initialization fails.
+ *
+ * @example
+ * const setupPage = SetupIndexPage();
+ * setupPage.PreparePage();
+ */
 ﻿function SetupIndexPage() {
   var cachedRules = {
     // temporary cache of rules, for the life of this page
@@ -584,6 +596,22 @@
     $('.forPreBallot').toggle(usePreBallot);
   }
 
+  /**
+   * Saves the changes made to the election settings.
+   *
+   * This function gathers data from the Vue instance and constructs a form object
+   * that is sent to the server via an AJAX call. It validates input fields, checks for
+   * special characters in custom voting methods, and manages the state of the kiosk setting.
+   *
+   * @throws {Error} Throws an error if the election name is not provided or if there are
+   *                 special characters in the custom voting methods.
+   *
+   * @returns {void}
+   *
+   * @example
+   * // To save changes after modifying election settings
+   * saveChanges();
+   */
   function saveChanges() {
     var vue = settings.vue;
     var election = vue.election;
