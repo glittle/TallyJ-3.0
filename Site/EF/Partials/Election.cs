@@ -42,9 +42,9 @@ public partial class Election : IIndexedForCaching
   private Dictionary<ExtraSettingKey, string> _extraDict;
 
   public string EmailFromAddressWithDefault =>
-    EmailFromAddress ?? AppSettings["SmtpDefaultFromAddress"] ?? "noreply@tallyj.com";
+    EmailFromAddress ?? SettingsHelper.Get("SmtpDefaultFromAddress", "noreply@tallyj.com");
 
-  public string EmailFromNameWithDefault => EmailFromName ?? AppSettings["SmtpDefaultFromName"] ?? "TallyJ System";
+  public string EmailFromNameWithDefault => EmailFromName ?? SettingsHelper.Get("SmtpDefaultFromName", "TallyJ System");
 
 
   /// <summary>
@@ -157,6 +157,12 @@ public partial class Election : IIndexedForCaching
     set => SetExtraSetting(ExtraSettingKey.RV, value ? "1" : "0");
   }
 
+  public bool GuestTellersCanAddPeople
+  {
+    get => GetExtraSetting(ExtraSettingKey.GA).AsBoolean(false);
+    set => SetExtraSetting(ExtraSettingKey.GA, value ? "1" : "0");
+  }
+
   public bool IsSingleNameElection =>
     NumberToElect.GetValueOrDefault(0) == 1 && NumberExtra.GetValueOrDefault(0) == 0;
 
@@ -263,6 +269,7 @@ public partial class Election : IIndexedForCaching
     BP, // Ballot Process?
     Env, // Envelope Mode
     T24, // use 24 hour time?
-    RV // randomize voters list displayed for voters
+    RV, // randomize voters list displayed for voters
+    GA, // Guest Tellers can add people
   }
 }

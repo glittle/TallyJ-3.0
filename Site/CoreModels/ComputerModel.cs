@@ -125,7 +125,6 @@ namespace TallyJ.CoreModels
       return computer;
     }
 
-    //    private void ClearOutOldComputerRecords()
     //    {
     //      // backward compatible... remove all records from database
     //
@@ -142,6 +141,20 @@ namespace TallyJ.CoreModels
     //    }
 
     /// <Summary>Move this computer into this location (don't change the computer code)</Summary>
+    /// <summary>
+    /// Moves the current computer into the specified location without changing the computer code.
+    /// </summary>
+    /// <param name="locationId">The identifier of the location to which the computer should be moved.</param>
+    /// <returns>True if the computer was successfully moved to the location; otherwise, false.</returns>
+    /// <remarks>
+    /// This method retrieves the location based on the provided <paramref name="locationId"/> and checks if it exists.
+    /// If the location is found, it verifies that the current computer is associated with the same election as the location.
+    /// Upon successful validation, it updates the computer's location and resets the current ballot ID in the session.
+    /// 
+    /// Additionally, if the election is a single name election, it ensures that only one ballot per computer per location is maintained.
+    /// If there are existing ballots for the specified location and computer code, it sets the current ballot ID to the first available ballot.
+    /// If any checks fail (e.g., location not found or mismatched elections), the method will return false without making any changes.
+    /// </remarks>
     public bool MoveCurrentComputerIntoLocation(int locationId)
     {
       var location = new LocationCacher(Db).AllForThisElection.SingleOrDefault(l => l.C_RowId == locationId);
@@ -154,7 +167,7 @@ namespace TallyJ.CoreModels
 
       var computer = UserSession.CurrentComputer;
       AssertAtRuntime.That(computer != null, "computer missing");
-      AssertAtRuntime.That(computer.ElectionGuid == location.ElectionGuid, $"Invalid location comp election ${computer.ElectionGuid} location ${location.ElectionGuid} session ${UserSession.CurrentElectionGuid}");
+      AssertAtRuntime.That(computer.ElectionGuid == location.ElectionGuid, $"Invalid - Computer election {computer.ElectionGuid} Location {location.LocationGuid} is in {location.ElectionGuid} (Session ${UserSession.CurrentElectionGuid})");
 
       computer.LocationGuid = location.LocationGuid;
       new ComputerCacher().UpdateComputer(computer);

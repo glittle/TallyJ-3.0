@@ -412,13 +412,11 @@ namespace TallyJ.CoreModels.Helper
     {
       if (message.Sender == null)
       {
-        message.Sender = new MailAddress(SettingsHelper.Get("SmtpDefaultFromAddress", "system@tallyj.com"), "TallyJ System");
+        var senderName = message.ReplyToList.Count > 0 ? message.ReplyToList.First().DisplayName : "TallyJ System";
+        message.Sender = new MailAddress(SettingsHelper.Get("SmtpDefaultFromAddress", "system@tallyj.com"), senderName);
       }
 
-      if (message.From == null)
-      {
-        message.From = message.Sender;
-      }
+      message.From ??= message.Sender;
 
       message.Body = htmlBody;
       message.IsBodyHtml = true;
