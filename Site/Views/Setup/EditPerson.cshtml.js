@@ -127,8 +127,12 @@
     var $phone = local.hostPanel.find('[data-name="Phone"]');
     $phone.on('change paste', fixPhone);
 
-    showVotingMethod(personProperties.VotingMethod, personProperties.RegistrationLog);
-
+    if (personProperties.VotingMethod || personProperties.CanVote) {
+      $('.votingRelated').show();
+      showVotingMethod(personProperties.VotingMethod, personProperties.RegistrationLog);
+    } else {
+      $('.votingRelated').hide();
+    }
     startEdit(true);
 
     $('#trCanVote').toggleClass('IsNo', !personProperties.CanVote);

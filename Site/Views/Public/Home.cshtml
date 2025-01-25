@@ -253,64 +253,61 @@
                 </div>
                 <div v-if="showKiosk" class="voterKiosk forKioskBlock" v-on:click.passive="chooseMethod('kiosk')">
                   <span>Using the code given to you</span>
-              </div>
-              </div>
-                <div class="voterLogin" :class="mode" v-if="mode">
-                    <div v-show="mode==='kiosk'">
-                        <label for="kiosk">
-                            Enter the code given to you:
-                        </label>
-                        <div class="example">Example: ABCDEF</div>
-                        <input type="text" name="kiosk" id="kiosk"
-                               v-model="kiosk"
-                               maxlength="6"
-                               placeholder="______"
-                               pattern="[a-zA-Z]{6}"
-                               required>
-                        <button class="btn" :disabled="kiosk.length != 6" v-on:click.passive="submitKiosk">Login</button>
-                    </div>
-                    <div v-show="mode==='email'">
-                        <label for="email">
-                            Enter your email address:
-                        </label>
-                        <div class="example">Example: name@example.com</div>
-                        <input type="email" name="email" id="email"
-                               v-model="email"
-                               placeholder="____&#64____.__"
-                               required autocomplete="email">
-                        <div>Send me a login code via</div>
-                        <button class="btn" :disabled="sending || !okayToSend" v-on:click.passive="sendEmail()">Email</button>
-                    </div>
-                    <div v-show="mode==='phone'">
-                        <label for="phone">
-                            Enter your full phone number:
-                        </label>
-                        <div class="example">Example: +12025550103</div>
-                        <input type="tel" name="phone" id="phone"
-                               v-model="phone"
-                               placeholder="+__________"
-                               required autocomplete="tel">
-                        <div>Send me a login code via</div>
-                        <button v-if="smsAvailable" class="btn" :disabled="sending || !okayToSend" v-on:click.passive="sendPhone('sms')">SMS</button>
-                        <button v-if="voiceAvailable" class="btn" :disabled="sending || !okayToSend" v-on:click.passive="sendPhone('voice')">Voice</button>
-                        @if (SettingsHelper.HostSupportsOnlineWhatsAppLogin)
-                        {
-                            <button class="btn" :disabled="sending || !okayToSend" v-on:click.passive="sendPhone('whatsapp')">WhatsApp</button>
-                        }
-                    </div>
-                    <div v-if="showCodeInput" class="pendingCode">
-                        <div v-if="sent">
-                            @*<div v-text="codePrompt"></div>*@
-                            <div class="status" v-text="twilioStatus" v-if="twilioStatus"></div>
-                            <input type="tel" v-model="code" placeholder="______" autocomplete="off" pattern="\d{6}" />
-                            <div>
-                                <button class="btn" :disabled="code.length != 6" v-on:click.passive="submitCode">Login</button>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="status" v-if="status">{{status}}</div>
                 </div>
-                <div class="afterLogin"></div>
+              </div>
+              <div class="voterLogin" :class="mode" v-if="mode">
+                <div v-show="mode==='kiosk'">
+                  <label for="kiosk">
+                    Enter the code given to you:
+                  </label>
+                  <div class="example">Example: ABCDEF</div>
+                  <input type="text" name="kiosk" id="kiosk"
+                         v-model="kiosk"
+                         maxlength="6"
+                         placeholder="______"
+                         pattern="[a-zA-Z]{6}"
+                         required>
+                  <button class="btn" :disabled="kiosk.length != 6" v-on:click.passive="submitKiosk">Login</button>
+                </div>
+                <div v-show="mode==='email'">
+                  <label for="email">
+                    Enter your email address:
+                  </label>
+                  <div class="example">Example: name@example.com</div>
+                  <input type="email" name="email" id="email"
+                         v-model="email"
+                         placeholder="____&#64____.__"
+                         required autocomplete="email">
+                  <div>Send me a login code via:</div>
+                  <button class="btn" :disabled="sending || !okayToSend" v-on:click.passive="sendEmail()">Email</button>
+                </div>
+                <div v-show="mode==='phone'">
+                  <label for="phone">
+                    Enter your full phone number:
+                  </label>
+                  <div class="example">Example: +12025550103</div>
+                  <input type="tel" name="phone" id="phone"
+                         v-model="phone"
+                         placeholder="+__________"
+                         required autocomplete="tel">
+                  <div>Send me a login code via:</div>
+                  <button v-if="smsAvailable" class="btn" :disabled="sending || !okayToSend" v-on:click.passive="sendPhone('sms')">SMS</button>
+                  <button v-if="voiceAvailable" class="btn" :disabled="sending || !okayToSend" v-on:click.passive="sendPhone('voice')">Voice</button>
+                  @if (SettingsHelper.HostSupportsOnlineWhatsAppLogin)
+                  {
+                    <button class="btn" :disabled="sending || !okayToSend" v-on:click.passive="sendPhone('whatsapp')">WhatsApp</button>
+                  }
+                </div>
+                <div v-if="showCodeInput" class="pendingCode">
+                  <div class="status" v-text="sendingStatus" v-if="sendingStatus"></div>
+                  <input type="tel" v-model="code" placeholder="______" autocomplete="off" pattern="\d{6}" />
+                  <div>
+                    <button class="btn" :disabled="code.length != 6" v-on:click.passive="submitCode">Login</button>
+                  </div>
+                </div>
+                <div class="status" v-if="status">{{status}}</div>
+              </div>
+              <div class="afterLogin"></div>
               <div class="mustPreRegister">
                 <p>
                   <strong>Please Note:</strong> You can sign in at any time, but the
@@ -365,28 +362,28 @@
 }
 
 <div class="notes">
-    <p>
-        Please send feedback to
-        <a href="mailto:@SettingsHelper.Get("TechSupportContactEmail","glen.little+tallyj@gmail.com")">@SettingsHelper.Get("TechSupportContactName", "Glen Little")</a> and refer to the
-        <a title="View document"
-           href="https://docs.google.com/document/d/1mlxI_5HWyt-zdr0EyGPzrScInqUXhA5WbT7d0Mb7gJQ/view"
-           target="gdoc">Status and Feedback</a> document for current updates!
-    </p>
-    <p>
-        Please note that TallyJ requires a current browser, such as Chrome, Edge or Firefox.
-    </p>
-    <p class="links">
-        <a href="@Url.Action("About")" title="Want to know more about the TallyJ tool?">
-            About TallyJ
-        </a>
-        <a href="@Url.Action("Learning")" title="Read more about Bahá’í elections and the job of tellers.">
-            Reference Materials
-        </a>
-        <a href="@Url.Action("Privacy")" title="Voter's Privacy Policy and User Agreement.">
-            Policies & Agreements
-        </a>
+  <p>
+    Please send feedback to
+    <a href="mailto:@SettingsHelper.Get("TechSupportContactEmail","glen.little+tallyj@gmail.com")">@SettingsHelper.Get("TechSupportContactName", "Glen Little")</a> and refer to the
+    <a title="View document"
+       href="https://docs.google.com/document/d/1mlxI_5HWyt-zdr0EyGPzrScInqUXhA5WbT7d0Mb7gJQ/view"
+       target="gdoc">Status and Feedback</a> document for current updates!
+  </p>
+  <p>
+    Please note that TallyJ requires a current browser, such as Chrome, Edge or Firefox.
+  </p>
+  <p class="links">
+    <a href="@Url.Action("About")" title="Want to know more about the TallyJ tool?">
+      About TallyJ
+    </a>
+    <a href="@Url.Action("Learning")" title="Read more about Bahá’í elections and the job of tellers.">
+      Reference Materials
+    </a>
+    <a href="@Url.Action("Privacy")" title="Voter's Privacy Policy and User Agreement.">
+      Policies & Agreements
+    </a>
 
-    </p>
+  </p>
 </div>
 
 <div class="Summary">
