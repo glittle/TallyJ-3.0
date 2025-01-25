@@ -1481,6 +1481,27 @@
     return true;
   }
 
+  /**
+   * Prepares a list of reasons as HTML option elements for a dropdown menu.
+   * The function generates an optgroup for each unique reason group and
+   * populates it with options representing individual reasons.
+   *
+   * @param {string} onlyGroup - An optional parameter that filters the
+   *                             reasons to include only those belonging
+   *                             to the specified group. If not provided,
+   *                             all groups will be included.
+   *
+   * @returns {string} A string containing the HTML markup for the
+   *                  dropdown options, including optgroups and options
+   *                  for each reason.
+   *
+   * @example
+   * // Example usage of prepareReasons function
+   * const reasonsHtml = prepareReasons('SomeGroup');
+   *
+   * @throws {Error} Throws an error if there is an issue with generating
+   *                 the HTML markup.
+   */
   function prepareReasons(onlyGroup) {
     var html = [
       '<option value="0">Select a reason...</option>',
