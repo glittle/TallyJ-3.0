@@ -352,6 +352,7 @@ namespace TallyJ.CoreModels
         election.OnlineCloseIsEstimate,
         election.OnlineSelectionProcess,
         election.RandomizeVotersList,
+        election.GuestTellersCanAddPeople,
         election.EmailFromAddress,
         election.EmailFromName,
         election.VotingMethods,
@@ -499,6 +500,7 @@ namespace TallyJ.CoreModels
 
       if (UserSession.CurrentElectionGuid == wantedElectionGuid)
       {
+        UserSession.CurrentComputer.ElectionGuid = wantedElectionGuid;
         return true;
       }
 
