@@ -391,13 +391,17 @@ namespace TallyJ.CoreModels.Helper
     }
 
     /// <summary>
-    /// 
+    /// Sends an email message with the specified HTML body and captures any error messages.
     /// </summary>
-    /// <param name="message"></param>
-    /// <param name="htmlBody"></param>
-    /// <param name="errorMessage"></param>
+    /// <param name="message">The MailMessage object containing the email details.</param>
+    /// <param name="htmlBody">The HTML content to be included in the email body.</param>
+    /// <param name="errorMessage">An output parameter that will contain any error message if the email fails to send.</param>
     /// <remarks>
-    /// Settings from AppSettings in Web.config or similar:
+    /// This method configures the sender of the email if not already set, using a default address from the application settings.
+    /// It also extracts the subject from the HTML body by looking for a <title> tag.
+    /// The method first checks if a SendGrid API key is available in the application settings; if so, it uses the SendGrid API to send the email.
+    /// Otherwise, it falls back to using SMTP settings to send the email.
+    /// The SMTP settings should be configured in the application's configuration file (e.g., Web.config) and include parameters such as:
     /// "FromEmailAddress", "system@tallyj.com"
     /// "SmtpPickupDirectory", "" -- if used, all other settings are ignored
     /// "SmtpHost", "localhost"
@@ -405,9 +409,9 @@ namespace TallyJ.CoreModels.Helper
     /// "SmtpPassword", ""
     /// "SmtpSecure", false
     /// "SmtpPort", 25
-    /// "SmtpTimeoutMs", 5 * 1000
+    /// "SmtpTimeoutMs", 5000
     /// </remarks>
-    /// <returns></returns>
+    /// <returns>Returns true if the email was sent successfully; otherwise, false.</returns>
     public bool SendEmail(MailMessage message, string htmlBody, out string errorMessage)
     {
       if (message.Sender == null)
