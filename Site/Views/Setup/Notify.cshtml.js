@@ -240,7 +240,7 @@ contact the Assembly as soon as possible!</p>
 <p>With greetings from the Elections Committee</p>`;
           this.smsText = `<p>Hello {FirstName},</p>
 <p>Online voting opens tomorrow.</p>
-<p>Cast your ballot at {hostSite}</p>
+<p>Cast your ballot at tallyj.com</p>
 <p>Elections Committee</p>`;
         },
         updateTextForSms: function () {

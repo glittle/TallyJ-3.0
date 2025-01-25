@@ -80,7 +80,7 @@
     <h2 class="shead">SMS</h2>
 
     <div class="smsHost">
-      <p>SMS should be as short as possible and not use special characters.</p>
+      <p>SMS should be as short as possible and not use special characters. Caution: some providers block messages with weblinks.</p>
       <div class="ckHost">
         <ckeditor :editor="editor" :config="smsEditorConfig" v-model="smsText" v-on:input="checkSms"></ckeditor>
       </div>
@@ -98,6 +98,11 @@
         Save SMS Changes
       </el-button>
 
+      <p class="estSmsCost" v-if="smsCost">Estimated cost to send {{numWithPhones}} SMS message{{plural(numWithPhones)}}: USD ${{smsCost}}</p>
+      <p class="estSmsCostComment" v-if="smsCost">
+        SMS costs are covered by donations. If you send a significant number, please consider donating... but don't
+        let cost be a barrier to using this tool in your community!
+      </p>
 
     </div>
 
@@ -136,11 +141,6 @@
       </div>
       <p class="isSaveNeeded" v-if="smsChanged">Save changes before sending the SMS message.</p>
       <p>Check the log below to see if the messages get delivered.</p>
-      <p class="estSmsCost" v-if="smsCost">Estimated cost to send {{numWithPhones}} SMS message{{plural(numWithPhones)}}: USD ${{smsCost}}</p>
-      <p class="estSmsCostComment" v-if="smsCost">
-        This is free for you to use as costs are covered by donations. If you send a significant number, please consider donating... but don't
-        let cost be a barrier to using this tool in your community!
-      </p>
     </div>
 
     <div class="listingSelection">
