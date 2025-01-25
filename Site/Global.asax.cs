@@ -309,6 +309,17 @@ public class MvcApplication : HttpApplication
   }
 
 
+  /// <summary>
+  /// Modifies the connection string for the main database connection.
+  /// </summary>
+  /// <remarks>
+  /// This method retrieves the connection string named "MainConnection3" from the web configuration file.
+  /// If the connection string is found, it sets its read-only state to false, allowing modifications.
+  /// The method then appends the option "MultipleActiveResultSets=True" to the existing connection string.
+  /// This enables support for multiple active result sets (MARS) in SQL Server, allowing multiple 
+  /// commands to be executed on a single connection without waiting for the previous command to complete.
+  /// If the connection string is not found, the method simply returns without making any changes.
+  /// </remarks>
   private void FixUpConnectionString()
   {
     var cnString = WebConfigurationManager.ConnectionStrings["MainConnection3"];
