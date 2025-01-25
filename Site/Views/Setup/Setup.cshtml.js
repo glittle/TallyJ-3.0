@@ -625,6 +625,7 @@
       EmailFromName: election.EmailFromName,
       EmailFromAddress: election.EmailFromAddress,
       RandomizeVotersList: election.RandomizeVotersList,
+      GuestTellersCanAddPeople: election.GuestTellersCanAddPeople,
       VotingMethods: votingMethods,
       CustomMethods: customs,
       Flags: flags,

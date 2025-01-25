@@ -1440,6 +1440,7 @@
         setTimeout(function () {
           //          console.log('focus2', s);
           $(s).focus();
+          ShowStatusDone('Please finish the current vote before starting another.');
         },
           0);
       }
@@ -1450,7 +1451,7 @@
     if (unresolved) {
       return;
     }
-
+    
     var voteHost;
 
     if (local.location.IsVirtual) {
@@ -1477,7 +1478,7 @@
       vote.invalid = 0;
       vote.changed = false;
       vote.ineligible = null;
-      vote.InvalidReasons = local.invalidReasonsHtml;
+      vote.InvalidReasons = local.invalidReasonsShortHtml;
 
       showVotes(vid);
 
@@ -1622,9 +1623,9 @@
     var html = [
       '<option value="0">Select a reason...</option>',
       '<optgroup label="Name not in the List">',
-      ballotPage.isGuest ?
-        '<option value="0">(Ask head teller to add required name)</option>' :
-        '<option value="-1">Add new name (including spoiled)</option>',
+      ballotPage.canAddNames ?
+        '<option value="-1">Add new name (including spoiled)</option>': 
+        '<option value="0">(Ask head teller to add required name)</option>',
       '</optgroup>'
     ];
     var group = '';
