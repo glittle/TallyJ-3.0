@@ -1485,9 +1485,9 @@
     var html = [
       '<option value="0">Select a reason...</option>',
       '<optgroup label="Name not in the List">',
-      ballotPage.isGuest ?
-        '<option value="0">(Ask head teller to add required name)</option>' :
-        '<option value="-1">Add new name (including spoiled)</option>',
+      ballotPage.canAddNames ?
+        '<option value="-1">Add new name (including spoiled)</option>' :
+        '<option value="0">(Ask head teller to add required name)</option>',
       '</optgroup>'
     ];
     var group = '';

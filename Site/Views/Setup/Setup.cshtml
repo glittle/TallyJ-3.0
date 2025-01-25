@@ -77,8 +77,8 @@
             {"B", " id=modeB"}
           })
           @*                <option value="N">Normal Election</option>
-            <option value="T">Tie-Break</option>
-            <option value="B" id="modeB">By-election</option>
+          <option value="T">Tie-Break</option>
+          <option value="B" id="modeB">By-election</option>
           *@
         </select>
         <span id="VariationNotice">
@@ -142,6 +142,15 @@
         </div>
       </td>
     </tr>
+    <tr>
+      <th>
+        Just Testing?<span class="ui-icon ui-icon-info" id="qTipTest"></span>
+      </th>
+      <td>
+        <yes-no v-model="election.ShowAsTest"></yes-no>
+        Show this as a Test election in my list of elections.
+      </td>
+    </tr>
   </table>
 
   <div class="newStep">
@@ -153,21 +162,21 @@
   <div class="PullInstructionsHandle btn btn-mini">Instructions & Tips</div>
   <div class="PullInstructions">
     <ol>
-      <li>Tellers without a system login account in your election can join as 'helper' tellers using the access code you define here.</li>
+      <li>Tellers without a system login account in your election can join as 'guest' tellers using the access code you define here.</li>
     </ol>
   </div>
 
   <table class="Demographics">
-
     <tr>
       <th>
-        Just Testing?<span class="ui-icon ui-icon-info" id="qTipTest"></span>
+        Allow Guest Tellers?<span class="ui-icon ui-icon-info" id="qTipShow"></span>
       </th>
       <td>
-        <yes-no v-model="election.ShowAsTest"></yes-no>
+        <yes-no v-model="election.ListForPublic" :disabled="!election.ElectionPasscode"></yes-no>
       </td>
       <td>
-        Show this as a Test election in my list of elections.
+        If Yes, this election is shown on the Home Page for guest tellers to join in.<br>
+        This is only effective if an Access Code is set. It can be changed here later or on the <a href="~/After/Monitor">Monitor Progress</a> page.
       </td>
     </tr>
 
@@ -179,20 +188,19 @@
         <input type="text" v-model="election.ElectionPasscode" maxlength="50" />
       </td>
       <td>
-        Assistant tellers use this code to join you in the election.
-        Other head or administrative tellers can log in using your account and password.
+        Assistant (guest) tellers use this code to join you in the election.
+        Tellers with their own login accounts can log in at any time.
       </td>
     </tr>
     <tr>
       <th>
-        Allow Tellers In?<span class="ui-icon ui-icon-info" id="qTipShow"></span>
+        Can Add People?
       </th>
       <td>
-        <yes-no v-model="election.ListForPublic" :disabled="!election.ElectionPasscode"></yes-no>
+        <yes-no v-model="election.GuestTellersCanAddPeople"></yes-no>
       </td>
       <td>
-        If Yes, this election is shown on the Home Page for tellers to join in.<br>
-        This is only effective if an Access Code is set. It can be changed here later or on the <a href="~/After/Monitor">Monitor Progress</a> page.
+        When a guest teller determines that a vote is spoiled, can they add a new name to the system? If not, a logged-in teller must add new names.
       </td>
     </tr>
   </table>

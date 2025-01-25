@@ -296,6 +296,12 @@ namespace TallyJ.CoreModels
       if (UserSession.CurrentElectionStatus == ElectionTallyStatusEnum.Finalized)
         return new { Message = UserSession.FinalizedNoChangesMessage }.AsJsonResult();
 
+      // can they edit people?
+      if (!(UserSession.IsKnownTeller || UserSession.CurrentElection.GuestTellersCanAddPeople))
+      {
+        return new { Message = "Only head tellers can add people." }.AsJsonResult();
+      }
+
       var personInDatastore = PeopleInElection.SingleOrDefault(p => p.C_RowId == incomingPerson.C_RowId);
       var changed = false;
 
