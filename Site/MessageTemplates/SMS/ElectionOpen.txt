@@ -1,1 +1,1 @@
-﻿Hello {personName}. The "{electionName}" {electionType} election is now open for online voting at {hostSite}
+﻿The "{electionName}" {electionType} election is now open for online voting.

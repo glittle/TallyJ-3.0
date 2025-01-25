@@ -1,1 +1,1 @@
-﻿Hello {voterName}. Your online ballot in the "{electionName}" {electionType} election has been processed by the tellers.
+﻿Your online ballot has been processed by the tellers.

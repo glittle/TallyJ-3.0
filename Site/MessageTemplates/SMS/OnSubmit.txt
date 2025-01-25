@@ -1,1 +1,1 @@
-﻿Hello {name}. Your ballot for the "{electionName}" {electionType} election has been received.
+﻿Your ballot has been received.
