@@ -561,7 +561,7 @@ body.HasOfflineLocations .ForLocations {
   display: none;
 }
 #votesList .VoteHost.rawTarget {
-  border-color: #8dc63e;
+  border-color: #3da81f;
 }
 #votesList .VoteHost.rawTarget .rawVote {
   opacity: 1;
