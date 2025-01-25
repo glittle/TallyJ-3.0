@@ -205,6 +205,19 @@
     smsAvailable: false,
   };
 
+  /**
+   * Initializes the Vue instance for the voter interface.
+   * This function sets up the data properties, computed properties,
+   * and methods necessary for handling voter interactions.
+   * It also manages the connection to the SignalR hub for real-time updates.
+   *
+   * @function
+   * @returns {void}
+   *
+   * @example
+   * // Call this function to set up the voter interface
+   * setupVoterVue();
+   */
   function setupVoterVue() {
     //    console.log('online', homeIndexPage.vote, publicInterface.vote, $("#voterVue"));
     if (!homeIndexPage.vote) {

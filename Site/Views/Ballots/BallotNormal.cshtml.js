@@ -1430,6 +1430,19 @@
     }
   }
 
+  /**
+   * Handles the addition of a spoiled vote in the voting system.
+   * This function checks for unresolved votes and manages the state of the voting interface.
+   * If there are pending votes, it prevents adding another spoiled vote and prompts the user to complete the current vote.
+   *
+   * It also updates the vote details based on whether the voting is happening in a virtual location or not.
+   *
+   * @throws {Error} Throws an error if the vote ID cannot be found or if there are issues with the vote host.
+   *
+   * @example
+   * // To add a spoiled vote, simply call the function
+   * addSpoiled();
+   */
   function addSpoiled() {
     // if one is pending, don't add another
     var unresolved = false;
@@ -1440,6 +1453,7 @@
         setTimeout(function () {
           //          console.log('focus2', s);
           $(s).focus();
+          ShowStatusDone('Please finish the current vote before starting another.');
         },
           0);
       }
@@ -1450,7 +1464,7 @@
     if (unresolved) {
       return;
     }
-
+    
     var voteHost;
 
     if (local.location.IsVirtual) {
@@ -1477,7 +1491,7 @@
       vote.invalid = 0;
       vote.changed = false;
       vote.ineligible = null;
-      vote.InvalidReasons = local.invalidReasonsHtml;
+      vote.InvalidReasons = local.invalidReasonsShortHtml;
 
       showVotes(vid);
 
@@ -1618,13 +1632,31 @@
   };
 
 
+  /**
+   * Prepares a list of reasons as HTML option elements for a dropdown menu.
+   * The reasons are grouped by their categories, and an option to add a new name
+   * is included based on the user's permissions.
+   *
+   * @param {string} onlyGroup - The specific group of reasons to filter by.
+   *                             If not provided, all groups will be included.
+   * @returns {string} A string containing the HTML for the dropdown options.
+   *
+   * @example
+   * // To get all reasons
+   * const allReasonsHtml = prepareReasons();
+   *
+   * // To get reasons only from a specific group
+   * const specificGroupHtml = prepareReasons('GroupName');
+   *
+   * @throws {TypeError} Throws an error if the input is not of type string.
+   */
   function prepareReasons(onlyGroup) {
     var html = [
       '<option value="0">Select a reason...</option>',
       '<optgroup label="Name not in the List">',
-      ballotPage.isGuest ?
-        '<option value="0">(Ask head teller to add required name)</option>' :
-        '<option value="-1">Add new name (including spoiled)</option>',
+      ballotPage.canAddNames ?
+        '<option value="-1">Add new name (including spoiled)</option>': 
+        '<option value="0">(Ask head teller to add required name)</option>',
       '</optgroup>'
     ];
     var group = '';

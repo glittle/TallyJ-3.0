@@ -291,10 +291,29 @@ namespace TallyJ.CoreModels
     }
 
 
+    /// <summary>
+    /// Saves a person to the database, updating their information or creating a new entry if necessary.
+    /// </summary>
+    /// <param name="incomingPerson">The person object containing the information to be saved.</param>
+    /// <returns>A JsonResult indicating the status of the operation and the saved person's details.</returns>
+    /// <remarks>
+    /// This method checks the current election status to determine if changes can be made. 
+    /// It verifies if the user has permission to edit people based on their role. 
+    /// If the person does not exist in the datastore, a new entry is created; otherwise, the existing entry is updated. 
+    /// The method validates the phone number format and ensures that certain fields cannot be changed after voting online. 
+    /// If any database errors occur during saving, it reverts changes and returns appropriate error messages.
+    /// Finally, it updates the cache and returns the status of the operation along with the updated person details.
+    /// </remarks>
     public JsonResult SavePerson(Person incomingPerson)
     {
       if (UserSession.CurrentElectionStatus == ElectionTallyStatusEnum.Finalized)
         return new { Message = UserSession.FinalizedNoChangesMessage }.AsJsonResult();
+
+      // can they edit people?
+      if (!(UserSession.IsKnownTeller || UserSession.CurrentElection.GuestTellersCanAddPeople))
+      {
+        return new { Message = "Only head tellers can add people." }.AsJsonResult();
+      }
 
       var personInDatastore = PeopleInElection.SingleOrDefault(p => p.C_RowId == incomingPerson.C_RowId);
       var changed = false;

@@ -306,8 +306,19 @@ namespace TallyJ.CoreModels
       }.AsJsonResult();
     }
 
-    /// <Summary>Gets directly from the database, not session. Stores in session.</Summary>
-    /// <Summary>Saves changes to this election</Summary>
+    /// <summary>
+    /// Saves changes to the specified election and updates the relevant database records.
+    /// </summary>
+    /// <param name="electionFromBrowser">The election object containing updated values from the browser.</param>
+    /// <returns>A JsonResult indicating the success or failure of the operation, along with relevant status information.</returns>
+    /// <remarks>
+    /// This method retrieves the current election from the user session and attaches it to the database context. 
+    /// It then compares the current properties of the election with the incoming values from the browser. 
+    /// If any editable fields have changed, it updates the election object accordingly. 
+    /// The method also checks for specific conditions, such as whether online voting is enabled or if the election type has changed after ballots have been entered. 
+    /// If changes are made, it saves the updated election to the database and updates any related caches and notifications to public hubs. 
+    /// Additionally, it handles adjustments for online voting locations based on the current settings.
+    /// </remarks>
     public JsonResult SaveElection(Election electionFromBrowser)
     {
       var electionCacher = new ElectionCacher(Db);
@@ -352,6 +363,7 @@ namespace TallyJ.CoreModels
         election.OnlineCloseIsEstimate,
         election.OnlineSelectionProcess,
         election.RandomizeVotersList,
+        election.GuestTellersCanAddPeople,
         election.EmailFromAddress,
         election.EmailFromName,
         election.VotingMethods,
@@ -488,6 +500,21 @@ namespace TallyJ.CoreModels
       }.AsJsonResult();
     }
 
+    /// <summary>
+    /// Joins the user into a specified election if it exists and updates the user session accordingly.
+    /// </summary>
+    /// <param name="wantedElectionGuid">The unique identifier of the election the user wants to join.</param>
+    /// <param name="oldComputerGuid">The unique identifier of the old computer being used by the user.</param>
+    /// <returns>True if the user successfully joined the election; otherwise, false.</returns>
+    /// <remarks>
+    /// This method first checks if the desired election, identified by <paramref name="wantedElectionGuid"/>, exists in the database.
+    /// If the election does not exist, it returns false. If the user is already in the desired election, it updates the current computer's election GUID and returns true.
+    /// 
+    /// If the user is not in the desired election, it triggers a process to leave the current election and switch to the new one.
+    /// The method also attempts to assign a new computer code for the user, reusing an old one if possible.
+    /// Depending on whether the user is a guest teller or a regular teller, it logs a different message and may notify others about the election switch.
+    /// Finally, it logs the action taken and returns true to indicate a successful operation.
+    /// </remarks>
     public bool JoinIntoElection(Guid wantedElectionGuid, Guid oldComputerGuid)
     {
       // don't use cache, go directly to database - cache is tied to current election
@@ -499,6 +526,7 @@ namespace TallyJ.CoreModels
 
       if (UserSession.CurrentElectionGuid == wantedElectionGuid)
       {
+        UserSession.CurrentComputer.ElectionGuid = wantedElectionGuid;
         return true;
       }
 
