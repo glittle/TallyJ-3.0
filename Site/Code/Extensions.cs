@@ -7,6 +7,7 @@ using System.IO;
 using System.Linq;
 using System.Net.Mail;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Web;
 using System.Web.Mvc;
 using System.Web.Script.Serialization;
@@ -658,6 +659,56 @@ namespace TallyJ.Code
     //  if (input.HasNoContent()) return "";
     //  return Regex.Replace(input, @"[^\w\.\'\- ]", "");
     //}
+
+    /// <summary>
+    /// Return just the body text.
+    /// </summary>
+    /// <param name="input"></param>
+    /// <returns></returns>
+    public static string GetPlainTextFromHtml(this string text)
+    {
+      if (text.HasNoContent())
+      {
+        return "";
+      }
+
+      // if there is a <body> tag, use only that
+      var bodyMatch = Regex.Match(text, @"<body[^>]*>(.*)</body>", RegexOptions.IgnoreCase | RegexOptions.Singleline);
+      if (bodyMatch.Success)
+      {
+        text = bodyMatch.Groups[1].Value;
+      }
+
+      // decode any HTML entities
+      text = HttpUtility.HtmlDecode(text);
+
+      // extract text and link contents from <a> tags
+      text = Regex.Replace(text, @"<a\s+[^>]*?href=""([^""]*)""[^>]*?>(.*?)</a>", "$2 ($1)");
+
+      // remove heading end tags
+      text = Regex.Replace(text, @"</h[1-6]>", "\r\n\r\n");
+
+      // replace <br> tags with newlines
+      text = text.Replace("<br>", "\r\n").Replace("<br/>", "\r\n").Replace("<br />", "\r\n");
+
+      // ensure other block tags are separated by blank lines
+      text = text.Trim()
+        .Replace("</blockquote>", "\r\n\r\n")
+        .Replace("</ul>", "\r\n\r\n")
+        .Replace("</p>", "\r\n\r\n")
+        .Replace("</li>", "\r\n");
+
+      text = text.Replace("\r\n\r\n\r\n", "\r\n\r\n"); // remove any triple line breaks
+
+      // get rid of any remaining HTML tags
+      text = Regex.Replace(text, "<[^>]*>", string.Empty);
+
+      // remove any leading/trailing whitespace
+      text = text.TrimEnd('\r', '\n', ' ');
+
+      return text;
+    }
+
 
     public static string CleanedForErrorMessages(this string input)
     {

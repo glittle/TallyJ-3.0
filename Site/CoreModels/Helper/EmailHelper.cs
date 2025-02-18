@@ -1,11 +1,9 @@
 using System;
 using System.Collections.Generic;
-using System.Data.Entity.SqlServer;
 using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Mail;
-using System.Security.Permissions;
 using System.Text.RegularExpressions;
 using System.Web.Mvc;
 using SendGrid;
@@ -414,33 +412,41 @@ namespace TallyJ.CoreModels.Helper
     /// <returns>Returns true if the email was sent successfully; otherwise, false.</returns>
     public bool SendEmail(MailMessage message, string htmlBody, out string errorMessage)
     {
+      // ensure a valid sender
       if (message.Sender == null)
       {
         var senderName = message.ReplyToList.Count > 0 ? message.ReplyToList.First().DisplayName : "TallyJ System";
-        message.Sender = new MailAddress(SettingsHelper.Get("SmtpDefaultFromAddress", "system@tallyj.com"), senderName);
+        message.Sender = new MailAddress(SettingsHelper.Get("SmtpDefaultFromAddress", "mail@tallyj.com"), senderName);
       }
 
       message.From ??= message.Sender;
 
-      message.Body = htmlBody;
-      message.IsBodyHtml = true;
-
+      // Extract subject from HTML
       var match = Regex.Match(htmlBody, @"<title>(?<subject>.*)</title>");
       var subject = match.Groups["subject"];
       message.Subject = subject.Value;
 
+      // Convert HTML to plain text
+      var plainText = htmlBody.GetPlainTextFromHtml();
 
       // use SendGrid API??
       var sendGridApiKey = SettingsHelper.Get("SendGridApiKey", "");
       if (sendGridApiKey.HasContent())
       {
-        return SendEmailApi(sendGridApiKey, message, htmlBody, out errorMessage);
+        return SendEmailUsingSendGrid(sendGridApiKey, message, htmlBody, plainText, out errorMessage);
       }
 
-      return SendEmailSmtp(message, htmlBody, out errorMessage);
+      message.Body = plainText;
+      message.IsBodyHtml = false;
+
+      // Add HTML as an alternate view
+      AlternateView htmlView = AlternateView.CreateAlternateViewFromString(htmlBody, null, "text/html");
+      message.AlternateViews.Add(htmlView);
+
+      return SendEmailSmtp(message, out errorMessage);
     }
 
-    private bool SendEmailApi(string sendGridApiKey, MailMessage message, string htmlBody, out string errorMessage)
+    private bool SendEmailUsingSendGrid(string sendGridApiKey, MailMessage message, string htmlBody, string plainText, out string errorMessage)
     {
       // Sender is not used by SendGrid
       var msg = new SendGridMessage
@@ -448,6 +454,7 @@ namespace TallyJ.CoreModels.Helper
         From = message.From.AsSendGridEmailAddress(),
         Subject = message.Subject,
         HtmlContent = htmlBody,
+        PlainTextContent = plainText
       };
       msg.AddTos(message.To.Select(a => a.AsSendGridEmailAddress()).ToList());
 
@@ -482,7 +489,13 @@ namespace TallyJ.CoreModels.Helper
       return false;
     }
 
-    private bool SendEmailSmtp(MailMessage message, string htmlBody, out string errorMessage)
+    /// <summary>
+    /// Send via SMTP. Good for Google Workspace.
+    /// </summary>
+    /// <param name="message"></param>
+    /// <param name="errorMessage"></param>
+    /// <returns></returns>
+    private bool SendEmailSmtp(MailMessage message, out string errorMessage)
     {
       var host = SettingsHelper.Get("SmtpHost", "localhost");
       var pickupDirectory = SettingsHelper.Get("SmtpPickupDirectory", "");
@@ -490,22 +503,33 @@ namespace TallyJ.CoreModels.Helper
 
       message.Headers.Add("Message-Id", "<{0}@{1}>".FilledWith(Guid.NewGuid(), senderHostName));
 
+      var enableSsl = !pickupDirectory.HasContent() && SettingsHelper.Get("SmtpSecure", false);
+      var smtpPort = SettingsHelper.Get("SmtpPort", 25);
+
+      var smtpUsername = SettingsHelper.Get("SmtpUsername", "");
+      var smtpPassword = SettingsHelper.Get("SmtpPassword", "");
+
+      var credentials = smtpUsername.HasContent() && smtpPassword.HasContent()
+        ? new NetworkCredential(smtpUsername, smtpPassword)
+        : CredentialCache.DefaultNetworkCredentials;
+
+      var timeoutMs = SettingsHelper.Get("SmtpTimeoutMs", 5 * 1000);
+
+      // at this level to be available in catch methods
+      SmtpClient smtpClient;
+
       try
       {
-        var smtpUsername = SettingsHelper.Get("SmtpUsername", "");
-        var credentials = smtpUsername.HasContent()
-          ? new NetworkCredential(smtpUsername, SettingsHelper.Get("SmtpPassword", ""))
-          : CredentialCache.DefaultNetworkCredentials;
-
-        using (var smtpClient = new SmtpClient
+        using (smtpClient = new SmtpClient
         {
           Host = host,
-          EnableSsl = !pickupDirectory.HasContent() && SettingsHelper.Get("SmtpSecure", false),
-          Port = SettingsHelper.Get("SmtpPort", 25),
+          Port = smtpPort,
+          EnableSsl = enableSsl,
+          DeliveryFormat = SmtpDeliveryFormat.International, // is this useful?
           PickupDirectoryLocation = pickupDirectory,
           DeliveryMethod = pickupDirectory.HasContent() ? SmtpDeliveryMethod.SpecifiedPickupDirectory : SmtpDeliveryMethod.Network,
           Credentials = credentials,
-          Timeout = SettingsHelper.Get("SmtpTimeoutMs", 5 * 1000) // milliseconds
+          Timeout = timeoutMs // milliseconds
         })
         {
           smtpClient.Send(message);
