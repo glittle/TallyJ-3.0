@@ -1,13 +1,10 @@
 ﻿using System;
-using System.Linq.Expressions;
 using System.Net.Mail;
 using System.Runtime.InteropServices;
-using System.Web;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using TallyJ.Code;
 using TallyJ.CoreModels.Helper;
 using Tests.Support;
-using Extensions = TallyJ.Code.Extensions;
 
 namespace Tests.FrameworkTests
 {
@@ -449,6 +446,28 @@ namespace Tests.FrameworkTests
 
       TwilioHelper.IsValidPhoneNumber("+123456").ShouldEqual(true);
 
+    }
+
+    [TestMethod]
+    public void GetPlainTextFromHtml_Test() {
+      var html = "<html><head><title>Test</title></head><body><h1>Test</h1><p>Test</p></body></html>";
+      var plainText = html.GetPlainTextFromHtml();
+      plainText.ShouldEqual("""
+        Test
+
+        Test
+        """);
+    }   
+    
+    [TestMethod]
+    public void GetPlainTextFromHtml_Test2() {
+      var html = "<html><head><title>Test</title></head><body><h1>Test</h1><p>Test with <a href=\"sdfsf\">a link</a>.</p></body></html>";
+      var plainText = html.GetPlainTextFromHtml();
+      plainText.ShouldEqual("""
+        Test
+
+        Test with a link (sdfsf).
+        """);
     }
   }
 
