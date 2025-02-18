@@ -446,6 +446,21 @@ namespace TallyJ.CoreModels.Helper
       return SendEmailSmtp(message, out errorMessage);
     }
 
+    /// <summary>
+    /// Sends an email using the SendGrid service.
+    /// </summary>
+    /// <param name="sendGridApiKey">The API key for authenticating with SendGrid.</param>
+    /// <param name="message">The MailMessage object containing the email details such as sender, recipients, subject, and reply-to addresses.</param>
+    /// <param name="htmlBody">The HTML content of the email.</param>
+    /// <param name="plainText">The plain text content of the email.</param>
+    /// <param name="errorMessage">An output parameter that will contain an error message if the email sending fails.</param>
+    /// <returns>True if the email was sent successfully; otherwise, false.</returns>
+    /// <remarks>
+    /// This method constructs a SendGridMessage object using the provided MailMessage details and sends it using the SendGrid API.
+    /// It handles multiple recipients, CCs, and reply-to addresses. If the email is sent successfully, it clears the error message.
+    /// If there is an error during sending, it populates the errorMessage with the status code and response body from SendGrid.
+    /// This method is synchronous and blocks until the email sending operation is complete.
+    /// </remarks>
     private bool SendEmailUsingSendGrid(string sendGridApiKey, MailMessage message, string htmlBody, string plainText, out string errorMessage)
     {
       // Sender is not used by SendGrid
@@ -490,11 +505,18 @@ namespace TallyJ.CoreModels.Helper
     }
 
     /// <summary>
-    /// Send via SMTP. Good for Google Workspace.
+    /// Sends an email using SMTP, suitable for Google Workspace configurations.
     /// </summary>
-    /// <param name="message"></param>
-    /// <param name="errorMessage"></param>
-    /// <returns></returns>
+    /// <param name="message">The email message to be sent.</param>
+    /// <param name="errorMessage">An output parameter that will contain the error message if the email sending fails.</param>
+    /// <returns>Returns true if the email was sent successfully; otherwise, returns false.</returns>
+    /// <remarks>
+    /// This method configures an SMTP client based on settings retrieved from a configuration helper. 
+    /// It sets up the necessary parameters such as host, port, SSL usage, and credentials. 
+    /// The method attempts to send the provided <paramref name="message"/> and captures any exceptions that occur during the process. 
+    /// If sending fails, it populates the <paramref name="errorMessage"/> with details about the failure, including information about failed recipients.
+    /// The method handles specific exceptions related to SMTP failures and logs the error messages for further analysis.
+    /// </remarks>
     private bool SendEmailSmtp(MailMessage message, out string errorMessage)
     {
       var host = SettingsHelper.Get("SmtpHost", "localhost");
