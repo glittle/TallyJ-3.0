@@ -9,7 +9,7 @@ namespace TallyJ.CoreModels;
 public class SetupModel : DataConnectedModel
 {
   private Election _election;
-  private ElectionHelper _electionHelper;
+  //private ElectionHelper _electionHelper;
 
   public int NumberOfPeople => new PersonCacher(Db).AllForThisElection.Count;
 
