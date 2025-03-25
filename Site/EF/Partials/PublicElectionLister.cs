@@ -93,15 +93,15 @@ namespace TallyJ.EF
       const string template = "<option value=\"{0}\">{1} {2}</option>";
       const string noneOpen = "(No elections are currently open for tellers.)";
 
-      var activeElectionGuids = new ComputerCacher().ElectionGuidsOfActiveComputers;
-      if (activeElectionGuids.Count == 0)
+      var electionGuidsOfActiveTellers = new ComputerCacher().ElectionGuidsOfActiveComputers;
+      if (electionGuidsOfActiveTellers.Count == 0)
       {
-        return template.FilledWith(0, noneOpen, "");
+        return template.FilledWith(0, noneOpen, "[None Active]");
       }
 
       //TODO - use election cacher?
       var electionsInfo = Db.Election
-        .Where(e => activeElectionGuids.Contains(e.ElectionGuid))
+        .Where(e => electionGuidsOfActiveTellers.Contains(e.ElectionGuid))
         .ToList()
         .Where(e => e.CanBeAvailableForGuestTellers)
         .Select(e => new { e.Name, e.ElectionGuid, e.Convenor })
@@ -109,7 +109,7 @@ namespace TallyJ.EF
 
       if (electionsInfo.Count == 0)
       {
-        return template.FilledWith(0, noneOpen, "");
+        return template.FilledWith(0, noneOpen, $"[{electionGuidsOfActiveTellers.Count}]");
       }
 
       return electionsInfo
