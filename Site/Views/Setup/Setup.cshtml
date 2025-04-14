@@ -77,8 +77,8 @@
             {"B", " id=modeB"}
           })
           @*                <option value="N">Normal Election</option>
-          <option value="T">Tie-Break</option>
-          <option value="B" id="modeB">By-election</option>
+            <option value="T">Tie-Break</option>
+            <option value="B" id="modeB">By-election</option>
           *@
         </select>
         <span id="VariationNotice">
@@ -321,9 +321,9 @@
         <p>There are spaces for 3 extra methods that you can define yourself.</p>
         <p>* To accept ballots Online using TallyJ's Online Voting, select it in Step 4 (below).</p>
         <p>** @VotingMethodEnum.Imported.DisplayText is automatically checked if/when ballots are imported.</p>
-          <p v-if="votingMethodsArray.includes(@VotingMethodEnum.Kiosk.Value.QuotedForJavascript())">
-              Kiosk is only available if Online is also active. See <a href="https://docs.google.com/document/d/1ii9jKqHJbUiSz53sA6i1T8MRSeXpA2lQPRWHSSeLC0g/view#heading=h.jqf7d1f9kp6j" target="_blank">Online Voting</a> for details of how to use it.
-          </p>
+        <p v-if="votingMethodsArray.includes(@VotingMethodEnum.Kiosk.Value.QuotedForJavascript())">
+          Kiosk is only available if Online is also active. See <a href="https://docs.google.com/document/d/1ii9jKqHJbUiSz53sA6i1T8MRSeXpA2lQPRWHSSeLC0g/view#heading=h.jqf7d1f9kp6j" target="_blank">Online Voting</a> for details of how to use it.
+        </p>
         <p v-if="votingMethodsArray.includes(@VotingMethodEnum.Kiosk.Value.QuotedForJavascript())">
           Enable this browser as a Kiosk?
           <el-radio-group v-model="isKiosk" size="mini" class="ignore">
@@ -334,6 +334,32 @@
         </p>
       </td>
     </tr>
+    <tr v-if="usingBallotProcess">
+      <th>
+        Checklist Items
+      </th>
+      <td>
+        <div class="flags">
+          <div v-for="(f,i) in flags" :key="i">
+            <el-input size="small"
+                      v-model="flags[i]"
+                      :maxlength="25"></el-input>
+            <i class="el-icon-delete" v-on:click="removeFlag(i)"></i>
+          </div>
+
+          <el-button size="mini" class="add" v-on:click="addFlag">Add Another</el-button>
+        </div>
+      </td>
+      <td>
+        <p>You can add items here that will be shown on the Front Desk and can be turned on or off for each person. See the "Attendance Checklists" report for viewing the results.</p>
+        <p>Only single words can be used. Sample uses: </p>
+        <ul>
+          <li>Attending - <em>Are they at the election? (regardless of voting method)</em></li>
+          <li>Lunch - <em>Have they purchased a lunch ticket?</em></li>
+        </ul>
+      </td>
+    </tr>
+
     @*<tr v-if="usingBallotProcess">
         <th>
           Show "Called In"?<span class="ui-icon ui-icon-info" id="qTipShowCalled"></span>
@@ -391,34 +417,9 @@
         Time display format
       </th>
       <td>
-        <yes-no v-model="election.T24" yes="19:30" no="7:30 pm"></yes-no>
+        <yes-no v-model="election.T24" yes="19:30" no="7:30 pm" :toggle-color="false"></yes-no>
       </td>
       <td></td>
-    </tr>
-    <tr v-if="usingBallotProcess">
-      <th>
-        Checklist Items
-      </th>
-      <td>
-        <div class="flags">
-          <div v-for="(f,i) in flags" :key="i">
-            <el-input size="small"
-                      v-model="flags[i]"
-                      :maxlength="25"></el-input>
-            <i class="el-icon-delete" v-on:click="removeFlag(i)"></i>
-          </div>
-
-          <el-button size="mini" class="add" v-on:click="addFlag">Add Another</el-button>
-        </div>
-      </td>
-      <td>
-        <p>You can add items here that will be shown on the Front Desk and can be turned on or off for each person. See the "Attendance Checklists" report for viewing the results.</p>
-        <p>Only single words can be used. Sample uses: </p>
-        <ul>
-          <li>Attending - <em>Are they at the election? (regardless of voting method)</em></li>
-          <li>Lunch - <em>Have they purchased a lunch ticket?</em></li>
-        </ul>
-      </td>
     </tr>
     <tr>
       <th>
@@ -641,7 +642,7 @@
 
 
 <script type="text/x-template" id="yes-no">
-  <span class="YN" v-bind:class="['YN' + yesNo, disabled ? 'disabled' : '']">
+  <span class="YN" v-bind:class="['YN' + (toggleColor && yesNo || 'Y'), disabled ? 'disabled' : '']">
     <label>
       <input type="radio" value="Y" v-model="yesNo" :disabled="disabled">
       {{yes}}
