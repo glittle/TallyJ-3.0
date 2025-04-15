@@ -1,7 +1,7 @@
 ﻿var EditPersonPage = function () {
   var local = {
     inputField: null,
-    hostPanel: null
+    hostPanel: null,
   };
 
   function startNewPerson(panel, ineligible, first, last) {
@@ -104,6 +104,8 @@
     } else {
       panel = local.hostPanel;
     }
+
+    updateReasons(!!personProperties.VotingMethod);
 
     clearKioskCode(personProperties.Voter?.KioskCode);
 
@@ -355,6 +357,7 @@
       title: 'Ineligible',
       text: 'Most people are eligible to participate in the election by voting or being voted for.'
         + '<br><br>However, if this person is ineligible in some way, select the best reason here.'
+        + '<br><br>If this person has already voted, cannot change to a non-voting option.'
     });
     //    site.qTips.push({ selector: '#qTipCanVote', title: 'Can Vote?', text: 'Override eligibility status. Check this box if this person can vote.' });
     //    site.qTips.push({ selector: '#qTipCanReceive', title: 'Tie Break?', text: 'Override eligibility status. Check this box if this person can be voted for.' });
@@ -373,11 +376,26 @@
         html.push('<optgroup label="{0}">'.filledWith(reasonGroup));
         group = reasonGroup;
       }
-      html.push('<option value="{Guid}">{Desc}</option>'.filledWith(this));
+      html.push('<option value="{Guid}" data-canVote={CanVote}>{Desc}</option>'.filledWith(this));
     });
     html.push('</optgroup>');
     return html.join('\n');
   };
+
+  function updateReasons(hasVoted) {
+    // disable any that would not allow the person to vote, if they have already voted
+    var ddl = $('#ddlIneligible');
+    ddl.find('option').each(function () {
+      var option = $(this);
+      if (hasVoted) {
+        if (option.data('canvote') === false) {
+          option.prop('disabled', true);
+        }
+      } else {
+        option.prop('disabled', false);
+      }
+    });
+  }
 
   var publicInterface = {
     peopleUrl: '',
