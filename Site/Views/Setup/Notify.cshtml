@@ -33,6 +33,7 @@
   <p>
     Use this page to send emails <span class="forSmsInline">and/or SMS messages</span> to voters with registered email addresses<span class="forSmsInline"> or mobile phone numbers</span>.
   </p>
+  <p>If you have a "normal" way to send emails or messages to your community, that should be your first choice. Send emails from this page only if other methods will not work.</p>
 
   <p>
     Here are some replaceable templates that can be used in the text:
@@ -112,12 +113,22 @@
       <div class="bottom">
         <el-button size="small"
                    @*:class="[pendingEmail ? 'pending' : '', pendingEmail ? 'btn-warning' : 'btn-primary']"*@
-                   :type="enableEmailSend ? 'primary' : ''"
+                   :type="enableEmailSend ? '' : ''"
                    v-on:click.passive="sendEmail(true)"
                    :disabled="!enableEmailSend">
           Send the email to {{numWithEmails}} voter{{plural(numWithEmails)}}{{ pendingEmail ? '':'...'}}
         </el-button>
         <div class="pending" v-if="pendingEmail">Are you sure? Click again to send now.</div>
+      </div>
+      <div class="bottom">
+        <el-button size="small"
+                   @*:class="[pendingEmail ? 'pending' : '', pendingEmail ? 'btn-warning' : 'btn-primary']"*@
+                   :type="enableEmailSend ? 'primary' : ''"
+                   v-on:click.passive="copyEmailAddresses()"
+                   :disabled="!enableEmailSend">
+          Copy {{numWithEmails}} email address{{plural(numWithEmails, 'es')}}{{ pendingEmail ? '':'...'}}
+        </el-button>
+        <span><em>For BCC in an external email.</em></span>
       </div>
       <p>
         <span class="comments" v-if="!emailFromAddress">(Must enter a "From Email Address" on the "Configure this Election" page.)</span>

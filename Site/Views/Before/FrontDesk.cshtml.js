@@ -49,6 +49,9 @@
           which: 27,
           preventDefault: function () { }
         });
+      })
+      .on('click', '#ifNoBallot', function (ev) {
+        toggleNoBallot();
       });
 
     $(document).keydown(processKey);
@@ -76,6 +79,13 @@
 
     resetSearch();
   };
+
+  function toggleNoBallot() {
+    var btn = $('#ifNoBallot'); 
+    var checked = btn.prop('checked');
+    // toggle class on #Main
+    $('#Main').toggleClass('NoBallot', checked);
+  }
 
   function connectToFrontDeskHub() {
     $.connection().logging = true;

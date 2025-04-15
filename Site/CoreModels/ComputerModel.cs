@@ -167,6 +167,14 @@ namespace TallyJ.CoreModels
 
       var computer = UserSession.CurrentComputer;
       AssertAtRuntime.That(computer != null, "computer missing");
+
+      if (computer.ElectionGuid == Guid.Empty) {
+        // may not be in the election yet?
+        var electionHelper = new ElectionHelper();
+        electionHelper.JoinIntoElection(location.ElectionGuid, Guid.Empty);
+        computer = UserSession.CurrentComputer;
+      }
+
       AssertAtRuntime.That(computer.ElectionGuid == location.ElectionGuid, $"Invalid - Computer election {computer.ElectionGuid} Location {location.LocationGuid} is in {location.ElectionGuid} (Session ${UserSession.CurrentElectionGuid})");
 
       computer.LocationGuid = location.LocationGuid;

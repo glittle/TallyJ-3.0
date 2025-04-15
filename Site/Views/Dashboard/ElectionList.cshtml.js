@@ -609,8 +609,10 @@ Vue.component('election-detail',
         this.form.email = '';
         this.form.invited = false;
         this.addingNew = true;
+        const vueHost = this.$el;
         setTimeout(function () {
-          $('.addNew')[0].scrollIntoView({ behavior: 'smooth', block: 'end' });
+          $('.addNew', vueHost)[0].scrollIntoView({ behavior: 'smooth', block: 'end' });
+          $('.el-input__inner', vueHost)[0].focus();
         }, 0);
       },
       closeForm() {
