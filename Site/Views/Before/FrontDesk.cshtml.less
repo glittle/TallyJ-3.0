@@ -178,11 +178,35 @@ p {
   padding: 0 5px;
 }
 
+.topLine {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
 .Counts {
-  display: inline-block;
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  align-items: center;
   margin: 0 0 8px 0;
   font-size: 90%;
   color: #555;
+
+  .flagBox {
+    display: block;
+    white-space: nowrap;
+  }
+
+  label {
+    margin: 0 0 0 6px;
+    font-size: inherit;
+    white-space: nowrap;
+
+    input[type="checkbox"] {
+      margin: 0;
+    }
+  }
 
   > span {
     display: inline-block;
@@ -225,7 +249,7 @@ p {
 
     &.Flag {
       border-radius: 1em;
-      font-size: 10.5px;
+      font-size: 11px;
       border-color: #4b77a2;
       color: #4b77a2;
       padding: 1px 5px;
@@ -265,6 +289,12 @@ p {
   overflow: auto;
   clear: both;
   padding: 3px 0;
+
+  &.NoBallot {
+    .Voter:not(.VM-) {
+      display: none;
+    }
+  }
 
   .Online {
     opacity: 0.4;
