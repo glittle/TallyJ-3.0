@@ -447,6 +447,16 @@ namespace Tests.FrameworkTests
       TwilioHelper.IsValidPhoneNumber("+123456").ShouldEqual(true);
 
     }
+    /// <summary>
+    /// Tests the GetPlainTextFromHtml method to ensure it correctly converts HTML content to plain text.
+    /// </summary>
+    /// <remarks>
+    /// This test method initializes a sample HTML string containing various HTML elements such as 
+    /// <code>&lt;title&gt;</code>, <code>&lt;h1&gt;</code>, and <code>&lt;p&gt;</code>. It then calls 
+    /// the <see cref="GetPlainTextFromHtml"/> method to convert the HTML into plain text. The resulting 
+    /// plain text is compared against the expected output using the <code>ShouldEqual</code> assertion. 
+    /// This ensures that the method behaves as expected and accurately extracts text from the provided HTML.
+    /// </remarks>
 
     [TestMethod]
     public void GetPlainTextFromHtml_Test() {
@@ -458,6 +468,15 @@ namespace Tests.FrameworkTests
         Test
         """);
     }   
+    /// <summary>
+    /// Tests the conversion of HTML content to plain text.
+    /// </summary>
+    /// <remarks>
+    /// This test method verifies that the method <c>GetPlainTextFromHtml</c> correctly extracts plain text from a given HTML string.
+    /// The HTML input contains various elements such as headings, paragraphs, and links. The expected output is a plain text representation 
+    /// that preserves the textual content while removing the HTML tags. The test checks if the resulting plain text matches the expected format,
+    /// ensuring that the conversion logic works as intended.
+    /// </remarks>
     
     [TestMethod]
     public void GetPlainTextFromHtml_Test2() {

@@ -654,7 +654,6 @@ namespace TallyJ.Code
       return input.ToString().ToLower();
     }
 
-    //public static string CleanedForSearching(this string input)
     //{
     //  if (input.HasNoContent()) return "";
     //  return Regex.Replace(input, @"[^\w\.\'\- ]", "");
@@ -665,6 +664,20 @@ namespace TallyJ.Code
     /// </summary>
     /// <param name="input"></param>
     /// <returns></returns>
+    /// <summary>
+    /// Extracts plain text from an HTML string, removing all HTML tags and decoding HTML entities.
+    /// </summary>
+    /// <param name="text">The HTML string from which to extract plain text.</param>
+    /// <returns>A string containing the plain text extracted from the input HTML.</returns>
+    /// <remarks>
+    /// This method processes the input HTML string to return only the body text. 
+    /// It first checks if the input string has any content; if not, it returns an empty string. 
+    /// If the input contains a <body> tag, it extracts the content within that tag. 
+    /// The method then decodes any HTML entities present in the text. 
+    /// It also handles <a> tags by replacing them with their link text followed by the URL in parentheses. 
+    /// Other block-level tags such as headings, blockquotes, and paragraphs are replaced with appropriate newlines to maintain readability. 
+    /// Finally, any remaining HTML tags are stripped away, and leading or trailing whitespace is removed.
+    /// </remarks>
     public static string GetPlainTextFromHtml(this string text)
     {
       if (text.HasNoContent())
