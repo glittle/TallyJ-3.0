@@ -90,9 +90,20 @@ namespace TallyJ.EF
     protected ITallyJDbContext Db => _db ??= UserSession.GetNewDbContext;
 
     /// <summary>
-    /// Refresh the list and return it.
+    /// Refreshes the list of available elections and returns it as an HTML string.
     /// </summary>
-    /// <returns></returns>
+    /// <returns>
+    /// An HTML string containing options for available elections. If no elections are currently open for tellers, 
+    /// it returns a default message indicating that there are no active elections.
+    /// </returns>
+    /// <remarks>
+    /// This method retrieves the GUIDs of active elections from a cache and checks the database for elections 
+    /// that can be made available to guest tellers. If there are no active elections, it returns a message 
+    /// stating that there are no elections currently open. If there are available elections, it constructs 
+    /// an HTML option string for each election, including the election's name and convenor, and returns 
+    /// the complete list as a single string. The elections are sorted by name before being formatted into 
+    /// the HTML string.
+    /// </remarks>
     public string RefreshAndGetListOfAvailableElections()
     {
       const string template = "<option value=\"{0}\">{1} {2}</option>";
