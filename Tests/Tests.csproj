@@ -331,6 +331,10 @@
     <Compile Include="ControllerTests\BallotsControllerTests.cs" />
     <Compile Include="ControllerTests\PeopleControllerTests.cs" />
     <Compile Include="ControllerTests\PublicControllerTests.cs" />
+    <Compile Include="ControllerTests\VoteControllerTests.cs" />
+    <Compile Include="ControllerTests\DashboardControllerTests.cs" />
+    <Compile Include="DataValidationTests\ElectionValidationTests.cs" />
+    <Compile Include="DataValidationTests\VoteValidationTests.cs" />
     <Compile Include="CoreModelTests\ElectionHelperTests.cs" />
     <Compile Include="CoreModelTests\VoteAnalyzerTests.cs" />
     <Compile Include="CoreModelTests\LocationModelTests.cs" />
