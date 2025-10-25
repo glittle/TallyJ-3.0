@@ -21,3 +21,7 @@ See more info at: https://docs.google.com/document/d/1mlxI_5HWyt-zdr0EyGPzrScInq
 
 Assistance in the development of TallyJ is welcome. You can fork this repository and make
 pull requests to it. Please contact Glen Little to discuss further!
+
+**October 2025**
+
+Work has started on version 4 of TallyJ. Contact Glen if you can help!
