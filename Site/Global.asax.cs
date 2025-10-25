@@ -9,6 +9,7 @@ using System.Reflection;
 using System.Web;
 using System.Web.Configuration;
 using System.Web.Hosting;
+using System.Web.Http;
 using System.Web.Mvc;
 using System.Web.Routing;
 using FluentSecurity;
@@ -43,6 +44,9 @@ public class MvcApplication : HttpApplication
     SetupEnvironment();
 
     Bootstrapper.Initialise();
+
+    // Configure Web API
+    WebApiConfig.Register(GlobalConfiguration.Configuration);
 
     SecurityConfigurator.Configure(
       configuration =>
