@@ -30,33 +30,28 @@ namespace Tests.BusinessTests
     }
 
     [TestMethod]
-    [ExpectedException(typeof(NotSupportedException))]
     public void Test_null()
     {
       string text = null;
       var salt = "123";
 
-      var encrypted = EncryptionHelper.Encrypt(text, salt);
-
-      encrypted.ShouldEqual(null);
+      Assert.Throws<NotSupportedException>(() => EncryptionHelper.Encrypt(text, salt));
     }
 
     [TestMethod]
-    [ExpectedException(typeof(NotSupportedException))]
     public void Test_null_salt()
     {
       var text = "abc";
       string salt = null;
-      var encrypted = EncryptionHelper.Encrypt(text, salt);
+      Assert.Throws<NotSupportedException>(()=> EncryptionHelper.Encrypt(text, salt));
     }
 
     [TestMethod]
-    [ExpectedException(typeof(NotSupportedException))]
     public void Test_empty_salt()
     {
       var text = "abc";
       var salt = "";
-      var encrypted = EncryptionHelper.Encrypt(text, salt);
+      Assert.Throws<NotSupportedException>(()=> EncryptionHelper.Encrypt(text, salt));
     }
 
     [TestMethod]
@@ -147,7 +142,7 @@ namespace Tests.BusinessTests
     {
       // captured output from first text (above) when temporarily hardcoded to use v1
       var v1result =
-        "CfDJ8CDzsoxHFAROsU-9aq_i2lqJcZ7xNV32pzWQpLGqRuTQ2RoioZ2DXbrHyretWC6YoM2gRiIo-QCyWiKwzhSmk4jqYhhKfgirnnabUta-PEJPV7ZExHPTIEXXs4O75mr9oWGkuWg7WU2WzdMOfbFEImM";
+        "CfDJ8JsOOZlPGT1FniB6qrjjZ5u99pJmoJ_-71Uhrr0JPuQ9VIXkDtUiqCg5bscS37uFs_Y8y86YWACxWOxgJBb2LkR-rfJCr2Wzkevr0Z03LahkUd8F61s1opTrO-mhIpcH8Nw885lW5ZyIgBYwTCarJ3E";
       var salt = "123";
 
       var v2result = EncryptionHelper.Decrypt(v1result, salt, out var eroMessage);
