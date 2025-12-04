@@ -1,21 +1,8 @@
-using System;
-using System.Collections.Generic;
-using System.Configuration;
-using System.IO;
-using System.Linq;
-using System.Net;
-using System.Text.RegularExpressions;
-using System.Web.Mvc;
 using TallyJ.Code;
 using TallyJ.Code.Enumerations;
 using TallyJ.Code.Helpers;
 using TallyJ.Code.Session;
 using TallyJ.EF;
-using Twilio;
-using Twilio.Exceptions;
-using Twilio.Rest.Api.V2010.Account;
-using Twilio.Rest.Api.V2010.Account.Call;
-using Twilio.Types;
 using FeedbackResource = Twilio.Rest.Api.V2010.Account.Message.FeedbackResource;
 
 namespace TallyJ.CoreModels.Helper
@@ -34,7 +21,7 @@ namespace TallyJ.CoreModels.Helper
       });
 
       // this voter is not in a specific election... just testing from the voter page
-      var ok = SendSms(phone, text, null, out error);
+      var ok = SendSmsAsync(phone, text, null, out error);
 
       LogHelper.Add($"Sms: Voter test message sent", true);
 
@@ -50,7 +37,7 @@ namespace TallyJ.CoreModels.Helper
 
       // this voter is not in a specific election...
 
-      return SendSms(phone, text, null, out error, method);
+      return SendSmsAsync(phone, text, null, out error, method);
     }
 
     public bool SendVerifyCodeToVoterByPhone(string phone, string newCode, string hubKey, out string error)
@@ -65,7 +52,7 @@ namespace TallyJ.CoreModels.Helper
 
       return SendVoice(phone, text, null, out error);
     }
-    
+
 
     public bool SendWhenBallotSubmitted(Person person, Election election, out string error)
     {
@@ -80,43 +67,43 @@ namespace TallyJ.CoreModels.Helper
         electionType = ElectionTypeEnum.TextFor(election.ElectionType)
       });
 
-      var ok = SendSms(person.Phone, text, person.PersonGuid, out error);
+      var ok = SendSmsAsync(person.Phone, text, person.PersonGuid, out error);
 
       LogHelper.Add($"Sms: Ballot Submitted", false);
 
       return ok;
     }
 
-    public bool SendWhenProcessed(Election e, Person p, OnlineVoter ov, LogHelper logHelper, out string error)
-    {
-      // only send if they asked for it
-      if (ov.EmailCodes == null || !ov.EmailCodes.Contains("p") || p.Phone.HasNoContent())
-      {
-        error = null;
-        return false;
-      }
+    //public bool SendWhenProcessed(Election e, Person p, OnlineVoter ov, LogHelper logHelper, out string error)
+    //{
+    //  // only send if they asked for it
+    //  if (ov.EmailCodes == null || !ov.EmailCodes.Contains("p") || p.Phone.HasNoContent())
+    //  {
+    //    error = null;
+    //    return false;
+    //  }
 
-      // proceed to send
-      var phone = p.Phone;
+    //  // proceed to send
+    //  var phone = p.Phone;
 
-      var text = GetSmsTemplate("BallotProcessed").FilledWithObject(new
-      {
-        voterName = p.C_FullNameFL,
-        electionName = e.Name,
-        electionType = ElectionTypeEnum.TextFor(e.ElectionType),
-      });
+    //  var text = GetSmsTemplate("BallotProcessed").FilledWithObject(new
+    //  {
+    //    voterName = p.C_FullNameFL,
+    //    electionName = e.Name,
+    //    electionType = ElectionTypeEnum.TextFor(e.ElectionType),
+    //  });
 
-      var ok = SendSms(phone, text, p.PersonGuid, out error);
+    //  var ok = SendSmsAsync(phone, text, p.PersonGuid, out error);
 
-      // error logging done at a higher level
+    //  // error logging done at a higher level
 
-      if (ok)
-      {
-        logHelper.Add("Sms: ballot was processed", false, phone);
-      }
+    //  if (ok)
+    //  {
+    //    logHelper.Add("Sms: ballot was processed", false, phone);
+    //  }
 
-      return ok;
-    }
+    //  return ok;
+    //}
 
     /// <summary>
     ///   requested by the head teller
@@ -238,7 +225,7 @@ namespace TallyJ.CoreModels.Helper
           p.VoterContact,
         });
 
-        var ok = SendSms(phoneNumber, messageText, p.PersonGuid, out var errorMessage);
+        var ok = SendSmsAsync(phoneNumber, messageText, p.PersonGuid, out var errorMessage);
 
         if (ok)
           numSent++;
@@ -282,7 +269,7 @@ namespace TallyJ.CoreModels.Helper
     /// <param name="errorMessage"></param>
     /// <param name="method">sms or whatsapp</param>
     /// <returns></returns>
-    public bool SendSms(string toPhoneNumber, string messageText, Guid? personGuid, out string errorMessage, string method = "sms")
+    public bool SendSmsAsync(string toPhoneNumber, string messageText, Guid? personGuid, out string errorMessage, string method = "sms")
     {
       var sid = SettingsHelper.Get("twilio-SID", "");
       var token = SettingsHelper.Get("twilio-Token", "");
@@ -321,6 +308,24 @@ namespace TallyJ.CoreModels.Helper
 
       TwilioClient.Init(sid, token);
 
+      // add to the safelist (ignore if already there)
+      try
+      {
+        var safelistNumber = SafelistResource.CreateAsync(
+                  toPhoneNumber
+                ).Result;
+        //Console.WriteLine($"Added: {safelistNumber.PhoneNumber} (SID: {safelistNumber.Sid})");
+      }
+      catch (ApiException ex) when (ex.Status == 409)
+      {
+        // 409 Conflict = already in safelist (this is expected and safe to ignore)
+        //Console.WriteLine($"Already safelisted: {toPhoneNumber}");
+      }
+      catch (Exception ex)
+      {
+        Console.WriteLine($"Failed to add {toPhoneNumber}: {ex.Message}");
+      }
+
       try
       {
         MessageResource messageResource;
@@ -331,7 +336,8 @@ namespace TallyJ.CoreModels.Helper
             new PhoneNumber(toPhoneNumber),
             body: messageText,
             messagingServiceSid: messagingSid,
-            statusCallback: callbackUrl
+            statusCallback: callbackUrl,
+            riskCheck: MessageResource.RiskCheckEnum.Disable
           );
         }
         else if (fromNumber.HasContent())
@@ -340,7 +346,8 @@ namespace TallyJ.CoreModels.Helper
             new PhoneNumber(toPhoneNumber),
             body: messageText,
             from: new PhoneNumber(fromNumber),
-            statusCallback: callbackUrl
+            statusCallback: callbackUrl,
+            riskCheck: MessageResource.RiskCheckEnum.Disable
           );
         }
         else
