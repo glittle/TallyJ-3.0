@@ -104,7 +104,7 @@
           if (!this.numWithPhones) {
             return '';
           }
-          var costPerSegment = 0.027;
+          var costPerSegment = 0.1; // almost 10 cents
           var cost = this.numWithPhones * this.smsSegments * costPerSegment;
           return Math.ceil(cost * 100) / 100;
         },

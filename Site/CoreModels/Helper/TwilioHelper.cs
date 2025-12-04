@@ -1,9 +1,21 @@
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Net;
+using System.Text.RegularExpressions;
+using System.Web.Mvc;
 using TallyJ.Code;
 using TallyJ.Code.Enumerations;
 using TallyJ.Code.Helpers;
 using TallyJ.Code.Session;
 using TallyJ.EF;
-using FeedbackResource = Twilio.Rest.Api.V2010.Account.Message.FeedbackResource;
+using Twilio;
+using Twilio.Exceptions;
+using Twilio.Rest.Accounts.V1;
+using Twilio.Rest.Api.V2010.Account;
+using Twilio.Rest.Api.V2010.Account.Message;
+using Twilio.Types;
 
 namespace TallyJ.CoreModels.Helper
 {
@@ -314,7 +326,7 @@ namespace TallyJ.CoreModels.Helper
         var safelistNumber = SafelistResource.CreateAsync(
                   toPhoneNumber
                 ).Result;
-        //Console.WriteLine($"Added: {safelistNumber.PhoneNumber} (SID: {safelistNumber.Sid})");
+        Console.WriteLine($"Added: {safelistNumber.PhoneNumber} (SID: {safelistNumber.Sid})");
       }
       catch (ApiException ex) when (ex.Status == 409)
       {

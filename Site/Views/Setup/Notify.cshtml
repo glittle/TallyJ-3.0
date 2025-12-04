@@ -98,12 +98,13 @@
         Save SMS Changes
       </el-button>
 
-      <p class="estSmsCost" v-if="smsCost">Estimated cost to send {{numWithPhones}} SMS message{{plural(numWithPhones)}}: USD ${{smsCost}}</p>
-      <p class="estSmsCostComment" v-if="smsCost">
-        SMS costs are covered by donations. If you send a significant number, please consider donating... but don't
-        let cost be a barrier to using this tool in your community!
-      </p>
-
+      <p class="estSmsCost" v-if="smsCost">Estimated cost to send {{numWithPhones}} SMS message{{plural(numWithPhones)}}: <b>USD ${{smsCost.toFixed(2)}}</b></p>
+      @if (!SettingsHelper.HideSmsCostAppeal)
+      {
+        <p class="estSmsCostComment" v-if="smsCost">
+          SMS costs are covered by donations. Please consider making a payment to <a href="https://paypal.me/GlenLittle" target="paypal">paypal.me/GlenLittle</a> to cover this cost.
+        </p>
+      }
     </div>
 
     <div class="messageBtns email">
