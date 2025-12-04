@@ -321,22 +321,23 @@ namespace TallyJ.CoreModels.Helper
       TwilioClient.Init(sid, token);
 
       // add to the safelist (ignore if already there)
-      try
-      {
-        var safelistNumber = SafelistResource.CreateAsync(
-                  toPhoneNumber
-                ).Result;
-        Console.WriteLine($"Added: {safelistNumber.PhoneNumber} (SID: {safelistNumber.Sid})");
-      }
-      catch (ApiException ex) when (ex.Status == 409)
-      {
-        // 409 Conflict = already in safelist (this is expected and safe to ignore)
-        //Console.WriteLine($"Already safelisted: {toPhoneNumber}");
-      }
-      catch (Exception ex)
-      {
-        Console.WriteLine($"Failed to add {toPhoneNumber}: {ex.Message}");
-      }
+      // --> can't use Safe List!
+      //try
+      //{
+      //  var safelistNumber = SafelistResource.CreateAsync(
+      //            toPhoneNumber
+      //          ).Result;
+      //  Console.WriteLine($"Added: {safelistNumber.PhoneNumber} (SID: {safelistNumber.Sid})");
+      //}
+      //catch (ApiException ex) when (ex.Status == 409)
+      //{
+      //  // 409 Conflict = already in safelist (this is expected and safe to ignore)
+      //  //Console.WriteLine($"Already safelisted: {toPhoneNumber}");
+      //}
+      //catch (Exception ex)
+      //{
+      //  Console.WriteLine($"Failed to add {toPhoneNumber}: {ex.Message}");
+      //}
 
       try
       {
