@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Text.RegularExpressions;
+using System.Web.Helpers;
 using System.Web.Mvc;
 using TallyJ.Code;
 using TallyJ.Code.Enumerations;
@@ -23,22 +24,22 @@ namespace TallyJ.CoreModels.Helper
   {
     private static Regex PhoneNumberChecker => new(@"\+[0-9]{4,15}");
 
-    public bool SendVoterSmsTestMessage(string phone, out string error)
-    {
-      var hostSite = SettingsHelper.Get("HostSite", "");
+    //public bool SendVoterSmsTestMessage(string phone, out string error)
+    //{
+    //  var hostSite = SettingsHelper.Get("HostSite", "");
 
-      var text = GetSmsTemplate("TestSms").FilledWithObject(new
-      {
-        hostSite,
-      });
+    //  var text = GetSmsTemplate("TestSms").FilledWithObject(new
+    //  {
+    //    hostSite,
+    //  });
 
-      // this voter is not in a specific election... just testing from the voter page
-      var ok = SendSmsAsync(phone, text, null, out error);
+    //  // this voter is not in a specific election... just testing from the voter page
+    //  var ok = SendSmsAsync(phone, text, null, out error);
 
-      LogHelper.Add($"Sms: Voter test message sent", true);
+    //  LogHelper.Add($"Sms: Voter test message sent", true);
 
-      return ok;
-    }
+    //  return ok;
+    //}
 
     public bool SendVerifyCodeToVoter(string phone, string newCode, string method, string hubKey, out string error)
     {
@@ -66,25 +67,25 @@ namespace TallyJ.CoreModels.Helper
     }
 
 
-    public bool SendWhenBallotSubmitted(Person person, Election election, out string error)
-    {
-      var hostSite = SettingsHelper.Get("HostSite", "");
+    //public bool SendWhenBallotSubmitted(Person person, Election election, out string error)
+    //{
+    //  var hostSite = SettingsHelper.Get("HostSite", "");
 
-      var text = GetSmsTemplate("OnSubmit").FilledWithObject(new
-      {
-        hostSite,
-        logo = hostSite + "/Images/LogoSideM.png",
-        name = person.C_FullNameFL,
-        electionName = election.Name,
-        electionType = ElectionTypeEnum.TextFor(election.ElectionType)
-      });
+    //  var text = GetSmsTemplate("OnSubmit").FilledWithObject(new
+    //  {
+    //    hostSite,
+    //    logo = hostSite + "/Images/LogoSideM.png",
+    //    name = person.C_FullNameFL,
+    //    electionName = election.Name,
+    //    electionType = ElectionTypeEnum.TextFor(election.ElectionType)
+    //  });
 
-      var ok = SendSmsAsync(person.Phone, text, person.PersonGuid, out error);
+    //  var ok = SendSmsAsync(person.Phone, text, person.PersonGuid, out error);
 
-      LogHelper.Add($"Sms: Ballot Submitted", false);
+    //  LogHelper.Add($"Sms: Ballot Submitted", false);
 
-      return ok;
-    }
+    //  return ok;
+    //}
 
     //public bool SendWhenProcessed(Election e, Person p, OnlineVoter ov, LogHelper logHelper, out string error)
     //{
@@ -321,23 +322,19 @@ namespace TallyJ.CoreModels.Helper
       TwilioClient.Init(sid, token);
 
       // add to the safelist (ignore if already there)
-      // --> can't use Safe List!
-      //try
-      //{
-      //  var safelistNumber = SafelistResource.CreateAsync(
-      //            toPhoneNumber
-      //          ).Result;
-      //  Console.WriteLine($"Added: {safelistNumber.PhoneNumber} (SID: {safelistNumber.Sid})");
-      //}
-      //catch (ApiException ex) when (ex.Status == 409)
-      //{
-      //  // 409 Conflict = already in safelist (this is expected and safe to ignore)
-      //  //Console.WriteLine($"Already safelisted: {toPhoneNumber}");
-      //}
-      //catch (Exception ex)
-      //{
-      //  Console.WriteLine($"Failed to add {toPhoneNumber}: {ex.Message}");
-      //}
+      try
+      {
+        var safelistNumber = SafelistResource.Create(toPhoneNumber);
+        Console.WriteLine($"Added: {safelistNumber.PhoneNumber} (SID: {safelistNumber.Sid})");
+      }
+      catch (ApiException ex) when (ex.Code == 60411)
+      {
+        Console.WriteLine($"Already on the safe list: {toPhoneNumber}");
+      }
+      catch (Exception ex)
+      {
+        new LogHelper().Add("SMS Add to SafeList failed - {0} ({1})".FilledWith(ex.Message, toPhoneNumber), true);
+      }
 
       try
       {
