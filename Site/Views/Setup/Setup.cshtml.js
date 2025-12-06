@@ -837,6 +837,10 @@ var YesNo = Vue.component('yes-no',
       no: {
         type: String,
         default: 'No'
+      },
+      toggleColor: {
+        type: Boolean,
+        default: true
       }
     },
     data: function () {

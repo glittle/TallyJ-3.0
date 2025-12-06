@@ -223,6 +223,10 @@
     if (!homeIndexPage.vote) {
       return;
     }
+    if (!$('#voterVue').length) {
+      // user must be logged in already
+      return;
+    }
 
     local.vue = new Vue({
       el: '#voterVue',

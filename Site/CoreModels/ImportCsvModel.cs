@@ -191,7 +191,7 @@ public class ImportCsvModel : DataConnectedModel
       return new
       {
         Success = false,
-        Message = "Unable to parse headers. Is this the correct content encoding?"
+        Message = "Unable to parse headers. Are the headers on the line indicated? Is this the correct content encoding?"
       }.AsJsonResult();
 
     //mapping:   csv->db,csv->db
@@ -344,7 +344,18 @@ public class ImportCsvModel : DataConnectedModel
     var currentMappings =
       columnsToRead.DefaultTo("").SplitWithString(",").Select(s => s.SplitWithString(_mappingSymbol)).ToList();
     var dbFields = DbFieldsList.ToList();
-    var validMappings = currentMappings.Where(mapping => dbFields.Contains(mapping[1])).ToList();
+    var validMappings = new List<string[]>();
+    try
+    {
+      validMappings = currentMappings.Where(mapping => dbFields.Contains(mapping[1])).ToList();
+    }
+    catch (Exception) {
+      return new
+      {
+        failed = true,
+        result = new[] { "Unable to read headings. Are they on the line in the file?" }
+      }.AsJsonResult();
+    }
 
     if (validMappings.Count == 0)
       return new

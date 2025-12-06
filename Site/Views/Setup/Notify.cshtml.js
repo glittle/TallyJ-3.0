@@ -156,6 +156,15 @@
           this.smsChanged = true;
           this.updateTextForSms();
         },
+        copyEmailAddresses: function () {
+          var emailString = this.emailsToSend.map(function (p) { return p.Email }).join(', ');
+          navigator.clipboard.writeText(emailString).then(function () {
+            console.log('Emails copied to clipboard');
+          }).catch(function (err) {
+            console.error('Could not copy emails: ', err);
+          });
+
+        },
         sendEmail: function (usePending) {
           var vue = this;
 

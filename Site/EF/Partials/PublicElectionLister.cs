@@ -69,6 +69,11 @@ namespace TallyJ.EF
     /// <returns></returns>
     public string GetPasscodeIfAvailable(Guid electionGuid)
     {
+      if (electionGuid == Guid.Empty)
+      {
+        return null;
+      }
+
       var activeElectionGuids = new ComputerCacher().ElectionGuidsOfActiveComputers.Where(g => g == electionGuid).ToList();
       if (activeElectionGuids.Count == 0)
       {

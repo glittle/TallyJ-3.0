@@ -39,7 +39,7 @@
       {
         case BallotProcessEnum.Roll:
           <li>
-            Mark people as "@inPersonName" as they arrive at the election venue if they intend to cast their own ballot when
+            If using Roll Call, you can mark people as "@inPersonName" as they arrive at the election venue if they intend to cast their own ballot when
             the Roll Call is done.
           </li>
           break;
@@ -62,101 +62,109 @@
           If using "Checklist" items, the "Attendance Checklists" report provides a way to view and report on checked items.
         </li>
       }
+      <li>
+        Clicking "Ballot Not Received" will hide everyone whose ballot has been received. Combine with a Checklist item to see whose ballot has not been received.
+      </li>
 
     }
   </ol>
 </div>
-<div class="SearchArea">
-  <span><u>S</u>earch box: </span>
-  <input accesskey="S" id="search">
-  <span class="info fakeEsc">(Esc to clear)</span>
-</div>
-<div class="Counts">
-  @if (currentElection.VotingMethodsContains(VotingMethodEnum.Imported.Value))
-  {
-    <div class="Imported" data-status="Imported" title="Click to filter the list">
-      Imported
-      <i>0</i>
-    </div>
-  }
-  @if (currentElection.VotingMethodsContains("O"))
-  {
-    <div class="Online" data-status="Online" title="Click to filter the list">
-      Online
-      <i>0</i>
-    </div>
-  }
-  @if (currentElection.VotingMethodsContains("C"))
-  {
-    <div class="CalledIn" data-status="CalledIn" title="Click to filter the list">
-      Called In
-      <i>0</i>
-    </div>
-  }
-  @if (currentElection.VotingMethodsContains("M"))
-  {
-    <div class="MailedIn" data-status="MailedIn" title="Click to filter the list">
-      Mailed In
-      <i>0</i>
-    </div>
-  }
-  @if (currentElection.VotingMethodsContains("D"))
-  {
-    <div class="DroppedOff" data-status="DroppedOff" title="Click to filter the list">
-      Dropped Off
-      <i>0</i>
-    </div>
-  }
-  @if (currentElection.VotingMethodsContains("1"))
-  {
-    <div class="Custom1" data-status="Custom1" title="Click to filter the list">
-      @currentElection.Custom1Name
-      <i>0</i>
-    </div>
-  }
-  @if (currentElection.VotingMethodsContains("2"))
-  {
-    <div class="Custom2" data-status="Custom2" title="Click to filter the list">
-      @currentElection.Custom2Name
-      <i>0</i>
-    </div>
-  }
-  @if (currentElection.VotingMethodsContains("3"))
-  {
-    <div class="Custom3" data-status="Custom3" title="Click to filter the list">
-      @currentElection.Custom3Name
-      <i>0</i>
-    </div>
-  }
-  @*@if (ballotProcessEnum == BallotProcessEnum.RegV)
+<div class="topLine">
+  <div class="SearchArea">
+    <span><u>S</u>earch box: </span>
+    <input accesskey="S" id="search">
+    <span class="info fakeEsc">(Esc to clear)</span>
+  </div>
+  <div class="Counts">
+    @if (currentElection.VotingMethodsContains(VotingMethodEnum.Imported.Value))
     {
-      <div class="Registered" data-status="Registered" title="Click to filter the list">
-        Registered
+      <div class="Imported" data-status="Imported" title="Click to filter the list">
+        Imported
         <i>0</i>
       </div>
-    }*@
-  @if (currentElection.VotingMethodsContains("P"))
-  {
-    <div class="InPerson" data-status="InPerson" title="Click to filter the list">
-      @inPersonName
+    }
+    @if (currentElection.VotingMethodsContains("O"))
+    {
+      <div class="Online" data-status="Online" title="Click to filter the list">
+        Online
+        <i>0</i>
+      </div>
+    }
+    @if (currentElection.VotingMethodsContains("C"))
+    {
+      <div class="CalledIn" data-status="CalledIn" title="Click to filter the list">
+        Called In
+        <i>0</i>
+      </div>
+    }
+    @if (currentElection.VotingMethodsContains("M"))
+    {
+      <div class="MailedIn" data-status="MailedIn" title="Click to filter the list">
+        Mailed In
+        <i>0</i>
+      </div>
+    }
+    @if (currentElection.VotingMethodsContains("D"))
+    {
+      <div class="DroppedOff" data-status="DroppedOff" title="Click to filter the list">
+        Dropped Off
+        <i>0</i>
+      </div>
+    }
+    @if (currentElection.VotingMethodsContains("1"))
+    {
+      <div class="Custom1" data-status="Custom1" title="Click to filter the list">
+        @currentElection.Custom1Name
+        <i>0</i>
+      </div>
+    }
+    @if (currentElection.VotingMethodsContains("2"))
+    {
+      <div class="Custom2" data-status="Custom2" title="Click to filter the list">
+        @currentElection.Custom2Name
+        <i>0</i>
+      </div>
+    }
+    @if (currentElection.VotingMethodsContains("3"))
+    {
+      <div class="Custom3" data-status="Custom3" title="Click to filter the list">
+        @currentElection.Custom3Name
+        <i>0</i>
+      </div>
+    }
+    @*@if (ballotProcessEnum == BallotProcessEnum.RegV)
+      {
+        <div class="Registered" data-status="Registered" title="Click to filter the list">
+          Registered
+          <i>0</i>
+        </div>
+      }*@
+    @if (currentElection.VotingMethodsContains("P"))
+    {
+      <div class="InPerson" data-status="InPerson" title="Click to filter the list">
+        @inPersonName
+        <i>0</i>
+      </div>
+    }
+    <div class="Total" data-status="Total" title="Click to filter the list">
+      Total
       <i>0</i>
     </div>
-  }
-  <div class="Total" data-status="Total" title="Click to filter the list">
-    Total
-    <i>0</i>
-  </div>
-  <span class="Other">
-    Other <i>0</i>
-  </span>
-  @foreach (var f in currentElection.FlagsList)
-  {
-    <div class="Flag flag-@f" data-status="flag-@f" title="Click to filter the list">
-      @f
-      <i>0</i>
-    </div>
-  }
+    <span class="Other">
+      Other <i>0</i>
+    </span>
+    <aside class="flagBox">
+      @foreach (var f in currentElection.FlagsList)
+      {
+        <div class="Flag flag-@f" data-status="flag-@f" title="Click to filter the list">
+          @f
+          <i>0</i>
+        </div>
+      }
 
+      <label><input type="checkbox" id="ifNoBallot" /> Ballot Not Received</label>
+    </aside>
+  </div>
 </div>
 <div id="Main" class="@(new[] {"EnvMode-" + currentElection.EnvNumModeRaw }.JoinedAsString(" "))">
   <div id="selectorTip">
