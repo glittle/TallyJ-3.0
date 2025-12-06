@@ -32,7 +32,7 @@ namespace Tests.FrameworkTests
 
       a = 0;
       a.DefaultTo(1).ShouldEqual(1);
-    
+
       a = null;
       a.DefaultTo(1).ShouldEqual(1);
     }
@@ -133,13 +133,12 @@ namespace Tests.FrameworkTests
     }
 
     [TestMethod]
-    [ExpectedException(typeof(FormatException))]
     public void FilledWithArray_List_Fail1()
     {
       var values = new object[] { "string", 1234 };
       var template = "0:{0} 1:{1} 2:{2}"; // too many items in template
 
-      template.FilledWithList(values).ShouldEqual(" fails - will through exception ");
+      Assert.Throws<FormatException>(() => template.FilledWithList(values).ShouldEqual(" fails - will through exception "));
     }
 
     [TestMethod]
@@ -156,16 +155,17 @@ namespace Tests.FrameworkTests
     {
       var template = "A:{A} B:{B}";
       var item = new
-                   {
-                     A = 23,
-                     B = "Hello"
-                   };
+      {
+        A = 23,
+        B = "Hello"
+      };
 
       template.FilledWithObject(item).ShouldEqual("A:23 B:Hello");
     }
 
     [TestMethod]
-    public void FilledWithObjectUnicode() {
+    public void FilledWithObjectUnicode()
+    {
       // test FilledWithObject with Korean characters
       // 이때 꼭 투표해 보세요
       // 안녕하세요 
@@ -173,9 +173,9 @@ namespace Tests.FrameworkTests
       var template = "안녕하세요:{A} B:{B} C:이때 꼭 투표해 보세";
       var item = new
       {
-                     A = 23,
-                     B = "안녕하세요"
-                   };
+        A = 23,
+        B = "안녕하세요"
+      };
 
       template.FilledWithObject(item).ShouldEqual("안녕하세요:23 B:안녕하세요 C:이때 꼭 투표해 보세");
     }
@@ -185,10 +185,10 @@ namespace Tests.FrameworkTests
     {
       var template = "Name:{Name} Recursive:{MyName}";
       var item = new
-                   {
-                     Name = "John",
-                     MyName = "{Name}"
-                   };
+      {
+        Name = "John",
+        MyName = "{Name}"
+      };
 
       template.FilledWithObject(item).ShouldEqual("Name:John Recursive:John");
     }
@@ -343,14 +343,14 @@ namespace Tests.FrameworkTests
     [TestMethod]
     public void InSentence_Test()
     {
-      new []{"a"}.InSentence("and").ShouldEqual("a");
+      new[] { "a" }.InSentence("and").ShouldEqual("a");
 
-      new []{"a", "b", "c"}.InSentence("or").ShouldEqual("a, b, or c");
-      new []{"a", "b", "c"}.InSentence("and").ShouldEqual("a, b, and c");
+      new[] { "a", "b", "c" }.InSentence("or").ShouldEqual("a, b, or c");
+      new[] { "a", "b", "c" }.InSentence("and").ShouldEqual("a, b, and c");
 
-      new []{"a", "b"}.InSentence("and").ShouldEqual("a and b");
+      new[] { "a", "b" }.InSentence("and").ShouldEqual("a and b");
 
-      new []{"a", "b", "c", "d"}.InSentence("and").ShouldEqual("a, b, c, and d");
+      new[] { "a", "b", "c", "d" }.InSentence("and").ShouldEqual("a, b, c, and d");
     }
 
     [TestMethod]
@@ -372,8 +372,8 @@ namespace Tests.FrameworkTests
 
       0.PercentOf(50, 3).ShouldEqual("0.000%");
       0.PercentOf(50, -3).ShouldEqual("0%");
-      
-      0.PercentOf(50, showZero:false).ShouldEqual("-");
+
+      0.PercentOf(50, showZero: false).ShouldEqual("-");
 
       1.PercentOf(10000).ShouldEqual("0%");
       1.PercentOf(10000, 1).ShouldEqual("0.0%");
@@ -382,7 +382,7 @@ namespace Tests.FrameworkTests
       44.PercentOf(1000).ShouldEqual("4%");
       45.PercentOf(1000).ShouldEqual("4%"); // round down
       46.PercentOf(1000).ShouldEqual("5%");
-      
+
       74.PercentOf(1000).ShouldEqual("7%");
       75.PercentOf(1000).ShouldEqual("8%"); //round up
       76.PercentOf(1000).ShouldEqual("8%");
@@ -449,7 +449,8 @@ namespace Tests.FrameworkTests
     }
 
     [TestMethod]
-    public void GetPlainTextFromHtml_Test() {
+    public void GetPlainTextFromHtml_Test()
+    {
       var html = "<html><head><title>Test</title></head><body><h1>Test</h1><p>Test</p></body></html>";
       var plainText = html.GetPlainTextFromHtml();
       plainText.ShouldEqual("""
@@ -457,10 +458,11 @@ namespace Tests.FrameworkTests
 
         Test
         """);
-    }   
-    
+    }
+
     [TestMethod]
-    public void GetPlainTextFromHtml_Test2() {
+    public void GetPlainTextFromHtml_Test2()
+    {
       var html = "<html><head><title>Test</title></head><body><h1>Test</h1><p>Test with <a href=\"sdfsf\">a link</a>.</p></body></html>";
       var plainText = html.GetPlainTextFromHtml();
       plainText.ShouldEqual("""

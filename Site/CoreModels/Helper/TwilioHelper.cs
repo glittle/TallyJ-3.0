@@ -1,22 +1,20 @@
 using System;
 using System.Collections.Generic;
-using System.Configuration;
 using System.IO;
 using System.Linq;
 using System.Net;
 using System.Text.RegularExpressions;
 using System.Web.Mvc;
 using TallyJ.Code;
-using TallyJ.Code.Enumerations;
 using TallyJ.Code.Helpers;
 using TallyJ.Code.Session;
 using TallyJ.EF;
 using Twilio;
 using Twilio.Exceptions;
+using Twilio.Rest.Accounts.V1;
 using Twilio.Rest.Api.V2010.Account;
-using Twilio.Rest.Api.V2010.Account.Call;
+using Twilio.Rest.Api.V2010.Account.Message;
 using Twilio.Types;
-using FeedbackResource = Twilio.Rest.Api.V2010.Account.Message.FeedbackResource;
 
 namespace TallyJ.CoreModels.Helper
 {
@@ -24,22 +22,22 @@ namespace TallyJ.CoreModels.Helper
   {
     private static Regex PhoneNumberChecker => new(@"\+[0-9]{4,15}");
 
-    public bool SendVoterSmsTestMessage(string phone, out string error)
-    {
-      var hostSite = SettingsHelper.Get("HostSite", "");
+    //public bool SendVoterSmsTestMessage(string phone, out string error)
+    //{
+    //  var hostSite = SettingsHelper.Get("HostSite", "");
 
-      var text = GetSmsTemplate("TestSms").FilledWithObject(new
-      {
-        hostSite,
-      });
+    //  var text = GetSmsTemplate("TestSms").FilledWithObject(new
+    //  {
+    //    hostSite,
+    //  });
 
-      // this voter is not in a specific election... just testing from the voter page
-      var ok = SendSms(phone, text, null, out error);
+    //  // this voter is not in a specific election... just testing from the voter page
+    //  var ok = SendSmsAsync(phone, text, null, out error);
 
-      LogHelper.Add($"Sms: Voter test message sent", true);
+    //  LogHelper.Add($"Sms: Voter test message sent", true);
 
-      return ok;
-    }
+    //  return ok;
+    //}
 
     public bool SendVerifyCodeToVoter(string phone, string newCode, string method, string hubKey, out string error)
     {
@@ -50,7 +48,7 @@ namespace TallyJ.CoreModels.Helper
 
       // this voter is not in a specific election...
 
-      return SendSms(phone, text, null, out error, method);
+      return SendSmsAsync(phone, text, null, out error, method);
     }
 
     public bool SendVerifyCodeToVoterByPhone(string phone, string newCode, string hubKey, out string error)
@@ -65,58 +63,58 @@ namespace TallyJ.CoreModels.Helper
 
       return SendVoice(phone, text, null, out error);
     }
-    
 
-    public bool SendWhenBallotSubmitted(Person person, Election election, out string error)
-    {
-      var hostSite = SettingsHelper.Get("HostSite", "");
 
-      var text = GetSmsTemplate("OnSubmit").FilledWithObject(new
-      {
-        hostSite,
-        logo = hostSite + "/Images/LogoSideM.png",
-        name = person.C_FullNameFL,
-        electionName = election.Name,
-        electionType = ElectionTypeEnum.TextFor(election.ElectionType)
-      });
+    //public bool SendWhenBallotSubmitted(Person person, Election election, out string error)
+    //{
+    //  var hostSite = SettingsHelper.Get("HostSite", "");
 
-      var ok = SendSms(person.Phone, text, person.PersonGuid, out error);
+    //  var text = GetSmsTemplate("OnSubmit").FilledWithObject(new
+    //  {
+    //    hostSite,
+    //    logo = hostSite + "/Images/LogoSideM.png",
+    //    name = person.C_FullNameFL,
+    //    electionName = election.Name,
+    //    electionType = ElectionTypeEnum.TextFor(election.ElectionType)
+    //  });
 
-      LogHelper.Add($"Sms: Ballot Submitted", false);
+    //  var ok = SendSmsAsync(person.Phone, text, person.PersonGuid, out error);
 
-      return ok;
-    }
+    //  LogHelper.Add($"Sms: Ballot Submitted", false);
 
-    public bool SendWhenProcessed(Election e, Person p, OnlineVoter ov, LogHelper logHelper, out string error)
-    {
-      // only send if they asked for it
-      if (ov.EmailCodes == null || !ov.EmailCodes.Contains("p") || p.Phone.HasNoContent())
-      {
-        error = null;
-        return false;
-      }
+    //  return ok;
+    //}
 
-      // proceed to send
-      var phone = p.Phone;
+    //public bool SendWhenProcessed(Election e, Person p, OnlineVoter ov, LogHelper logHelper, out string error)
+    //{
+    //  // only send if they asked for it
+    //  if (ov.EmailCodes == null || !ov.EmailCodes.Contains("p") || p.Phone.HasNoContent())
+    //  {
+    //    error = null;
+    //    return false;
+    //  }
 
-      var text = GetSmsTemplate("BallotProcessed").FilledWithObject(new
-      {
-        voterName = p.C_FullNameFL,
-        electionName = e.Name,
-        electionType = ElectionTypeEnum.TextFor(e.ElectionType),
-      });
+    //  // proceed to send
+    //  var phone = p.Phone;
 
-      var ok = SendSms(phone, text, p.PersonGuid, out error);
+    //  var text = GetSmsTemplate("BallotProcessed").FilledWithObject(new
+    //  {
+    //    voterName = p.C_FullNameFL,
+    //    electionName = e.Name,
+    //    electionType = ElectionTypeEnum.TextFor(e.ElectionType),
+    //  });
 
-      // error logging done at a higher level
+    //  var ok = SendSmsAsync(phone, text, p.PersonGuid, out error);
 
-      if (ok)
-      {
-        logHelper.Add("Sms: ballot was processed", false, phone);
-      }
+    //  // error logging done at a higher level
 
-      return ok;
-    }
+    //  if (ok)
+    //  {
+    //    logHelper.Add("Sms: ballot was processed", false, phone);
+    //  }
+
+    //  return ok;
+    //}
 
     /// <summary>
     ///   requested by the head teller
@@ -238,7 +236,7 @@ namespace TallyJ.CoreModels.Helper
           p.VoterContact,
         });
 
-        var ok = SendSms(phoneNumber, messageText, p.PersonGuid, out var errorMessage);
+        var ok = SendSmsAsync(phoneNumber, messageText, p.PersonGuid, out var errorMessage);
 
         if (ok)
           numSent++;
@@ -282,7 +280,7 @@ namespace TallyJ.CoreModels.Helper
     /// <param name="errorMessage"></param>
     /// <param name="method">sms or whatsapp</param>
     /// <returns></returns>
-    public bool SendSms(string toPhoneNumber, string messageText, Guid? personGuid, out string errorMessage, string method = "sms")
+    public bool SendSmsAsync(string toPhoneNumber, string messageText, Guid? personGuid, out string errorMessage, string method = "sms")
     {
       var sid = SettingsHelper.Get("twilio-SID", "");
       var token = SettingsHelper.Get("twilio-Token", "");
@@ -321,6 +319,21 @@ namespace TallyJ.CoreModels.Helper
 
       TwilioClient.Init(sid, token);
 
+      // add to the safelist (ignore if already there)
+      try
+      {
+        var safelistNumber = SafelistResource.Create(toPhoneNumber);
+        Console.WriteLine($"Added: {safelistNumber.PhoneNumber} (SID: {safelistNumber.Sid})");
+      }
+      catch (ApiException ex) when (ex.Code == 60411)
+      {
+        Console.WriteLine($"Already on the safe list: {toPhoneNumber}");
+      }
+      catch (Exception ex)
+      {
+        new LogHelper().Add("SMS Add to SafeList failed - {0} ({1})".FilledWith(ex.Message, toPhoneNumber), true);
+      }
+
       try
       {
         MessageResource messageResource;
@@ -331,7 +344,8 @@ namespace TallyJ.CoreModels.Helper
             new PhoneNumber(toPhoneNumber),
             body: messageText,
             messagingServiceSid: messagingSid,
-            statusCallback: callbackUrl
+            statusCallback: callbackUrl,
+            riskCheck: MessageResource.RiskCheckEnum.Disable
           );
         }
         else if (fromNumber.HasContent())
@@ -340,7 +354,8 @@ namespace TallyJ.CoreModels.Helper
             new PhoneNumber(toPhoneNumber),
             body: messageText,
             from: new PhoneNumber(fromNumber),
-            statusCallback: callbackUrl
+            statusCallback: callbackUrl,
+            riskCheck: MessageResource.RiskCheckEnum.Disable
           );
         }
         else

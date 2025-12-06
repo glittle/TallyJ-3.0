@@ -1133,12 +1133,12 @@ namespace TallyJ.CoreModels
                     break;
                   case "P": //  VoterIdTypeEnum.Phone.Value:
                     logHelper.Add("Ballot processed", false, personVoting.Phone);
-                    smsHelper.SendWhenProcessed(election, personVoting, onlineVoter, logHelper,
-                      out var smsError);
-                    if (smsError.HasContent())
-                    {
-                      problems.Add($"Error: {smsError}");
-                    }
+                    //smsHelper.SendWhenProcessed(election, personVoting, onlineVoter, logHelper,
+                    //  out var smsError);
+                    //if (smsError.HasContent())
+                    //{
+                    //  problems.Add($"Error: {smsError}");
+                    //}
 
                     break;
                   case "K": //  VoterIdTypeEnum.Kiosk.Value:
