@@ -28,11 +28,11 @@ namespace TallyJ.CoreModels.Helper
         return emailHelper.SendVoterTestMessage(UserSession.VoterId, out error);
       } 
       
-      if (voterIdType == VoterIdTypeEnum.Phone)
-      {
-        var smsHelper = new TwilioHelper();
-        return smsHelper.SendVoterSmsTestMessage(UserSession.VoterId, out error);
-      }
+      //if (voterIdType == VoterIdTypeEnum.Phone)
+      //{
+      //  var smsHelper = new TwilioHelper();
+      //  return smsHelper.SendVoterSmsTestMessage(UserSession.VoterId, out error);
+      //}
 
       if (voterIdType == VoterIdTypeEnum.Kiosk)
       {
@@ -55,12 +55,12 @@ namespace TallyJ.CoreModels.Helper
         return emailHelper.SendWhenBallotSubmitted(person, election, out error);
       } 
       
-      if (voterIdType == VoterIdTypeEnum.Phone)
-      {
-        var smsHelper = new TwilioHelper();
-        notificationType = "text message";
-        return smsHelper.SendWhenBallotSubmitted(person, election, out error);
-      }
+      //if (voterIdType == VoterIdTypeEnum.Phone)
+      //{
+      //  var smsHelper = new TwilioHelper();
+      //  notificationType = "text message";
+      //  return smsHelper.SendWhenBallotSubmitted(person, election, out error);
+      //}
 
       if (voterIdType == VoterIdTypeEnum.Kiosk)
       {
