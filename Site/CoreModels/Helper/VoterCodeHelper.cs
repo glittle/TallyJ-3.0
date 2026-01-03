@@ -6,6 +6,7 @@ using System.Threading;
 using System.Web;
 using Microsoft.Owin.Security;
 using Microsoft.Owin.Security.Cookies;
+using Newtonsoft.Json;
 using TallyJ.Code;
 using TallyJ.Code.Enumerations;
 using TallyJ.Code.Resources;
@@ -89,7 +90,7 @@ namespace TallyJ.CoreModels.Helper
         };
 
       var newCode = MakeCode();
-      CreateOrUpdateOnlineVoter(voterIdType, target, newCode, out message);
+      var isInElection = CreateOrUpdateOnlineVoter(voterIdType, target, newCode, out message);
       if (message.HasContent())
         return new
         {
@@ -111,7 +112,7 @@ namespace TallyJ.CoreModels.Helper
       }
       else if (voterIdType == VoterIdTypeEnum.Phone)
       {
-        sent = SendViaTwilio(target, method, newCode, out message);
+        sent = SendViaTwilio(target, method, newCode, isInElection, out message);
 
         if (message.HasContent())
         {
@@ -140,13 +141,33 @@ namespace TallyJ.CoreModels.Helper
       };
     }
 
-
-    private void CreateOrUpdateOnlineVoter(VoterIdTypeEnum voterIdType, string voterId, string newCode, out string errorMessage, bool reset = false)
+    /// <summary>
+    ///  Create or update the OnlineVoter record with the new code
+    /// </summary>
+    /// <param name="voterIdType"></param>
+    /// <param name="voterId"></param>
+    /// <param name="newCode"></param>
+    /// <param name="errorMessage"></param>
+    /// <param name="reset"></param>
+    /// <returns>True if this Email or Phone is found in an election. (Ignore for Kiosk mode)</returns>
+    private bool CreateOrUpdateOnlineVoter(VoterIdTypeEnum voterIdType, string voterId, string newCode, out string errorMessage, bool reset = false)
     {
       // find or make this OnlineVoter record
       var db = UserSession.GetNewDbContext;
       var onlineVoter = db.OnlineVoter.FirstOrDefault(ov => ov.VoterIdType == voterIdType && ov.VoterId == voterId);
       var utcNow = DateTime.UtcNow;
+
+      // determine how many elections this voterId is used in
+      var numElections =
+        voterIdType == VoterIdTypeEnum.Phone ?
+           db.Person
+            .Where(p => p.Phone == voterId)
+            .Count() :
+        voterIdType == VoterIdTypeEnum.Email ?
+          db.Person
+            .Where(p => p.Email == voterId)
+            .Count() : 0;
+      // don't bother for kiosk - it should always be 1, so don't calculate it and store it as 0.
 
       if (onlineVoter == null)
       {
@@ -158,12 +179,32 @@ namespace TallyJ.CoreModels.Helper
           VerifyCodeDate = utcNow,
           VerifyAttempts = 1,
           VerifyAttemptsStart = utcNow,
-          WhenRegistered = utcNow
+          WhenRegistered = utcNow,
+          OtherInfo = JsonConvert.SerializeObject( new OnlineVoterOtherInfo { NumElections = numElections })
         };
         db.OnlineVoter.Add(onlineVoter);
       }
       else
       {
+        // use the JSON structure, incase it is extended in the future
+        var json = onlineVoter.OtherInfo;
+        OnlineVoterOtherInfo otherInfo;
+        try
+        {
+          otherInfo = string.IsNullOrWhiteSpace(json)
+              ? new OnlineVoterOtherInfo()
+              : JsonConvert.DeserializeObject<OnlineVoterOtherInfo>(json) ?? new OnlineVoterOtherInfo();
+        }
+        catch (JsonException)
+        {
+          // Handle invalid JSON gracefully
+          otherInfo = new OnlineVoterOtherInfo();
+        }
+
+        otherInfo.NumElections = numElections;
+
+        onlineVoter.OtherInfo = JsonConvert.SerializeObject(otherInfo);
+
         var verifyAttemptsStart = onlineVoter.VerifyAttemptsStart.AsUtc();
         var attempts = onlineVoter.VerifyAttempts.GetValueOrDefault();
 
@@ -178,7 +219,7 @@ namespace TallyJ.CoreModels.Helper
         if (attempts >= UserAttemptMax)
         {
           errorMessage = "Too many attempts. Please wait before trying again.";
-          return;
+          return numElections > 0;
         }
 
         //TODO - ensure not being hit too often
@@ -192,6 +233,8 @@ namespace TallyJ.CoreModels.Helper
       db.SaveChanges();
 
       errorMessage = "";
+
+      return numElections > 0;
     }
 
     private void CheckSiteUsageThresholds(out string message)
@@ -251,7 +294,7 @@ namespace TallyJ.CoreModels.Helper
       message = "";
     }
 
-    private bool SendViaTwilio(string phoneNumber, string method, string newCode, out string message)
+    private bool SendViaTwilio(string phoneNumber, string method, string newCode, bool isInElection, out string message)
     {
       UserSession.TwilioMsgId = null;
       var twilioHelper = new TwilioHelper();
@@ -260,14 +303,14 @@ namespace TallyJ.CoreModels.Helper
       {
         case "sms":
         case "whatsapp":
-          twilioHelper.SendVerifyCodeToVoter(phoneNumber, newCode, method, _hubKey, out message);
+          twilioHelper.SendVerifyCodeToVoter(phoneNumber, newCode, method, _hubKey, isInElection, out message);
           if (message.HasNoContent()) MonitorSmsStatus(twilioHelper);
           break;
 
         case "voice":
+          // don't bother with isInElection for voice calls
           twilioHelper.SendVerifyCodeToVoterByPhone(phoneNumber, newCode, _hubKey, out message);
           if (message.HasNoContent()) MonitorCallStatus(twilioHelper);
-
           break;
 
         default:

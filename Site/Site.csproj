@@ -479,6 +479,7 @@
     <Compile Include="CoreModels\Helper\EncryptionHelper.cs" />
     <Compile Include="CoreModels\Helper\NotificationHelper.cs" />
     <Compile Include="CoreModels\Helper\MessageHelperBase.cs" />
+    <Compile Include="CoreModels\Helper\OnlineVoterOtherInfo.cs" />
     <Compile Include="CoreModels\Helper\TwilioHelper.cs" />
     <Compile Include="CoreModels\Helper\SmsOtherInfo.cs" />
     <Compile Include="CoreModels\Helper\VoterCodeHelper.cs" />
