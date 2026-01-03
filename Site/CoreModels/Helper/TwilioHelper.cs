@@ -39,7 +39,7 @@ namespace TallyJ.CoreModels.Helper
     //  return ok;
     //}
 
-    public bool SendVerifyCodeToVoter(string phone, string newCode, string method, string hubKey, out string error)
+    public bool SendVerifyCodeToVoter(string phone, string newCode, string method, string hubKey, bool isInElection, out string error)
     {
       var text = GetSmsTemplate("VerifyCodeSms").FilledWithObject(new
       {
@@ -48,7 +48,7 @@ namespace TallyJ.CoreModels.Helper
 
       // this voter is not in a specific election...
 
-      return SendSmsAsync(phone, text, null, out error, method);
+      return SendSmsAsync(phone, text, null, out error, method, isInElection);
     }
 
     public bool SendVerifyCodeToVoterByPhone(string phone, string newCode, string hubKey, out string error)
@@ -236,7 +236,7 @@ namespace TallyJ.CoreModels.Helper
           p.VoterContact,
         });
 
-        var ok = SendSmsAsync(phoneNumber, messageText, p.PersonGuid, out var errorMessage);
+        var ok = SendSmsAsync(phoneNumber, messageText, p.PersonGuid, out var errorMessage, "sms", true);
 
         if (ok)
           numSent++;
@@ -280,7 +280,7 @@ namespace TallyJ.CoreModels.Helper
     /// <param name="errorMessage"></param>
     /// <param name="method">sms or whatsapp</param>
     /// <returns></returns>
-    public bool SendSmsAsync(string toPhoneNumber, string messageText, Guid? personGuid, out string errorMessage, string method = "sms")
+    public bool SendSmsAsync(string toPhoneNumber, string messageText, Guid? personGuid, out string errorMessage, string method = "sms", bool isInElection = false)
     {
       var sid = SettingsHelper.Get("twilio-SID", "");
       var token = SettingsHelper.Get("twilio-Token", "");
@@ -319,19 +319,22 @@ namespace TallyJ.CoreModels.Helper
 
       TwilioClient.Init(sid, token);
 
-      // add to the safelist (ignore if already there)
-      try
+      if (isInElection)
       {
-        var safelistNumber = SafelistResource.Create(toPhoneNumber);
-        Console.WriteLine($"Added: {safelistNumber.PhoneNumber} (SID: {safelistNumber.Sid})");
-      }
-      catch (ApiException ex) when (ex.Code == 60411)
-      {
-        Console.WriteLine($"Already on the safe list: {toPhoneNumber}");
-      }
-      catch (Exception ex)
-      {
-        new LogHelper().Add("SMS Add to SafeList failed - {0} ({1})".FilledWith(ex.Message, toPhoneNumber), true);
+        // add to the safelist (ignore if already there), but only if known to be in an election
+        try
+        {
+          var safelistNumber = SafelistResource.Create(toPhoneNumber);
+          Console.WriteLine($"Added: {safelistNumber.PhoneNumber} (SID: {safelistNumber.Sid})");
+        }
+        catch (ApiException ex) when (ex.Code == 60411)
+        {
+          Console.WriteLine($"Already on the safe list: {toPhoneNumber}");
+        }
+        catch (Exception ex)
+        {
+          new LogHelper().Add("SMS Add to SafeList failed - {0} ({1})".FilledWith(ex.Message, toPhoneNumber), true);
+        }
       }
 
       try
