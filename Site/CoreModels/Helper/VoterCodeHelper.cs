@@ -65,6 +65,10 @@ namespace TallyJ.CoreModels.Helper
       else if (voterIdType == VoterIdTypeEnum.Phone)
       {
         validMessage = TwilioHelper.IsValidPhoneNumber(target) ? "" : "Invalid phone number";
+        if (!SettingsHelper.HostSupportsOnlineSmsLogin)
+        {
+          validMessage = "SMS not supported";
+        }
       }
       else if (voterIdType == VoterIdTypeEnum.Kiosk)
       {
@@ -180,7 +184,7 @@ namespace TallyJ.CoreModels.Helper
           VerifyAttempts = 1,
           VerifyAttemptsStart = utcNow,
           WhenRegistered = utcNow,
-          OtherInfo = JsonConvert.SerializeObject( new OnlineVoterOtherInfo { NumElections = numElections })
+          OtherInfo = JsonConvert.SerializeObject(new OnlineVoterOtherInfo { NumElections = numElections })
         };
         db.OnlineVoter.Add(onlineVoter);
       }
