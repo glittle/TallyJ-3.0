@@ -19,7 +19,7 @@ namespace TallyJ.CoreModels
 {
   public class ElectionHelper : DataConnectedModel
   {
-    private static readonly object LockObject = new ();
+    private static readonly object LockObject = new();
 
     private static readonly ConcurrentDictionary<Guid, bool> OnlineBallotProcessingLocks = new();
 
@@ -712,6 +712,7 @@ namespace TallyJ.CoreModels
         VotingMethods = "PDM",
         NumberToElect = rules.Num,
         NumberExtra = rules.Extra,
+        OnlineSelectionProcess = OnlineSelectionProcessEnum.Random.ToString().Substring(0, 1)
       };
 
       Db.Election.Add(election);

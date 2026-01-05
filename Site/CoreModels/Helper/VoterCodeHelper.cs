@@ -21,6 +21,7 @@ namespace TallyJ.CoreModels.Helper
   /// </summary>
   public class VoterCodeHelper
   {
+    private const string GenericResultMsg = "SentIf";
     private const string VerifyCodeSentPrefix = "Verify Code Sent via ";
     private const int UserAttemptMinutes = 15;
     private int UserAttemptMax = SettingsHelper.UserAttemptMax;
@@ -64,10 +65,13 @@ namespace TallyJ.CoreModels.Helper
       }
       else if (voterIdType == VoterIdTypeEnum.Phone)
       {
-        validMessage = TwilioHelper.IsValidPhoneNumber(target) ? "" : "Invalid phone number";
         if (!SettingsHelper.HostSupportsOnlineSmsLogin)
         {
           validMessage = "SMS not supported";
+        }
+        else
+        {
+          validMessage = TwilioHelper.IsValidPhoneNumber(target) ? "" : "Invalid phone number";
         }
       }
       else if (voterIdType == VoterIdTypeEnum.Kiosk)
@@ -99,7 +103,7 @@ namespace TallyJ.CoreModels.Helper
         return new
         {
           Success = false,
-          Message = message
+          Message = GenericResultMsg // message
         };
 
       // send code
@@ -108,9 +112,9 @@ namespace TallyJ.CoreModels.Helper
       {
         sent = SendViaEmail(target, newCode, out message);
         if (message.HasContent())
-          _voterCodeHub.SetStatus(_hubKey, "Error: " + message.CleanedForErrorMessages());
+          _voterCodeHub.SetStatus(_hubKey, GenericResultMsg, GenericResultMsg); // "Error: " + message.CleanedForErrorMessages());
         else
-          _voterCodeHub.SetStatus(_hubKey, null, "emailSent");
+          _voterCodeHub.SetStatus(_hubKey, null, GenericResultMsg); //  "emailSent");
 
         method = type;
       }
@@ -120,7 +124,8 @@ namespace TallyJ.CoreModels.Helper
 
         if (message.HasContent())
         {
-          _voterCodeHub.SetStatus(_hubKey, "Error: " + message.CleanedForErrorMessages());
+          _voterCodeHub.SetStatus(_hubKey, "Error: " + GenericResultMsg);
+          //_voterCodeHub.SetStatus(_hubKey, "Error: " + message.CleanedForErrorMessages());
         }
         // else
         // {
@@ -134,14 +139,16 @@ namespace TallyJ.CoreModels.Helper
 
         return new
         {
-          Success = true
+          //Success = true
+          Success = false,
+          Message = GenericResultMsg
         };
       }
 
       return new
       {
         Success = false,
-        Message = message
+        Message = GenericResultMsg // message
       };
     }
 
@@ -161,17 +168,30 @@ namespace TallyJ.CoreModels.Helper
       var onlineVoter = db.OnlineVoter.FirstOrDefault(ov => ov.VoterIdType == voterIdType && ov.VoterId == voterId);
       var utcNow = DateTime.UtcNow;
 
-      // determine how many elections this voterId is used in
-      var numElections =
-        voterIdType == VoterIdTypeEnum.Phone ?
-           db.Person
-            .Where(p => p.Phone == voterId)
-            .Count() :
-        voterIdType == VoterIdTypeEnum.Email ?
-          db.Person
-            .Where(p => p.Email == voterId)
-            .Count() : 0;
+      // determine how many elections this voterId is used in, and how many are open
+      var electionMatches = voterIdType == VoterIdTypeEnum.Phone
+          ? db.Person
+              .Where(p => p.Phone == voterId)
+              .Join(db.Election, p => p.ElectionGuid, e => e.ElectionGuid, (p, e) => e)
+              .ToList()
+          : voterIdType == VoterIdTypeEnum.Email
+              ? db.Person
+                  .Where(p => p.Email == voterId)
+                  .Join(db.Election, p => p.ElectionGuid, e => e.ElectionGuid, (p, e) => e)
+                  .ToList()
+          : new List<Election>();
       // don't bother for kiosk - it should always be 1, so don't calculate it and store it as 0.
+
+      var totalElections = electionMatches.Select(e => e.ElectionGuid).Distinct().Count();
+      var openElections = electionMatches.Where(e => e.OnlineCurrentlyOpen).Select(e => e.ElectionGuid).Distinct().Count();
+      var electionInfo = new OnlineVoterOtherInfo { NumElections = totalElections, Open = openElections };
+      
+      // don't proceed if not in any open elections
+      if (openElections == 0)
+      {
+        errorMessage = "NoneOpen";
+        return false;
+      }
 
       if (onlineVoter == null)
       {
@@ -184,30 +204,34 @@ namespace TallyJ.CoreModels.Helper
           VerifyAttempts = 1,
           VerifyAttemptsStart = utcNow,
           WhenRegistered = utcNow,
-          OtherInfo = JsonConvert.SerializeObject(new OnlineVoterOtherInfo { NumElections = numElections })
+          OtherInfo = JsonConvert.SerializeObject(electionInfo)
         };
         db.OnlineVoter.Add(onlineVoter);
       }
       else
       {
-        // use the JSON structure, incase it is extended in the future
-        var json = onlineVoter.OtherInfo;
-        OnlineVoterOtherInfo otherInfo;
-        try
+        // update OtherInfo
         {
-          otherInfo = string.IsNullOrWhiteSpace(json)
-              ? new OnlineVoterOtherInfo()
-              : JsonConvert.DeserializeObject<OnlineVoterOtherInfo>(json) ?? new OnlineVoterOtherInfo();
-        }
-        catch (JsonException)
-        {
-          // Handle invalid JSON gracefully
-          otherInfo = new OnlineVoterOtherInfo();
-        }
+          // use the JSON structure, incase it is extended in the future
+          var json = onlineVoter.OtherInfo;
+          OnlineVoterOtherInfo otherInfo;
+          try
+          {
+            otherInfo = string.IsNullOrWhiteSpace(json)
+                ? new OnlineVoterOtherInfo()
+                : JsonConvert.DeserializeObject<OnlineVoterOtherInfo>(json) ?? new OnlineVoterOtherInfo();
+          }
+          catch (JsonException)
+          {
+            // Handle invalid JSON gracefully
+            otherInfo = new OnlineVoterOtherInfo();
+          }
 
-        otherInfo.NumElections = numElections;
+          otherInfo.NumElections = totalElections;
+          otherInfo.Open = openElections;
 
-        onlineVoter.OtherInfo = JsonConvert.SerializeObject(otherInfo);
+          onlineVoter.OtherInfo = JsonConvert.SerializeObject(otherInfo);
+        }
 
         var verifyAttemptsStart = onlineVoter.VerifyAttemptsStart.AsUtc();
         var attempts = onlineVoter.VerifyAttempts.GetValueOrDefault();
@@ -223,7 +247,7 @@ namespace TallyJ.CoreModels.Helper
         if (attempts >= UserAttemptMax)
         {
           errorMessage = "Too many attempts. Please wait before trying again.";
-          return numElections > 0;
+          return openElections > 0;
         }
 
         //TODO - ensure not being hit too often
@@ -238,7 +262,7 @@ namespace TallyJ.CoreModels.Helper
 
       errorMessage = "";
 
-      return numElections > 0;
+      return openElections > 0;
     }
 
     private void CheckSiteUsageThresholds(out string message)
@@ -338,9 +362,9 @@ namespace TallyJ.CoreModels.Helper
       do
       {
         var status = twilioHelper.GetCallStatus(sid);
-        var statusDisplay = new LangResourceHelper().GetFromList("CallStatus", status) ?? status;
+        //var statusDisplay = new LangResourceHelper().GetFromList("CallStatus", status) ?? status;
 
-        _voterCodeHub.SetStatus(_hubKey, statusDisplay, status);
+        _voterCodeHub.SetStatus(_hubKey, GenericResultMsg, GenericResultMsg);
 
         tryAgain = activeStatusList.Contains(status);
 
@@ -361,9 +385,9 @@ namespace TallyJ.CoreModels.Helper
       do
       {
         var status = twilioHelper.GetSmsStatus(sid);
-        var statusDisplay = new LangResourceHelper().GetFromList("SmsStatus", status) ?? status;
+        //var statusDisplay = new LangResourceHelper().GetFromList("SmsStatus", status) ?? status;
 
-        _voterCodeHub.SetStatus(_hubKey, statusDisplay, status);
+        _voterCodeHub.SetStatus(_hubKey, GenericResultMsg, GenericResultMsg);
 
         tryAgain = activeStatusList.Contains(status);
 

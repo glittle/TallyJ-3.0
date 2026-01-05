@@ -6,5 +6,7 @@ namespace TallyJ.CoreModels.Helper
 	{
 		[JsonProperty("numEl")]
     public int NumElections { get; set; }
+		[JsonProperty("open")]
+    public int Open { get; set; }
 	}
 }
