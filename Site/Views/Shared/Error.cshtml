@@ -19,7 +19,10 @@
   {
     //ignore
   }
-  new LogHelper(electionGuid).SendToRemoteLog($"Error... {message}\r\n{filteredStackTrace}");
+  if (message != "Anonymous access denied")
+  {
+    new LogHelper(electionGuid).SendToRemoteLog($"Error... {message}\r\n{filteredStackTrace}");
+  }
 }
 
 <hgroup class="title">
