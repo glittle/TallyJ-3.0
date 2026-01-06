@@ -14,7 +14,7 @@ namespace TallyJ.Code
     public static bool SmsAvailable =>  Get("SmsAvailable", true); // if Phone is supported, assume sms is available
     public static bool HideSmsCostAppeal =>  Get("HideSmsCostAppeal", false); 
     public static bool VoiceAvailable =>  Get("VoiceAvailable", true); // if Phone is supported, assume voice is available
-    public static int UserAttemptMax =>  Get("UserAttemptMax", 10); // max in 15 minutes
+    public static int UserAttemptMax =>  Get("UserAttemptMax", 3); // max in 15 minutes
     public static bool HostSupportsOnlineWhatsAppLogin =>  Get("SupportOnlineWhatsAppLogin", false);
 
     public static string Get(string name, string defaultValue)

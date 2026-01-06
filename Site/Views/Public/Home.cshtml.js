@@ -238,6 +238,7 @@
           kiosk: '',
           phone: '',
           phoneMethod: '',
+          lastType: '',
           sending: false,
           //          sent: false,
           status: '',
@@ -376,7 +377,8 @@
                   //                  vue.twilioCallDone = true;
                   break;
                 default:
-                  vue.sendingStatus = message;
+                  var msg = sendingStatus === "SentIf" ? `If your ${vue.lastType === 'email' ? "email" : "number"} was found in a current election, the code has been sent to you. Enter the code below.` : sendingStatus;
+                  vue.sendingStatus = msg;
                   break;
               }
             } else {
@@ -410,9 +412,10 @@
         },
         issueCode: function (type, method, target) {
           var vue = this;
+          vue.lastType = type;
 
           this.sending = true;
-          if (method === 'email') {
+          if (type === 'email') {
             this.status = 'Sending...';
           }
           // do the call
@@ -425,12 +428,10 @@
             }, function (info) {
               vue.showCodeInput = true;
               vue.sending = false;
+              vue.status = '';
 
               if (info.Success) {
                 // hub will update
-                console.log('issued');
-
-                //                vue.sent = true; //testing
                 vue.sending = false; // testing
                 setTimeout(() => {
                   $('.voterLogin .pendingCode input').focus();
@@ -438,7 +439,8 @@
                 }, 100);
 
               } else {
-                vue.sendingStatus = info.Message;
+                var msg = info.Message === "SentIf" ? `If your ${type === 'email' ? "email" : "number"} was found in a current election, the code has been sent to you. Enter the code below.` : info.Message;
+                vue.sendingStatus = msg;
               }
             });
         },

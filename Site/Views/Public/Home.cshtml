@@ -302,7 +302,7 @@
                   <div class="status" v-text="sendingStatus" v-if="sendingStatus"></div>
                   <input type="tel" v-model="code" placeholder="______" autocomplete="off" pattern="\d{6}" />
                   <div>
-                    <button class="btn" :disabled="code.length != 6" v-on:click.passive="submitCode">Login</button>
+                    <button class="btn" :disabled="code.length != 6" v-on:click.passive="submitCode">Submit Code</button>
                   </div>
                 </div>
                 <div class="status" v-if="status">{{status}}</div>
@@ -310,14 +310,12 @@
               <div class="afterLogin"></div>
               <div class="mustPreRegister">
                 <p>
-                  <strong>Please Note:</strong> You can sign in at any time, but the
+                  <strong>Please Note:</strong> The
                   email address <span class="forSmsInline">or phone number</span>
-                  you use here must match what is registered in an election before
-                  you will be able to vote in that election!
+                  you use here must match what is registered for you in an open election.
                 </p>
                 <p>
-                  After logging in, if you don't find the election you are looking for,
-                  please contact your Assembly or convenor to confirm your information.
+                  If you don't get a login code, please contact your Assembly or convenor to confirm your information.
                 </p>
               </div>
 

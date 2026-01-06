@@ -46,8 +46,6 @@ namespace TallyJ.CoreModels.Helper
         newCode
       });
 
-      // this voter is not in a specific election...
-
       return SendSmsAsync(phone, text, null, out error, method, isInElection);
     }
 
