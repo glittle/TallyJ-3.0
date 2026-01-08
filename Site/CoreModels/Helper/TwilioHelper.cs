@@ -316,6 +316,7 @@ namespace TallyJ.CoreModels.Helper
 
 
       TwilioClient.Init(sid, token);
+      //var riskCheckLevel = isInElection ? MessageResource.RiskCheckEnum.Disable : MessageResource.RiskCheckEnum.Enable;
 
       if (isInElection)
       {
@@ -345,8 +346,8 @@ namespace TallyJ.CoreModels.Helper
             new PhoneNumber(toPhoneNumber),
             body: messageText,
             messagingServiceSid: messagingSid,
-            statusCallback: callbackUrl,
-            riskCheck: MessageResource.RiskCheckEnum.Disable
+            statusCallback: callbackUrl
+            //riskCheck: riskCheckLevel
           );
         }
         else if (fromNumber.HasContent())
@@ -355,8 +356,8 @@ namespace TallyJ.CoreModels.Helper
             new PhoneNumber(toPhoneNumber),
             body: messageText,
             from: new PhoneNumber(fromNumber),
-            statusCallback: callbackUrl,
-            riskCheck: MessageResource.RiskCheckEnum.Disable
+            statusCallback: callbackUrl
+            //riskCheck: MessageResource.RiskCheckEnum.Disable
           );
         }
         else
