@@ -98,8 +98,13 @@ namespace TallyJ.CoreModels.Helper
         };
 
       var newCode = MakeCode();
-      var isInElection = CreateOrUpdateOnlineVoter(voterIdType, target, newCode, out message);
-      if (message.HasContent())
+
+      var openElectionGuid = (Guid?)null;
+      var personGuid = (Guid?)null;
+
+      CreateOrUpdateOnlineVoter(voterIdType, target, newCode, out message, ref openElectionGuid, ref personGuid);
+
+      if (message.HasContent() || openElectionGuid == null)
         return new
         {
           Success = false,
@@ -120,17 +125,13 @@ namespace TallyJ.CoreModels.Helper
       }
       else if (voterIdType == VoterIdTypeEnum.Phone)
       {
-        sent = SendViaTwilio(target, method, newCode, isInElection, out message);
+        sent = SendViaTwilio(target, method, newCode, openElectionGuid.Value, personGuid.Value, out message);
 
         if (message.HasContent())
         {
           _voterCodeHub.SetStatus(_hubKey, "Error: " + GenericResultMsg);
           //_voterCodeHub.SetStatus(_hubKey, "Error: " + message.CleanedForErrorMessages());
         }
-        // else
-        // {
-        //   if (method != "voice") _voterCodeHub.SetStatus(_hubKey, "Your login code has been sent.");
-        // }
       }
 
       if (sent)
@@ -159,40 +160,73 @@ namespace TallyJ.CoreModels.Helper
     /// <param name="voterId"></param>
     /// <param name="newCode"></param>
     /// <param name="errorMessage"></param>
-    /// <param name="reset"></param>
-    /// <returns>True if this Email or Phone is found in an election. (Ignore for Kiosk mode)</returns>
-    private bool CreateOrUpdateOnlineVoter(VoterIdTypeEnum voterIdType, string voterId, string newCode, out string errorMessage, bool reset = false)
+    /// <param name="openElectionGuid">May be passed in (Kiosk) or passed out (Phone or Email)</param>
+    /// <param name="personGuid">May be passed in (Kiosk) or passed out (Phone or Email)</param>
+    /// <param name="reset">If true, reset the attempt count</param>
+    private void CreateOrUpdateOnlineVoter(VoterIdTypeEnum voterIdType, string voterId, string newCode, out string errorMessage, ref Guid? openElectionGuid, ref Guid? personGuid, bool reset = false)
     {
       // find or make this OnlineVoter record
       var db = UserSession.GetNewDbContext;
-      var onlineVoter = db.OnlineVoter.FirstOrDefault(ov => ov.VoterIdType == voterIdType && ov.VoterId == voterId);
-      var utcNow = DateTime.UtcNow;
+      OnlineVoterOtherInfo electionInfoForDb = null;
+      var totalElections = 0;
+      var openElectionsCount = 0;
 
-      // determine how many elections this voterId is used in, and how many are open
-      var electionMatches = voterIdType == VoterIdTypeEnum.Phone
-          ? db.Person
-              .Where(p => p.Phone == voterId)
-              .Join(db.Election, p => p.ElectionGuid, e => e.ElectionGuid, (p, e) => e)
-              .ToList()
-          : voterIdType == VoterIdTypeEnum.Email
-              ? db.Person
-                  .Where(p => p.Email == voterId)
-                  .Join(db.Election, p => p.ElectionGuid, e => e.ElectionGuid, (p, e) => e)
-                  .ToList()
-          : new List<Election>();
-      // don't bother for kiosk - it should always be 1, so don't calculate it and store it as 0.
-
-      var totalElections = electionMatches.Select(e => e.ElectionGuid).Distinct().Count();
-      var openElections = electionMatches.Where(e => e.OnlineCurrentlyOpen).Select(e => e.ElectionGuid).Distinct().Count();
-      var electionInfo = new OnlineVoterOtherInfo { NumElections = totalElections, Open = openElections };
-      
-      // don't proceed if not in any open elections
-      if (openElections == 0)
+      if (voterIdType == VoterIdTypeEnum.Kiosk)
       {
-        errorMessage = "NoneOpen";
-        return false;
+        // for kiosk, we expect to have the electionGuid and personGuid passed in
+        if (openElectionGuid == null || personGuid == null)
+        {
+          errorMessage = "Invalid kiosk code.";
+          return;
+        }
+      }
+      else
+      {
+        // determine how many elections this voterId is used in, and how many are open
+        var electionMatches = voterIdType == VoterIdTypeEnum.Phone
+            ? db.Person
+                .Where(p => p.Phone == voterId)
+                .Join(db.Election, p => p.ElectionGuid, e => e.ElectionGuid, (p, e) => new { e, p.PersonGuid })
+                .ToList()
+            : voterIdType == VoterIdTypeEnum.Email
+                ? db.Person
+                    .Where(p => p.Email == voterId)
+                    .Join(db.Election, p => p.ElectionGuid, e => e.ElectionGuid, (p, e) => new { e, p.PersonGuid })
+                    .ToList()
+            : null;
+
+        totalElections = electionMatches?.Select(x => x.e.ElectionGuid).Distinct().Count() ?? 0;
+
+        // get the first of any elections - first if listed for public and not a test, otherwise any
+        var openElectionInfos = electionMatches?
+          .Where(x => x.e.OnlineCurrentlyOpen)
+          .OrderByDescending(x => (x.e.ListForPublic == true ? 3 : 2) + (x.e.ShowAsTest == true ? 0 : 1))
+          .Select(x => new { x.e.ElectionGuid, x.PersonGuid })
+          .ToList();
+
+        // get the first open election guid
+        var firstElectionPersonMatch = openElectionInfos.FirstOrDefault();
+        openElectionGuid = firstElectionPersonMatch?.ElectionGuid;
+        personGuid = firstElectionPersonMatch?.PersonGuid;
+
+        if (openElectionGuid == Guid.Empty)
+        {
+          openElectionGuid = null;
+        }
+
+        // don't proceed if not in any open elections
+        if (openElectionGuid == null)
+        {
+          errorMessage = "NoneOpen";
+          return;
+        }
+
+        openElectionsCount = openElectionInfos.Count;
+        electionInfoForDb = new OnlineVoterOtherInfo { NumElections = totalElections, Open = openElectionsCount };
       }
 
+      var utcNow = DateTime.UtcNow;
+      var onlineVoter = db.OnlineVoter.FirstOrDefault(ov => ov.VoterIdType == voterIdType && ov.VoterId == voterId);
       if (onlineVoter == null)
       {
         onlineVoter = new OnlineVoter
@@ -204,13 +238,14 @@ namespace TallyJ.CoreModels.Helper
           VerifyAttempts = 1,
           VerifyAttemptsStart = utcNow,
           WhenRegistered = utcNow,
-          OtherInfo = JsonConvert.SerializeObject(electionInfo)
+          OtherInfo = electionInfoForDb != null ? JsonConvert.SerializeObject(electionInfoForDb) : null
         };
         db.OnlineVoter.Add(onlineVoter);
       }
       else
       {
         // update OtherInfo
+        if (voterIdType != VoterIdTypeEnum.Kiosk)
         {
           // use the JSON structure, incase it is extended in the future
           var json = onlineVoter.OtherInfo;
@@ -228,7 +263,7 @@ namespace TallyJ.CoreModels.Helper
           }
 
           otherInfo.NumElections = totalElections;
-          otherInfo.Open = openElections;
+          otherInfo.Open = openElectionsCount;
 
           onlineVoter.OtherInfo = JsonConvert.SerializeObject(otherInfo);
         }
@@ -247,10 +282,8 @@ namespace TallyJ.CoreModels.Helper
         if (attempts >= UserAttemptMax)
         {
           errorMessage = "Too many attempts. Please wait before trying again.";
-          return openElections > 0;
+          return;
         }
-
-        //TODO - ensure not being hit too often
 
         onlineVoter.VerifyCode = newCode;
         onlineVoter.VerifyCodeDate = utcNow;
@@ -262,7 +295,7 @@ namespace TallyJ.CoreModels.Helper
 
       errorMessage = "";
 
-      return openElections > 0;
+      return;
     }
 
     private void CheckSiteUsageThresholds(out string message)
@@ -322,7 +355,7 @@ namespace TallyJ.CoreModels.Helper
       message = "";
     }
 
-    private bool SendViaTwilio(string phoneNumber, string method, string newCode, bool isInElection, out string message)
+    private bool SendViaTwilio(string phoneNumber, string method, string newCode, Guid openElectionGuid, Guid personGuid, out string message)
     {
       UserSession.TwilioMsgId = null;
       var twilioHelper = new TwilioHelper();
@@ -331,13 +364,12 @@ namespace TallyJ.CoreModels.Helper
       {
         case "sms":
         case "whatsapp":
-          twilioHelper.SendVerifyCodeToVoter(phoneNumber, newCode, method, _hubKey, isInElection, out message);
+          twilioHelper.SendVerifyCodeToVoter(phoneNumber, newCode, method, _hubKey, openElectionGuid, personGuid, out message);
           if (message.HasNoContent()) MonitorSmsStatus(twilioHelper);
           break;
 
         case "voice":
-          // don't bother with isInElection for voice calls
-          twilioHelper.SendVerifyCodeToVoterByPhone(phoneNumber, newCode, _hubKey, out message);
+          twilioHelper.SendVerifyCodeToVoterByPhone(phoneNumber, newCode, _hubKey, openElectionGuid, personGuid, out message);
           if (message.HasNoContent()) MonitorCallStatus(twilioHelper);
           break;
 
@@ -520,10 +552,11 @@ namespace TallyJ.CoreModels.Helper
     public string GenerateKioskCode(int personId, out string errorMessage)
     {
       var dbContext = UserSession.GetNewDbContext;
+      var electionGuid = UserSession.CurrentElectionGuid;
 
       // var person = new PersonCacher(dbContext).AllForThisElection.SingleOrDefault(p => p.C_RowId == personId);
       var person = dbContext.Person
-        .SingleOrDefault(p => p.C_RowId == personId && p.ElectionGuid == UserSession.CurrentElectionGuid);
+        .SingleOrDefault(p => p.C_RowId == personId && p.ElectionGuid == electionGuid);
       if (person == null)
       {
         errorMessage = "Unknown person";
@@ -557,8 +590,11 @@ namespace TallyJ.CoreModels.Helper
         kioskCode = $"{firstInitial}{lastInitial}{randomCode}".ToUpper();
       }
 
+      Guid? electionGuidRef = electionGuid;
+      Guid? personGuid = person.PersonGuid;
+
       // for kiosk voters, the voterId is the kioskCode and also the 'secret' code
-      CreateOrUpdateOnlineVoter(VoterIdTypeEnum.Kiosk, kioskCode, kioskCode, out errorMessage, true);
+      CreateOrUpdateOnlineVoter(VoterIdTypeEnum.Kiosk, kioskCode, kioskCode, out errorMessage, ref electionGuidRef, ref personGuid);
 
       if (errorMessage.HasContent())
       {
