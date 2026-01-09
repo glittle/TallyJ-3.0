@@ -39,17 +39,17 @@ namespace TallyJ.CoreModels.Helper
     //  return ok;
     //}
 
-    public bool SendVerifyCodeToVoter(string phone, string newCode, string method, string hubKey, bool isInElection, out string error)
+    public bool SendVerifyCodeToVoter(string phone, string newCode, string method, string hubKey, Guid openElectionGuid, Guid personGuid, out string error)
     {
       var text = GetSmsTemplate("VerifyCodeSms").FilledWithObject(new
       {
         newCode
       });
 
-      return SendSmsAsync(phone, text, null, out error, method, isInElection);
+      return SendSmsAsync(phone, text, personGuid, out error, method, openElectionGuid);
     }
 
-    public bool SendVerifyCodeToVoterByPhone(string phone, string newCode, string hubKey, out string error)
+    public bool SendVerifyCodeToVoterByPhone(string phone, string newCode, string hubKey, Guid openElectionGuid, Guid personGuid, out string error)
     {
       var text = GetSmsTemplate("VerifyCodePhone")
         .Replace("*", "      ") // more time
@@ -59,7 +59,7 @@ namespace TallyJ.CoreModels.Helper
           longCode = newCode.AddSpaces("</Say><Pause></Pause><Say>")
         });
 
-      return SendVoice(phone, text, null, out error);
+      return SendVoice(phone, text, personGuid, out error, openElectionGuid);
     }
 
 
@@ -234,7 +234,7 @@ namespace TallyJ.CoreModels.Helper
           p.VoterContact,
         });
 
-        var ok = SendSmsAsync(phoneNumber, messageText, p.PersonGuid, out var errorMessage, "sms", true);
+        var ok = SendSmsAsync(phoneNumber, messageText, p.PersonGuid, out var errorMessage, "sms", election.ElectionGuid);
 
         if (ok)
           numSent++;
@@ -278,7 +278,7 @@ namespace TallyJ.CoreModels.Helper
     /// <param name="errorMessage"></param>
     /// <param name="method">sms or whatsapp</param>
     /// <returns></returns>
-    public bool SendSmsAsync(string toPhoneNumber, string messageText, Guid? personGuid, out string errorMessage, string method = "sms", bool isInElection = false)
+    public bool SendSmsAsync(string toPhoneNumber, string messageText, Guid personGuid, out string errorMessage, string method, Guid openElectionGuid)
     {
       var sid = SettingsHelper.Get("twilio-SID", "");
       var token = SettingsHelper.Get("twilio-Token", "");
@@ -318,7 +318,7 @@ namespace TallyJ.CoreModels.Helper
       TwilioClient.Init(sid, token);
       //var riskCheckLevel = isInElection ? MessageResource.RiskCheckEnum.Disable : MessageResource.RiskCheckEnum.Enable;
 
-      if (isInElection)
+      if (openElectionGuid != null)
       {
         // add to the safelist (ignore if already there), but only if known to be in an election
         try
@@ -377,8 +377,8 @@ namespace TallyJ.CoreModels.Helper
           SmsSid = messageResource.Sid,
           Phone = toPhoneNumber,
           SentDate = utcNow,
-          ElectionGuid = UserSession.CurrentElectionGuid,
-          PersonGuid = personGuid == Guid.Empty ? null : personGuid,
+          ElectionGuid = openElectionGuid,
+          PersonGuid = personGuid,
           LastDate = utcNow,
           LastStatus = "submitted"
         });
@@ -406,9 +406,8 @@ namespace TallyJ.CoreModels.Helper
     /// <param name="messageText">Text. Should include <Say></Say></param>
     /// <param name="personGuid"></param>
     /// <param name="errorMessage"></param>
-    /// <param name="method">sms or whatsapp</param>
     /// <returns></returns>
-    public bool SendVoice(string toPhoneNumber, string messageText, Guid? personGuid, out string errorMessage)
+    public bool SendVoice(string toPhoneNumber, string messageText, Guid personGuid, out string errorMessage, Guid openElectionGuid)
     {
       var sid = SettingsHelper.Get("twilio-SID", "");
       var token = SettingsHelper.Get("twilio-Token", "");
@@ -456,8 +455,8 @@ namespace TallyJ.CoreModels.Helper
           SmsSid = callResource.Sid,
           Phone = toPhoneNumber,
           SentDate = utcNow,
-          ElectionGuid = UserSession.CurrentElectionGuid,
-          PersonGuid = personGuid == Guid.Empty ? null : personGuid,
+          ElectionGuid = openElectionGuid,
+          PersonGuid = personGuid,
           LastDate = utcNow,
           LastStatus = "voice"
         });
