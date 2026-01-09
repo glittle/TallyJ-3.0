@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
+using System.Security.Cryptography;
 using System.Threading;
 using System.Web;
 using Microsoft.Owin.Security;
@@ -439,10 +440,14 @@ namespace TallyJ.CoreModels.Helper
 
     private string MakeCode()
     {
-      const int size = 6;
-      var min = Math.Pow(10, size - 1).AsInt();
-      var max = Math.Pow(10, size).AsInt();
-      return new Random().Next(min, max).ToString();
+      var bytes = new byte[4];
+      using (var rng = RandomNumberGenerator.Create())
+      {
+        rng.GetBytes(bytes);
+      }
+      // Use modulo to stay within the 6-digit range (100,000 to 999,999)
+      var value = Math.Abs(BitConverter.ToInt32(bytes, 0)) % 900000 + 100000;
+      return value.ToString();
     }
 
     public object LoginWithCode(string code)
