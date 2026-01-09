@@ -318,7 +318,7 @@ namespace TallyJ.CoreModels.Helper
       TwilioClient.Init(sid, token);
       //var riskCheckLevel = isInElection ? MessageResource.RiskCheckEnum.Disable : MessageResource.RiskCheckEnum.Enable;
 
-      //if (isInElection)
+      if (openElectionGuid != null)
       {
         // add to the safelist (ignore if already there), but only if known to be in an election
         try
@@ -406,9 +406,8 @@ namespace TallyJ.CoreModels.Helper
     /// <param name="messageText">Text. Should include <Say></Say></param>
     /// <param name="personGuid"></param>
     /// <param name="errorMessage"></param>
-    /// <param name="method">sms or whatsapp</param>
     /// <returns></returns>
-    public bool SendVoice(string toPhoneNumber, string messageText, Guid? personGuid, out string errorMessage, Guid openElectionGuid)
+    public bool SendVoice(string toPhoneNumber, string messageText, Guid personGuid, out string errorMessage, Guid openElectionGuid)
     {
       var sid = SettingsHelper.Get("twilio-SID", "");
       var token = SettingsHelper.Get("twilio-Token", "");

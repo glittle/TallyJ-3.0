@@ -104,7 +104,7 @@ namespace TallyJ.CoreModels.Helper
 
       CreateOrUpdateOnlineVoter(voterIdType, target, newCode, out message, ref openElectionGuid, ref personGuid);
 
-      if (message.HasContent() || openElectionGuid == null)
+      if (message.HasContent() || openElectionGuid == null || personGuid == null)
         return new
         {
           Success = false,
