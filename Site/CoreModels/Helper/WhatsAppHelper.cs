@@ -138,8 +138,8 @@ namespace TallyJ.CoreModels.Helper
 
       try
       {
-        var response = _httpClient.PostAsync(url, content).Result;
-        var responseContent = response.Content.ReadAsStringAsync().Result;
+        var response = _httpClient.PostAsync(url, content).ConfigureAwait(false).GetAwaiter().GetResult();
+        var responseContent = response.Content.ReadAsStringAsync().ConfigureAwait(false).GetAwaiter().GetResult();
 
         if (!response.IsSuccessStatusCode)
         {
