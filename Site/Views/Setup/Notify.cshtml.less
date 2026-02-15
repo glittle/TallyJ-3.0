@@ -188,8 +188,8 @@ h2 {
   .bottom {
     margin-top: 1em;
 
-    > div {
-      margin: 5px 0;
+    > div:first-child {
+      margin: 0 0 10px;
     }
   }
 
@@ -229,7 +229,7 @@ button.pending {
   }
 
 
-  &.Sms {
+  &.Sms, &.WhatsApp {
     .emailBySms {
       grid-template-areas: 'eh sh' 'e1 s1' 'e2 s2' 'listingSelection listingSelection' 'e3 e3';
       grid-template-columns: 1fr 1fr;
@@ -414,7 +414,7 @@ button.pending {
     }
 
 
-    &.Sms {
+    &.Sms, &.WhatsApp {
       .emailBySms {
         grid-template-areas: 'eh' 'e1' 'e2' 'listingSelection' 'e3' 'sh' 's1' 's2' 's3';
       }

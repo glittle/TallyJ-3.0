@@ -121,7 +121,7 @@
                      :type="peopleWithUnknownWhatsApp.length ? 'primary' : null"
                      v-on:click.passive="checkWhatsApp"
                      :disabled="peopleWithUnknownWhatsApp.length === 0 || checkingWhatsApp">
-            <span v-if="!checkingWhatsApp">Check if {{peopleWithUnknownWhatsApp.length}} {{plural(peopleWithUnknownWhatsApp, 'people have', 'person has')}} WhatsApp</span>
+            <span v-if="!checkingWhatsApp">Check if {{peopleWithUnknownWhatsApp.length}} {{plural(peopleWithUnknownWhatsApp.length, 'people have', 'person has')}} WhatsApp</span>
             <span v-if="checkingWhatsApp">Checking...</span>
           </el-button>
     </div>
@@ -173,7 +173,7 @@
         </div>
         <div>
         <el-button size="small"
-                   :type="enableSmsSend  ? 'primary' : ''"
+                   :type="enableSmsSend  ? 'warning' : ''"
                    v-on:click.passive="sendSms(true)"
                    :disabled="!enableSmsSend">
             Send the message by SMS to {{numWithSms}} voter{{plural(numWithSms)}}{{ pendingSms ? '':'...'}}
@@ -250,7 +250,7 @@
                          show-overflow-tooltip>
           <template slot-scope="scope">
             <span>{{scope.row.Phone}}</span>
-            <span v-if="whatsApp">{{ scope.row.HasWhatsApp === null ? '(?)' : scope.row.HasWhatsApp ? '(WhatsApp)' : '(No)'}}</span>
+            <span v-if="whatsApp">{{ scope.row.HasWhatsApp === null ? (scope.row.Phone ? '(?)' : '') : (scope.row.HasWhatsApp ? '(WhatsApp)' : '(No)')}}</span>
           </template>
         </el-table-column>
         <el-table-column label="Front Desk"

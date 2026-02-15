@@ -378,7 +378,7 @@
                   //                  vue.twilioCallDone = true;
                   break;
                 default:
-                  var msg = sendingStatus === "SentIf" ? `If your ${vue.lastType === 'email' ? "email" : "phone number"} was found in a current election, the code has been sent to you. Enter the code below.` : sendingStatus;
+                  var msg = sendingStatus === "SentIf" ? `If your ${vue.lastType === 'email' ? "email" : "phone number"} was found in a current election, a code number has been sent to you. Enter the code below.` : sendingStatus;
                   vue.sendingStatus = msg;
                   break;
               }
@@ -438,7 +438,7 @@
                 }, 100);
 
               } else {
-                var msg = info.Message === "SentIf" ? `If your ${type === 'email' ? "email" : "number"} was found in a current election, the code has been sent to you. Enter the code below.` : info.Message;
+                var msg = info.Message === "SentIf" ? `If your ${type === 'email' ? "email" : "phone number"} was found in a current election, a code number has been sent to you. Enter the code below.` : info.Message;
                 vue.sendingStatus = msg;
               }
             });

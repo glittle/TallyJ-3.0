@@ -90,7 +90,8 @@
           return this.allPeople.filter(p => p.HasWhatsApp);
         },
         peopleWithUnknownWhatsApp: function () {
-          return this.allPeople.filter(p => p.HasWhatsApp === null);
+          // if have a phone but don't know if have WhatsApp, include in this list to encourage checking
+          return this.allPeople.filter(p => p.HasWhatsApp === null && !!p.Phone);
         },
         enableSmsSend: function () {
           return !!(this.numWithSms && this.smsText && !this.smsChanged);
@@ -277,15 +278,14 @@
         checkWhatsApp: function () {
           var vue = this;
 
-          if (vue.phonesToSend.length === 0) {
-            ShowStatusFailed('No contacts with phone numbers selected');
+          if (vue.peopleWithUnknownWhatsApp.length === 0) {
             return;
           }
 
           vue.checkingWhatsApp = true;
           vue.whatsAppChecked = false;
 
-          var list = vue.phonesToSend.map(function (p) { return p.C_RowId });
+          var list = vue.peopleWithUnknownWhatsApp.map(function (p) { return p.C_RowId });
 
           var form = {
             idList: JSON.stringify(list)
@@ -305,12 +305,13 @@
                   // find person
                   var person = vue.allPeople.find(p => p.C_RowId == id);
                   if (person) {
-                    if (person.HasWhatApp !== dict[id]) {
-                      person.HasWhatApp = dict[id];
+                    if (person.HasWhatsApp !== dict[id]) {
+                      person.HasWhatsApp = dict[id];
                       numUpdated++;
                     }
                   }
                 });
+
                 vue.whatsAppChecked = true;
 
                 ShowStatusDone(`Updated ${numUpdated} ${plural(numUpdated, 'people', 'person')}`);
@@ -431,15 +432,15 @@ contact the Assembly as soon as possible!</p>
               break;
 
             case 'emailOnly':
-              vue.allPeople.forEach(function (p) { vue.$refs.wholeList.toggleRowSelection(p, !p.Phone && !p.HasWhatApp) });
+              vue.allPeople.forEach(function (p) { vue.$refs.wholeList.toggleRowSelection(p, !p.Phone && !p.HasWhatsApp) });
               break;
 
             case 'smsOnly':
-              vue.allPeople.forEach(function (p) { vue.$refs.wholeList.toggleRowSelection(p, !p.Email && !p.HasWhatApp) });
+              vue.allPeople.forEach(function (p) { vue.$refs.wholeList.toggleRowSelection(p, !p.Email && !p.HasWhatsApp) });
               break;
 
             case 'hasWhatsApp':
-              vue.allPeople.forEach(function (p) { vue.$refs.wholeList.toggleRowSelection(p, p.HasWhatApp) });
+              vue.allPeople.forEach(function (p) { vue.$refs.wholeList.toggleRowSelection(p, p.HasWhatsApp === true) });
               break;
 
             case 'none':

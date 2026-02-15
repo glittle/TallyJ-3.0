@@ -23,7 +23,7 @@ namespace TallyJ.CoreModels.Helper
         newCode = code
       });
 
-      return SendWhatsAppMessage(phone, text, personGuid, out error, electionGuid);
+      return SendWhatsAppMessage(phone, text, personGuid, out error, electionGuid, "WhatsApp - Login");
     }
 
     public JsonResult SendHeadTellerMessage(string idList)
@@ -85,7 +85,7 @@ namespace TallyJ.CoreModels.Helper
           p.VoterContact,
         });
 
-        var ok = SendWhatsAppMessage(phoneNumber, messageText, p.PersonGuid, out var errorMessage, election.ElectionGuid);
+        var ok = SendWhatsAppMessage(phoneNumber, messageText, p.PersonGuid, out var errorMessage, election.ElectionGuid, "WhatsApp - message sent");
 
         if (ok)
           numSent++;
@@ -106,7 +106,7 @@ namespace TallyJ.CoreModels.Helper
       }.AsJsonResult();
     }
 
-    private bool SendWhatsAppMessage(string phoneNumber, string message, Guid personGuid, out string errorMessage, Guid openElectionGuid)
+    private bool SendWhatsAppMessage(string phoneNumber, string message, Guid personGuid, out string errorMessage, Guid openElectionGuid, string logMsg)
     {
       var idInstance = SettingsHelper.Get("greenapi-IdInstance", "");
       var apiToken = SettingsHelper.Get("greenapi-ApiTokenInstance", "");
@@ -167,7 +167,7 @@ namespace TallyJ.CoreModels.Helper
           ElectionGuid = openElectionGuid,
           PersonGuid = personGuid,
           LastDate = utcNow,
-          LastStatus = "WhatsApp sent"
+          LastStatus = logMsg
         });
         dbContext.SaveChanges();
 
