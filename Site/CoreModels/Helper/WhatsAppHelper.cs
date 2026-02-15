@@ -138,8 +138,8 @@ namespace TallyJ.CoreModels.Helper
 
       try
       {
-        var response = _httpClient.PostAsync(url, content).Result;
-        var responseContent = response.Content.ReadAsStringAsync().Result;
+        var response = _httpClient.PostAsync(url, content).ConfigureAwait(false).GetAwaiter().GetResult();
+        var responseContent = response.Content.ReadAsStringAsync().ConfigureAwait(false).GetAwaiter().GetResult();
 
         if (!response.IsSuccessStatusCode)
         {
@@ -247,11 +247,15 @@ namespace TallyJ.CoreModels.Helper
       }
 
       var digits = new string(phoneNumber.Where(char.IsDigit).ToArray());
+      if (!long.TryParse(digits, out var numericPhoneNumber))
+      {
+        return new WhatsAppCheckResult("Invalid phone number: " + phoneNumber);
+      }
       var url = $"{apiUrl}/waInstance{idInstance}/checkWhatsapp/{apiToken}";
 
       var requestBody = new
       {
-        phoneNumber = long.Parse(digits)
+        phoneNumber = numericPhoneNumber
       };
 
       var jsonContent = JsonConvert.SerializeObject(requestBody);
@@ -260,7 +264,7 @@ namespace TallyJ.CoreModels.Helper
       try
       {
         var response = await _httpClient.PostAsync(url, content);
-        var responseContent = response.Content.ReadAsStringAsync().Result;
+        var responseContent = await response.Content.ReadAsStringAsync();
 
         if (!response.IsSuccessStatusCode)
         {
