@@ -15,6 +15,7 @@ namespace TallyJ.EF
     {
       // keep names as short as possible
       RegLog, // registration log
+      HasWA, // has WhatsApp
     }
 
     public int TempImportLineNum { get; set; }
@@ -76,6 +77,34 @@ namespace TallyJ.EF
       }
     }
 
+    /// <summary>
+    /// This is a "fake" column that is embedded into the old CombinedSoundCodes column.
+    /// If this has been set, will be 1 or 0. If not checked, will be null.
+    /// </summary>
+    public bool? HasWhatsApp
+    {
+      get
+      {
+        var raw = GetExtraSetting(ExtraSettingKey.HasWA);
+        if (raw == null)
+        {
+          return null;
+        }
+        return raw == "1";
+      }
+      set
+      {
+        if (value.HasValue)
+        {
+          SetExtraSetting(ExtraSettingKey.HasWA, value.Value ? "1" : "0");
+        }
+        else
+        {
+          SetExtraSetting(ExtraSettingKey.HasWA, null);
+        }
+      }
+    }
+
 
     const char FlagChar = '~';
     const char SplitChar = '~';
@@ -105,7 +134,7 @@ namespace TallyJ.EF
             .Split(SplitChar)
             .Select(s => s.Split('='))
             .Where(a => Enum.IsDefined(typeof(ExtraSettingKey), a[0]))
-            // any that are not recognized are ignored and lost
+              // any that are not recognized are ignored and lost
               .ToDictionary(a => (ExtraSettingKey)Enum.Parse(typeof(ExtraSettingKey), a[0]), a => a[1]);
         }
 

@@ -18,7 +18,7 @@
   ContextItems.AddJavascriptForPage("sms", "homeIndexPage.sms={0};".FilledWith(SettingsHelper.HostSupportsOnlineSmsLogin.QuotedForJavascript()));
   ContextItems.AddJavascriptForPage("smsa", "homeIndexPage.smsAvailable={0};".FilledWith(SettingsHelper.SmsAvailable.QuotedForJavascript()));
   ContextItems.AddJavascriptForPage("voicea", "homeIndexPage.voiceAvailable={0};".FilledWith(SettingsHelper.VoiceAvailable.QuotedForJavascript()));
-  ContextItems.AddJavascriptForPage("whatsapp", "homeIndexPage.whatsapp={0};".FilledWith(SettingsHelper.HostSupportsOnlineWhatsAppLogin.QuotedForJavascript()));
+  ContextItems.AddJavascriptForPage("whatsapp", "homeIndexPage.whatsAppAvailable={0};".FilledWith(SettingsHelper.HostSupportsOnlineWhatsAppLogin.QuotedForJavascript()));
 }
 @section Metas {
   <link rel='canonical' href='https://www.tallyj.com/' />
@@ -239,7 +239,7 @@
         <div class="voterInfo" id="voterVue">
           <div>
             <div>
-              <p>Welcome!<span class="forSmsInline"> How would you like to log in to TallyJ to vote?</span></p>
+              <p>Welcome!<span class="forPhoneInline"> How would you like to log in to TallyJ to vote?</span></p>
               <p>
                 Learn about voting with TallyJ with the
                 <a href="https://docs.google.com/document/d/1tTzu69HekctCeZ1quwvCAXxI40xNV5L6147AmOLrudA/view" target="voter1">Voter's Guide</a>.
@@ -248,8 +248,8 @@
                 <div class="voterEmail" v-on:click.passive="chooseMethod('email')">
                   <span>Using your email</span>
                 </div>
-                <div v-if="smsAvailable || voiceAvailable" class="voterSms forSmsBlock" v-on:click.passive="chooseMethod('phone')">
-                  <span>Using your phone</span>
+                <div v-if="smsAvailable || voiceAvailable || whatsAppAvailable" class="voterSms forSmsBlock" v-on:click.passive="chooseMethod('phone')">
+                  <span>Using <span v-if="smsAvailable">your phone</span><span v-if="smsAvailable && whatsAppAvailable"> or </span><span v-if="whatsAppAvailable">WhatsApp</span></span>
                 </div>
                 <div v-if="showKiosk" class="voterKiosk forKioskBlock" v-on:click.passive="chooseMethod('kiosk')">
                   <span>Using the code given to you</span>
@@ -291,12 +291,12 @@
                          placeholder="+__________"
                          required autocomplete="tel">
                   <div>Send me a login code via:</div>
-                  <button v-if="smsAvailable" class="btn" :disabled="sending || !okayToSend" v-on:click.passive="sendPhone('sms')">SMS</button>
-                  <button v-if="voiceAvailable" class="btn" :disabled="sending || !okayToSend" v-on:click.passive="sendPhone('voice')">Voice</button>
                   @if (SettingsHelper.HostSupportsOnlineWhatsAppLogin)
                   {
                     <button class="btn" :disabled="sending || !okayToSend" v-on:click.passive="sendPhone('whatsapp')">WhatsApp</button>
                   }
+                  <button v-if="smsAvailable" class="btn" :disabled="sending || !okayToSend" v-on:click.passive="sendPhone('sms')">SMS</button>
+                  <button v-if="voiceAvailable" class="btn" :disabled="sending || !okayToSend" v-on:click.passive="sendPhone('voice')">Voice</button>
                 </div>
                 <div v-if="showCodeInput" class="pendingCode">
                   <div class="status" v-text="sendingStatus" v-if="sendingStatus"></div>
@@ -311,7 +311,7 @@
               <div class="mustPreRegister">
                 <p>
                   <strong>Please Note:</strong> The
-                  email address <span class="forSmsInline">or phone number</span>
+                  email address <span class="forPhoneInline">or phone number</span>
                   you use here must match what is registered for you in an open election.
                 </p>
                 <p>

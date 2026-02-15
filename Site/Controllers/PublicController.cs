@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.Entity;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
 using TallyJ.Code;
@@ -68,10 +70,10 @@ namespace TallyJ.Controllers
       return View();
     }
 
-    public JsonResult Warmup()
+    public async Task<JsonResult> Warmup()
     {
       // force the server to contact the database to ensure that it is warmed up and ready for action
-      var dummy = UserSession.GetNewDbContext.Election.FirstOrDefault();
+      var dummy = await UserSession.GetNewDbContext.Election.FirstOrDefaultAsync();
       return null;
     }
 
@@ -140,10 +142,10 @@ namespace TallyJ.Controllers
       return null;
     }
 
-    public JsonResult IssueCode(string type, string method, string target, string hubKey)
+    public async Task<JsonResult> IssueCode(string type, string method, string target, string hubKey)
     {
       var helper = new VoterCodeHelper(hubKey);
-      return helper.IssueCode(type, method, target).AsJsonResult();
+      return (await helper.IssueCode(type, method, target)).AsJsonResult();
     }
 
     public JsonResult LoginWithCode(string code, string hubKey)

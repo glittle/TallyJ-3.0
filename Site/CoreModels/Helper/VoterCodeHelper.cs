@@ -4,6 +4,7 @@ using System.Linq;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Web;
 using Microsoft.Owin.Security;
 using Microsoft.Owin.Security.Cookies;
@@ -39,6 +40,9 @@ namespace TallyJ.CoreModels.Helper
 
     protected LogHelper LogHelper => _logHelper ??= new LogHelper();
 
+
+    private static readonly Random _random = new Random();
+
     /// <summary>
     ///   Make and send the code
     /// </summary>
@@ -46,9 +50,22 @@ namespace TallyJ.CoreModels.Helper
     /// <param name="method"></param>
     /// <param name="target">Email address or phone</param>
     /// <returns></returns>
-    public object IssueCode(string type, string method, string target)
+    public async Task<object> IssueCode(string type, string method, string target)
     {
       UserSession.PendingVoterLogin = null;
+
+      // check throttle limits
+      CheckSiteUsageThresholds(out var message);
+      if (message.HasContent())
+        return new
+        {
+          Success = false,
+          Message = message
+        };
+
+      // put artifiical random delay
+      var watch = System.Diagnostics.Stopwatch.StartNew();
+      const int targetTimeMs = 3000; // The "Floor" duration
 
       var voterIdType = VoterIdTypeEnum.Parse(type);
       if (voterIdType == VoterIdTypeEnum._unknown)
@@ -66,9 +83,9 @@ namespace TallyJ.CoreModels.Helper
       }
       else if (voterIdType == VoterIdTypeEnum.Phone)
       {
-        if (!SettingsHelper.HostSupportsOnlineSmsLogin)
+        if (!SettingsHelper.HostSupportsOnlineSmsLogin && !SettingsHelper.HostSupportsOnlineWhatsAppLogin)
         {
-          validMessage = "SMS not supported";
+          validMessage = "Phone not supported";
         }
         else
         {
@@ -87,29 +104,20 @@ namespace TallyJ.CoreModels.Helper
           Message = validMessage
         };
 
-      _voterCodeHub.SetStatus(_hubKey, "", "Preparing");
-
-      // check throttle limits
-      CheckSiteUsageThresholds(out var message);
-      if (message.HasContent())
-        return new
-        {
-          Success = false,
-          Message = message
-        };
+      //_voterCodeHub.SetStatus(_hubKey, "", "Preparing");
 
       var newCode = MakeCode();
 
       var openElectionGuid = (Guid?)null;
       var personGuid = (Guid?)null;
 
-      CreateOrUpdateOnlineVoter(voterIdType, target, newCode, out message, ref openElectionGuid, ref personGuid);
+      CreateOrUpdateOnlineVoter(voterIdType, target, newCode, out message, ref openElectionGuid, ref personGuid, method: method);
 
       if (message.HasContent() || openElectionGuid == null || personGuid == null)
         return new
         {
           Success = false,
-          Message = GenericResultMsg // message
+          Message = message
         };
 
       // send code
@@ -126,13 +134,24 @@ namespace TallyJ.CoreModels.Helper
       }
       else if (voterIdType == VoterIdTypeEnum.Phone)
       {
-        sent = SendViaTwilio(target, method, newCode, openElectionGuid.Value, personGuid.Value, out message);
+        sent = SendViaPhone(target, method, newCode, openElectionGuid.Value, personGuid.Value, out message);
 
         if (message.HasContent())
         {
           _voterCodeHub.SetStatus(_hubKey, "Error: " + GenericResultMsg);
           //_voterCodeHub.SetStatus(_hubKey, "Error: " + message.CleanedForErrorMessages());
         }
+      }
+
+      // delay so hackers cannot know if it worked or not
+      // 2. Calculate how much time is left
+      watch.Stop();
+      int remainingDelay = targetTimeMs - (int)watch.ElapsedMilliseconds;
+
+      // 3. If we finished faster than the target, wait out the difference
+      if (remainingDelay > 0)
+      {
+        await Task.Delay(remainingDelay);
       }
 
       if (sent)
@@ -164,7 +183,8 @@ namespace TallyJ.CoreModels.Helper
     /// <param name="openElectionGuid">May be passed in (Kiosk) or passed out (Phone or Email)</param>
     /// <param name="personGuid">May be passed in (Kiosk) or passed out (Phone or Email)</param>
     /// <param name="reset">If true, reset the attempt count</param>
-    private void CreateOrUpdateOnlineVoter(VoterIdTypeEnum voterIdType, string voterId, string newCode, out string errorMessage, ref Guid? openElectionGuid, ref Guid? personGuid, bool reset = false)
+    /// <param name="method">Method used for verification (e.g., "whatsapp", "sms", "voice")</param>
+    private void CreateOrUpdateOnlineVoter(VoterIdTypeEnum voterIdType, string voterId, string newCode, out string errorMessage, ref Guid? openElectionGuid, ref Guid? personGuid, bool reset = false, string method = null)
     {
       // find or make this OnlineVoter record
       var db = UserSession.GetNewDbContext;
@@ -218,12 +238,18 @@ namespace TallyJ.CoreModels.Helper
         // don't proceed if not in any open elections
         if (openElectionGuid == null)
         {
-          errorMessage = "NoneOpen";
+          //errorMessage = "NoneOpen";
+          errorMessage = GenericResultMsg;
           return;
         }
 
         openElectionsCount = openElectionInfos.Count;
-        electionInfoForDb = new OnlineVoterOtherInfo { NumElections = totalElections, Open = openElectionsCount };
+        electionInfoForDb = new OnlineVoterOtherInfo
+        {
+          NumElections = totalElections,
+          Open = openElectionsCount,
+          UsedWhatsApp = method == "whatsapp"
+        };
       }
 
       var utcNow = DateTime.UtcNow;
@@ -266,6 +292,11 @@ namespace TallyJ.CoreModels.Helper
           otherInfo.NumElections = totalElections;
           otherInfo.Open = openElectionsCount;
 
+          if (method == "whatsapp")
+          {
+            otherInfo.UsedWhatsApp = true;
+          }
+
           onlineVoter.OtherInfo = JsonConvert.SerializeObject(otherInfo);
         }
 
@@ -301,24 +332,7 @@ namespace TallyJ.CoreModels.Helper
 
     private void CheckSiteUsageThresholds(out string message)
     {
-      // check for excessive system use
-      var siteHours = 1;
-      var siteMax = 1000;
-
-      var dbContext = UserSession.GetNewDbContext;
-
       var utcNow = DateTime.UtcNow;
-      var fromDate = utcNow.AddHours(0 - siteHours);
-
-      var usageCount = dbContext.C_Log
-        .Where(l => l.AsOf > fromDate)
-        .Count(l => l.Details.StartsWith(VerifyCodeSentPrefix));
-
-      if (usageCount > siteMax)
-      {
-        message = "System busy.";
-        return;
-      }
 
       // check if this session is too busy
       var attempts = UserSession.VerifyCodeAttempts + 1;
@@ -334,8 +348,28 @@ namespace TallyJ.CoreModels.Helper
 
         if (attemptsStart == DateTime.MinValue) UserSession.VerifyCodeAttemptsStart = utcNow;
       }
-
       UserSession.VerifyCodeAttempts = attempts;
+
+
+      // check for excessive system use
+      var siteHours = 1;
+      var siteMax = 1000;
+
+      var dbContext = UserSession.GetNewDbContext;
+
+      var fromDate = utcNow.AddHours(0 - siteHours);
+
+      var usageCount = dbContext.C_Log
+        .Where(l => l.AsOf > fromDate)
+        .Count(l => l.Details.StartsWith(VerifyCodeSentPrefix));
+
+      if (usageCount > siteMax)
+      {
+        message = "System busy. Please try again later.";
+        return;
+      }
+
+
 
       // // check if this user is too busy
       // var userMinutes = 15;
@@ -356,22 +390,27 @@ namespace TallyJ.CoreModels.Helper
       message = "";
     }
 
-    private bool SendViaTwilio(string phoneNumber, string method, string newCode, Guid openElectionGuid, Guid personGuid, out string message)
+    private bool SendViaPhone(string phoneNumber, string method, string newCode, Guid openElectionGuid, Guid personGuid, out string message)
     {
       UserSession.TwilioMsgId = null;
-      var twilioHelper = new TwilioHelper();
 
       switch (method)
       {
         case "sms":
-        case "whatsapp":
+          var twilioHelper = new TwilioHelper();
           twilioHelper.SendVerifyCodeToVoter(phoneNumber, newCode, method, _hubKey, openElectionGuid, personGuid, out message);
           if (message.HasNoContent()) MonitorSmsStatus(twilioHelper);
           break;
 
+        case "whatsapp":
+          var whatsappHelper = new WhatsAppHelper();
+          whatsappHelper.SendVerifyCodeToVoter(phoneNumber, newCode, _hubKey, openElectionGuid, personGuid, out message);
+          break;
+
         case "voice":
-          twilioHelper.SendVerifyCodeToVoterByPhone(phoneNumber, newCode, _hubKey, openElectionGuid, personGuid, out message);
-          if (message.HasNoContent()) MonitorCallStatus(twilioHelper);
+          var voiceHelper = new TwilioHelper();
+          voiceHelper.SendVerifyCodeToVoterByPhone(phoneNumber, newCode, _hubKey, openElectionGuid, personGuid, out message);
+          if (message.HasNoContent()) MonitorCallStatus(voiceHelper);
           break;
 
         default:
