@@ -247,11 +247,15 @@ namespace TallyJ.CoreModels.Helper
       }
 
       var digits = new string(phoneNumber.Where(char.IsDigit).ToArray());
+      if (!long.TryParse(digits, out var numericPhoneNumber))
+      {
+        return new WhatsAppCheckResult("Invalid phone number: " + phoneNumber);
+      }
       var url = $"{apiUrl}/waInstance{idInstance}/checkWhatsapp/{apiToken}";
 
       var requestBody = new
       {
-        phoneNumber = long.Parse(digits)
+        phoneNumber = numericPhoneNumber
       };
 
       var jsonContent = JsonConvert.SerializeObject(requestBody);
