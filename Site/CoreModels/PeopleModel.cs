@@ -348,6 +348,7 @@ namespace TallyJ.CoreModels
       if (incomingPerson.IneligibleReasonGuid == Guid.Empty) incomingPerson.IneligibleReasonGuid = null;
 
       if (incomingPerson.Phone != null)
+      {
         //check via Twilio to ensure real number?
         if (!new Regex(@"\+[0-9]{4,15}").IsMatch(incomingPerson.Phone))
           return new
@@ -355,6 +356,8 @@ namespace TallyJ.CoreModels
             Message = "Invalid phone number. Must start with + and only contain digits."
           }.AsJsonResult();
 
+        incomingPerson.HasWhatsApp = null; // reset 
+      }
 
       if (personInDatastore.VotingMethod == VotingMethodEnum.Online.Value)
       {
@@ -381,7 +384,8 @@ namespace TallyJ.CoreModels
         incomingPerson.OtherNames,
         incomingPerson.Area,
         incomingPerson.Email,
-        incomingPerson.Phone
+        incomingPerson.Phone,
+        incomingPerson.HasWhatsApp,
       }.GetAllPropertyInfos().Select(pi => pi.Name).ToArray();
 
       changed = incomingPerson.CopyPropertyValuesTo(personInDatastore, editableFields) || changed;

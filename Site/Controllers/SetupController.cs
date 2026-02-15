@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
-using System.Diagnostics.Contracts;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Web.Mvc;
 using TallyJ.Code;
 using TallyJ.Code.Session;
@@ -286,6 +286,37 @@ namespace TallyJ.Controllers
     public JsonResult SendSms(string list)
     {
       return new TwilioHelper().SendHeadTellerMessage(list);
+    }
+
+    [ForAuthenticatedTeller]
+    public JsonResult SendWhatsApp(string list)
+    {
+      return new WhatsAppHelper().SendHeadTellerMessage(list);
+    }
+
+    [ForAuthenticatedTeller]
+    public async Task<JsonResult> CheckWhatsAppForContactsAsync(string idList)
+    {
+      var personIds = idList.Replace("[", "").Replace("]", "").Split(',').Select(s => s.AsInt()).ToList();
+      var db = UserSession.GetNewDbContext;
+      var election = UserSession.CurrentElection;
+
+      var people = db.Person
+        .Where(p => p.ElectionGuid == election.ElectionGuid && p.Phone != null && p.Phone.Trim().Length > 0)
+        .Where(p => personIds.Contains(p.C_RowId))
+        .ToList();
+
+      var helper = new WhatsAppHelper();
+      var results = await helper.CheckMultipleWhatsAppAsync(people);
+
+      db.SaveChanges();
+
+      return new
+      {
+        Success = true,
+        Errors = results.errorMessages,
+        results.personIdToHasWhatsApp
+      }.AsJsonResult();
     }
 
     [ForAuthenticatedTeller]

@@ -201,7 +201,7 @@
     local: local,
     vote: false,
     sms: false,
-    whatsapp: false,
+    whatsAppAvailable: false,
     smsAvailable: false,
   };
 
@@ -248,6 +248,7 @@
           hubKey: '',
           smsAvailable: publicInterface.smsAvailable,
           voiceAvailable: publicInterface.voiceAvailable,
+          whatsAppAvailable: publicInterface.whatsAppAvailable,
           showCodeInput: false,
           showKiosk: GetFromStorage('kiosk', 'N') === 'Y' // set by teller on this device
         };
@@ -377,7 +378,7 @@
                   //                  vue.twilioCallDone = true;
                   break;
                 default:
-                  var msg = sendingStatus === "SentIf" ? `If your ${vue.lastType === 'email' ? "email" : "number"} was found in a current election, the code has been sent to you. Enter the code below.` : sendingStatus;
+                  var msg = sendingStatus === "SentIf" ? `If your ${vue.lastType === 'email' ? "email" : "phone number"} was found in a current election, the code has been sent to you. Enter the code below.` : sendingStatus;
                   vue.sendingStatus = msg;
                   break;
               }
@@ -415,9 +416,7 @@
           vue.lastType = type;
 
           this.sending = true;
-          if (type === 'email') {
-            this.status = 'Sending...';
-          }
+          this.status = 'Sending...';
           // do the call
           CallAjaxHandler(publicInterface.controllerUrl + 'IssueCode',
             {

@@ -19,8 +19,10 @@
         emailSubject: publicInterface.Election.EmailSubject || '',
         emailText: publicInterface.Election.EmailText || '',
         smsText: (publicInterface.Election.SmsText || ''),
+        whatsApp: publicInterface.whatsApp,
         emailChanged: false,
         smsChanged: false,
+        sending: false,
         toSend: [],
         //emailsToSend: [],
         //phonesToSend: [],
@@ -31,12 +33,16 @@
         ElectionGuid: publicInterface.Election.ElectionGuid,
         pendingSms: false,
         pendingEmail: false,
+        pendingWhatsApp: false,
         lastLogId: 0,
         loadingLog: true,
         loadingContacts: true,
         closeTime: '',
         displayUpdateCount: 0,
         originalEmailText: '',
+        checkingWhatsApp: false,
+        whatsAppChecked: false,
+        whatsAppResults: {},
         editor: ClassicEditor,
         emailEditorConfig: {
           toolbar: ['undo', 'redo', '|', 'bold', 'italic', 'bulletedList', 'link'],
@@ -62,11 +68,17 @@
         phonesToSend: function () {
           return this.toSend.filter(p => p.Phone);
         },
+        whatsAppToSend: function () {
+          return this.toSend.filter(p => p.HasWhatsApp);
+        },
         numWithEmails: function () {
           return this.emailsToSend.length;
         },
-        numWithPhones: function () {
+        numWithSms: function () {
           return this.phonesToSend.length;
+        },
+        numWithWhatsApp: function () {
+          return this.whatsAppToSend.length;
         },
         peopleWithEmail: function () {
           return this.allPeople.filter(function (p) { return p.Email; });
@@ -74,8 +86,17 @@
         peopleWithPhone: function () {
           return this.allPeople.filter(function (p) { return p.Phone; });
         },
+        peopleWithWhatsApp: function () {
+          return this.allPeople.filter(p => p.HasWhatsApp);
+        },
+        peopleWithUnknownWhatsApp: function () {
+          return this.allPeople.filter(p => p.HasWhatsApp === null);
+        },
         enableSmsSend: function () {
-          return !!(this.numWithPhones && this.smsText && !this.smsChanged);
+          return !!(this.numWithSms && this.smsText && !this.smsChanged);
+        },
+        enableWhatsAppSend: function () {
+          return !!(this.numWithWhatsApp && this.smsText && !this.smsChanged);
         },
         enableEmailSend: function () {
           return !!(this.numWithEmails && this.emailFromAddress && this.emailSubject && !this.emailChanged);
@@ -101,11 +122,11 @@
           return when.format('llll');
         },
         smsCost: function () {
-          if (!this.numWithPhones) {
+          if (!this.numWithSms) {
             return '';
           }
           var costPerSegment = 0.1; // almost 10 cents
-          var cost = this.numWithPhones * this.smsSegments * costPerSegment;
+          var cost = this.numWithSms * this.smsSegments * costPerSegment;
           return Math.ceil(cost * 100) / 100;
         },
         smsSegments: function () {
@@ -167,6 +188,7 @@
         },
         sendEmail: function (usePending) {
           var vue = this;
+          if (vue.sending) return;
 
           if (usePending) {
             if (!vue.pendingEmail) {
@@ -188,11 +210,18 @@
             //            subject: vue.emailSubject,
             list: JSON.stringify(list)
           };
+
+          vue.sending = true;
+          const getLog = setInterval(() => vue.getContactLog(), 2500);
+
           CallAjax2(publicInterface.controllerUrl + '/SendEmail', form,
             {
               busy: 'Sending Email'
             },
             function (info) {
+              vue.sending = false;
+              clearInterval(getLog);
+
               if (info.Success) {
                 vue.getContactLog();
                 ShowStatusDone(info.Status);
@@ -205,6 +234,7 @@
         },
         sendSms: function (usePending) {
           var vue = this;
+          if (vue.sending) return;
 
           if (usePending) {
             if (!vue.pendingSms) {
@@ -221,15 +251,110 @@
           var form = {
             list: JSON.stringify(list),
           };
+          vue.sending = true;
+          let getLog = setInterval(() => vue.getContactLog(), 2500);
+
           CallAjax2(publicInterface.controllerUrl + '/SendSms', form,
             {
               busy: 'Sending SMS'
             },
             function (info) {
+              vue.sending = false;
+              clearInterval(getLog);
+
               if (info.Success) {
                 vue.getContactLog();
                 setTimeout(() => vue.getContactLog(), 2500);
                 setTimeout(() => vue.getContactLog(), 5000);
+                ShowStatusDone(info.Status);
+              }
+              else {
+                ShowStatusFailed(info.Status);
+              }
+            });
+
+        },
+        checkWhatsApp: function () {
+          var vue = this;
+
+          if (vue.phonesToSend.length === 0) {
+            ShowStatusFailed('No contacts with phone numbers selected');
+            return;
+          }
+
+          vue.checkingWhatsApp = true;
+          vue.whatsAppChecked = false;
+
+          var list = vue.phonesToSend.map(function (p) { return p.C_RowId });
+
+          var form = {
+            idList: JSON.stringify(list)
+          };
+
+          CallAjax2(publicInterface.controllerUrl + '/CheckWhatsAppForContactsAsync', form,
+            {
+              busy: 'Checking WhatsApp availability'
+            },
+            function (info) {
+              vue.checkingWhatsApp = false;
+
+              if (info.Success) {
+                const dict = info.personIdToHasWhatsApp || {};
+                let numUpdated = 0;
+                Object.keys(dict).forEach(id => {
+                  // find person
+                  var person = vue.allPeople.find(p => p.C_RowId == id);
+                  if (person) {
+                    if (person.HasWhatApp !== dict[id]) {
+                      person.HasWhatApp = dict[id];
+                      numUpdated++;
+                    }
+                  }
+                });
+                vue.whatsAppChecked = true;
+
+                ShowStatusDone(`Updated ${numUpdated} ${plural(numUpdated, 'people', 'person')}`);
+
+                if (info.Errors && info.Errors.length > 0) {
+                  console.warn('WhatsApp check errors:', info.Errors);
+                }
+              }
+              else {
+                ShowStatusFailed(info.Status || 'Failed to check WhatsApp availability');
+              }
+            });
+        },
+        sendWhatsApp: function (usePending) {
+          var vue = this;
+          if (vue.sending) return;
+
+          if (usePending) {
+            if (!vue.pendingWhatsApp) {
+              vue.pendingWhatsApp = true;
+              setTimeout(function () {
+                vue.pendingWhatsApp = false;
+              }, 5000);
+              return;
+            }
+          }
+
+          var list = vue.whatsAppToSend.map(function (p) { return p.C_RowId });
+          vue.sending = true;
+          let getLog = setInterval(() => vue.getContactLog(), 2500);
+
+          var form = {
+            list: JSON.stringify(list),
+          };
+          CallAjax2(publicInterface.controllerUrl + '/SendWhatsApp', form,
+            {
+              busy: 'Sending WhatsApp'
+            },
+            function (info) {
+              vue.sending = false;
+              clearInterval(getLog);
+
+              if (info.Success) {
+                vue.getContactLog();
                 ShowStatusDone(info.Status);
               }
               else {
@@ -306,11 +431,15 @@ contact the Assembly as soon as possible!</p>
               break;
 
             case 'emailOnly':
-              vue.allPeople.forEach(function (p) { vue.$refs.wholeList.toggleRowSelection(p, !p.Phone) });
+              vue.allPeople.forEach(function (p) { vue.$refs.wholeList.toggleRowSelection(p, !p.Phone && !p.HasWhatApp) });
               break;
 
             case 'smsOnly':
-              vue.allPeople.forEach(function (p) { vue.$refs.wholeList.toggleRowSelection(p, !p.Email) });
+              vue.allPeople.forEach(function (p) { vue.$refs.wholeList.toggleRowSelection(p, !p.Email && !p.HasWhatApp) });
+              break;
+
+            case 'hasWhatsApp':
+              vue.allPeople.forEach(function (p) { vue.$refs.wholeList.toggleRowSelection(p, p.HasWhatApp) });
               break;
 
             case 'none':
@@ -319,6 +448,8 @@ contact the Assembly as soon as possible!</p>
         },
         selectionChanged: function (selected) {
           this.toSend = selected;
+          this.whatsAppChecked = false;
+          this.whatsAppResults = {};
         },
         isSelectable: function (data, i) {
           return !!(data.Email || data.Phone);
@@ -514,6 +645,7 @@ contact the Assembly as soon as possible!</p>
     controllerUrl: '',
     Election: null,
     settings: settings,
+    whatApp: false,
     PreparePage: preparePage
   };
 

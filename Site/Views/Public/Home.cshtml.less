@@ -281,12 +281,12 @@ div.or {
   background-color: #FCE1C1;
   min-height: 180px;
 
-  .forSmsInline, .forSmsBlock {
+  .forPhoneInline, .forSmsBlock {
     display: none;
   }
 
-  &.Sms {
-    .forSmsInline {
+  &.Sms, &.WhatsApp {
+    .forPhoneInline {
       display: inline;
     }
 
@@ -341,7 +341,7 @@ div.or {
         cursor: pointer;
       }
 
-      span {
+      & > span {
         position: absolute;
         bottom: 3px;
         height: 2.5em;
@@ -546,7 +546,7 @@ fieldset input[type="password"] {
   }
 }
 
-button.btn.btn-large, input[type="submit"].btn.btn-large{
+button.btn.btn-large, input[type="submit"].btn.btn-large {
   padding: 20px 35px;
   font-size: 20px;
 }

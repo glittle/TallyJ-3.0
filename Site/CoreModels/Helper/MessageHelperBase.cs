@@ -37,11 +37,12 @@ namespace TallyJ.CoreModels.Helper
 
       var people = dbContext.Person
         .Where(p => p.ElectionGuid == electionGuid
-                    && (hasOnlineBallot.Contains(p.PersonGuid) 
+                    && (hasOnlineBallot.Contains(p.PersonGuid)
                         || p.CanVote.Value
                         && (p.Email != null && p.Email.Trim().Length > 0 || p.Phone != null && p.Phone.Trim().Length > 0)))
         .GroupJoin(dbContext.OnlineVotingInfo.Where(ovi => ovi.ElectionGuid == electionGuid), p => p.PersonGuid, ovi => ovi.PersonGuid,
           (p, oviList) => new { p, Status = oviList.Select(ovi => ovi.Status).FirstOrDefault() })
+        .ToList()
         .Select(j => new
         {
           j.p.C_RowId,
@@ -49,10 +50,11 @@ namespace TallyJ.CoreModels.Helper
           j.p.VotingMethod,
           j.p.Email,
           j.p.Phone,
+          j.p.HasWhatsApp,
           j.Status
         })
         .ToList()
-        .Select(p=>new
+        .Select(p => new
         {
           p.C_RowId,
           p.C_FullName,
@@ -60,6 +62,7 @@ namespace TallyJ.CoreModels.Helper
           p.Email,
           EmailError = ValidateEmailSyntax(p.Email),
           p.Phone,
+          p.HasWhatsApp,
           p.Status
         });
 

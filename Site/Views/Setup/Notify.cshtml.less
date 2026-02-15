@@ -9,17 +9,19 @@
 }
 
 #notifyBody {
-  .forSmsInline, .forSmsBlock {
+  .forPhoneInline {
     display: none;
   }
 
   &.Sms {
-    .forSmsInline {
+    .forPhoneInline {
       display: inline;
     }
+  }
 
-    .forSmsBlock {
-      display: block;
+  &.WhatsApp {
+    .forPhoneInline {
+      display: inline;
     }
   }
 }
@@ -185,6 +187,10 @@ h2 {
 
   .bottom {
     margin-top: 1em;
+
+    > div {
+      margin: 5px 0;
+    }
   }
 
   .btn-warning {
