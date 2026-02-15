@@ -356,7 +356,7 @@ namespace TallyJ.CoreModels
             Message = "Invalid phone number. Must start with + and only contain digits."
           }.AsJsonResult();
 
-        personInDatastore.HasWhatsApp = null; // reset 
+        incomingPerson.HasWhatsApp = null; // reset 
       }
 
       if (personInDatastore.VotingMethod == VotingMethodEnum.Online.Value)
