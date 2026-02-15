@@ -313,7 +313,7 @@
                 });
                 vue.whatsAppChecked = true;
 
-                ShowStatusDone(`Updated ${numUpdated} ${numUpdated} ${plural(numUpdated, 'people', 'person')}`);
+                ShowStatusDone(`Updated ${numUpdated} ${plural(numUpdated, 'people', 'person')}`);
 
                 if (info.Errors && info.Errors.length > 0) {
                   console.warn('WhatsApp check errors:', info.Errors);
