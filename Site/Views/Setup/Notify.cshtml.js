@@ -87,10 +87,10 @@
           return this.allPeople.filter(function (p) { return p.Phone; });
         },
         peopleWithWhatsApp: function () {
-          return this.allPeople.filter(p => p.HasWhatApp);
+          return this.allPeople.filter(p => p.HasWhatsApp);
         },
         peopleWithUnknownWhatsApp: function () {
-          return this.allPeople.filter(p => p.HasWhatApp === null);
+          return this.allPeople.filter(p => p.HasWhatsApp === null);
         },
         enableSmsSend: function () {
           return !!(this.numWithSms && this.smsText && !this.smsChanged);
