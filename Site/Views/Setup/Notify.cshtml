@@ -27,9 +27,9 @@
   ContextItems.AddJavascriptForPage("notifyPage.Election={0};".FilledWith(currentElection.SerializedAsJsonString()));
   ContextItems.AddJavascriptForPage("notifyPage.defaultFromAddress={0};".FilledWith(currentElection.EmailFromAddressWithDefault.QuotedForJavascript()));
   ContextItems.AddJavascriptForPage("notifyPage.hostUrlSize={0};".FilledWith(SettingsHelper.Get("HostSite", "").Length));
-  ContextItems.AddJavascriptForPage("notifyPage.whatsApp={0};".FilledWith(SettingsHelper.HostSupportsOnlineWhatsAppLogin.QuotedForJavascript()));
+  ContextItems.AddJavascriptForPage("notifyPage.whatsApp={0};".FilledWith(SettingsHelper.HostSupportsWhatsAppNotification.QuotedForJavascript()));
 }
-<div id="notifyBody" v-cloak class="@(SettingsHelper.HostSupportsOnlineSmsLogin ? "Sms" : "") @(SettingsHelper.HostSupportsOnlineWhatsAppLogin ? "WhatsApp" : "")">
+<div id="notifyBody" v-cloak class="@(SettingsHelper.HostSupportsOnlineSmsLogin ? "Sms" : "") @(SettingsHelper.HostSupportsWhatsAppNotification ? "WhatsApp" : "")">
   <p>
     Use this page to send emails <span class="forPhoneInline">and/or phone (SMS/WhatsApp) messages</span> to voters with registered email addresses<span class="forPhoneInline"> or mobile phone numbers</span>.
   </p>

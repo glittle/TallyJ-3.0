@@ -95,7 +95,7 @@ namespace TallyJ.CoreModels.Helper
 
       var seconds = (DateTime.Now - startTime).TotalSeconds.AsInt();
 
-      var msg2 = $"WhatsApp: Sent to {numSent} {numSent.Plural("people", "person")} in {seconds} second{seconds.Plural()}";
+      var msg2 = $"WhatsApp: Queued to send to {numSent} {numSent.Plural("people", "person")}. Estimated time: {seconds} second{seconds.Plural()}";
       if (errors.Count > 0) msg2 += $" - {errors.Count} failed to send. First error: {errors[0]}";
       LogHelper.Add(msg2, true);
 
