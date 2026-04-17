@@ -291,7 +291,18 @@ namespace TallyJ.Controllers
     [ForAuthenticatedTeller]
     public JsonResult SendWhatsApp(string list)
     {
-      return new WhatsAppHelper().SendHeadTellerMessage(list);
+      return new WhatsAppGreenApiHelper().SendHeadTellerMessage(list);
+    }
+
+    [ForAuthenticatedTeller]
+    public JsonResult AbortWhatsApp(string queueToken)
+    {
+      var aborted = WhatsAppGreenApiHelper.AbortQueue(queueToken);
+      return new
+      {
+        Success = aborted,
+        Status = aborted ? "WhatsApp queue abort signaled." : "No active WhatsApp queue found for that token."
+      }.AsJsonResult();
     }
 
     [ForAuthenticatedTeller]
@@ -306,7 +317,7 @@ namespace TallyJ.Controllers
         .Where(p => personIds.Contains(p.C_RowId))
         .ToList();
 
-      var helper = new WhatsAppHelper();
+      var helper = new WhatsAppGreenApiHelper();
       var results = await helper.CheckMultipleWhatsAppAsync(people);
 
       db.SaveChanges();

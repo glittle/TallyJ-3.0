@@ -83,7 +83,7 @@ namespace TallyJ.CoreModels.Helper
       }
       else if (voterIdType == VoterIdTypeEnum.Phone)
       {
-        if (!SettingsHelper.HostSupportsOnlineSmsLogin && !SettingsHelper.HostSupportsOnlineWhatsAppLogin)
+        if (!SettingsHelper.HostSupportsOnlineSmsLogin && !SettingsHelper.HostSupportsWhatsAppGreenLogin)
         {
           validMessage = "Phone not supported";
         }
@@ -403,7 +403,7 @@ namespace TallyJ.CoreModels.Helper
           break;
 
         case "whatsapp":
-          var whatsappHelper = new WhatsAppHelper();
+          var whatsappHelper = new WhatsAppGreenApiHelper();
           whatsappHelper.SendVerifyCodeToVoter(phoneNumber, newCode, _hubKey, openElectionGuid, personGuid, out message);
           break;
 

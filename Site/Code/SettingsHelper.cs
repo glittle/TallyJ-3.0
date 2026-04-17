@@ -15,8 +15,8 @@ namespace TallyJ.Code
     public static bool HideSmsCostAppeal => Get("HideSmsCostAppeal", false);
     public static bool VoiceAvailable => Get("VoiceAvailable", true) && HostSupportsOnlineSmsLogin; // if Phone is supported, assume voice is available
     public static int UserAttemptMax => Get("UserAttemptMax", 3); // max in 15 minutes
-    public static bool HostSupportsOnlineWhatsAppLogin => Get("SupportOnlineWhatsAppLogin", false);
-    public static bool HostSupportsWhatsAppNotification => Get("SupportWhatsAppNotification", false);
+    public static bool HostSupportsWhatsAppGreenLogin => Get("SupportWhatsAppGreenLogin", false);
+    public static bool HostSupportsWhatsAppGreenNotification => Get("SupportWhatsAppGreenNotification", false);
     public static string GreenApiIdInstance => Get("greenapi-IdInstance", "");
     public static string GreenApiTokenInstance => Get("greenapi-ApiTokenInstance", "");
     public static string GreenApiUrl => Get("greenapi-ApiUrl", "https://api.green-api.com");

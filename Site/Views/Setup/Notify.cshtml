@@ -27,9 +27,9 @@
   ContextItems.AddJavascriptForPage("notifyPage.Election={0};".FilledWith(currentElection.SerializedAsJsonString()));
   ContextItems.AddJavascriptForPage("notifyPage.defaultFromAddress={0};".FilledWith(currentElection.EmailFromAddressWithDefault.QuotedForJavascript()));
   ContextItems.AddJavascriptForPage("notifyPage.hostUrlSize={0};".FilledWith(SettingsHelper.Get("HostSite", "").Length));
-  ContextItems.AddJavascriptForPage("notifyPage.whatsApp={0};".FilledWith(SettingsHelper.HostSupportsWhatsAppNotification.QuotedForJavascript()));
+  ContextItems.AddJavascriptForPage("notifyPage.whatsApp={0};".FilledWith(SettingsHelper.HostSupportsWhatsAppGreenNotification.QuotedForJavascript()));
 }
-<div id="notifyBody" v-cloak class="@(SettingsHelper.HostSupportsOnlineSmsLogin ? "Sms" : "") @(SettingsHelper.HostSupportsWhatsAppNotification ? "WhatsApp" : "")">
+<div id="notifyBody" v-cloak class="@(SettingsHelper.HostSupportsOnlineSmsLogin ? "Sms" : "") @(SettingsHelper.HostSupportsWhatsAppGreenNotification ? "WhatsApp" : "")">
   <p>
     Use this page to send emails <span class="forPhoneInline">and/or phone (SMS/WhatsApp) messages</span> to voters with registered email addresses<span class="forPhoneInline"> or mobile phone numbers</span>.
   </p>
@@ -165,6 +165,7 @@
       <div class="bottom stacked">
         <div>
           <el-button size="small"
+                     v-if="whatsApp"
                      :type="numWithWhatsApp ? 'primary' : ''"
                      v-on:click.passive="sendWhatsApp(true)"
                      :disabled="!numWithWhatsApp">
@@ -206,7 +207,7 @@
         <span>
           <button class="btn btn-mini" v-on:click.passive="select('emailOnly')" title="Only Email on file">Only has Email</button>
           <button class="btn btn-mini" v-on:click.passive="select('smsOnly')" title="Only SMS on file">Only has SMS</button>
-          <button class="btn btn-mini" v-on:click.passive="select('hasWhatsApp')" title="Has WhatsApp">Has WhatsApp</button>
+          <button v-if="whatsApp" class="btn btn-mini" v-on:click.passive="select('hasWhatsApp')" title="Has WhatsApp">Has WhatsApp</button>
         </span>
         <span>
           <button class="btn btn-mini" v-on:click.passive="refresh">Refresh List</button>

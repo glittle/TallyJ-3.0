@@ -67,7 +67,7 @@ namespace TallyJ.CoreModels
       var votes = allVotes.Where(v => v.BallotGuid == ballotGuid);
 
       var position = 1;
-      foreach (var vote in ids.Select(id => votes.SingleOrDefault(v => v.C_RowId == id)).Where(vote => vote != null))
+      foreach (var vote in ids.Select(id => votes.FirstOrDefault(v => v.C_RowId == id)).Where(vote => vote != null))
       {
         Db.Vote.Attach(vote);
         vote.PositionOnBallot = position;
