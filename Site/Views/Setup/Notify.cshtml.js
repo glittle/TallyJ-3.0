@@ -386,12 +386,12 @@
               busy: 'Cancelling WhatsApp messages'
             },
             function (info) {
-              vue.queueToken = null;
               if (info.Success) {
+                vue.queueToken = null;
                 ShowStatusDone(info.Status);
               }
               else {
-                //ShowStatusFailed(info.Status);
+                ShowStatusFailed(info.Status);
               }
             });
         },
