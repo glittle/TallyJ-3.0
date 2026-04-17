@@ -8,6 +8,7 @@ using TallyJ.Code.Data;
 using TallyJ.Code.Session;
 using TallyJ.Code.UnityRelated;
 using TallyJ.EF;
+using TallyJ.Properties;
 
 namespace TallyJ.Code
 {
@@ -72,15 +73,17 @@ namespace TallyJ.Code
     }
 
     private string HostAndVersion =>
-        $"{Environment.MachineName} / {HttpContext.Current?.Request.ServerVariables["HTTP_X_FORWARDED_FOR"] ?? HttpContext.Current?.Request.Url.Host} / {UserSession.SiteVersion}";
+        $"{Environment.MachineName} / {Settings.Default.VersionNum} / {HttpContext.Current?.Request.ServerVariables["HTTP_X_FORWARDED_FOR"] ?? HttpContext.Current?.Request.Url.Host}";
 
-    public void SendToRemoteLog(string message, bool systemLevel = false)
+    public void SendToRemoteLog(string message, bool systemLevel = false, string electionName = null)
     {
       var iftttKey = ConfigurationManager.AppSettings["iftttKey"].DefaultTo("");
       if (iftttKey.HasNoContent())
       {
         return;
       }
+
+      // value 1: machine / version [/ hosturl [/ username]]
 
       var info = new NameValueCollection();
       if (systemLevel)
@@ -89,24 +92,30 @@ namespace TallyJ.Code
       }
       else
       {
-        info["value1"] = "{0} / {1}".FilledWith(UserSession.LoginId, HostAndVersion);
+        info["value1"] = "{0} / {1}".FilledWith(HostAndVersion, UserSession.LoginId);
       }
 
-      try
+      if (electionName == null)
       {
-        info["value2"] = UserSession.CurrentElectionName;
-      }
-      catch (Exception)
-      {
-        if (_electionGuid != Guid.Empty)
+        try
         {
-          info["value2"] = _electionGuid.ToString();
+          electionName = UserSession.CurrentElectionName;
         }
-        else
+        catch (Exception)
         {
-          info["value2"] = "";
+          if (_electionGuid != Guid.Empty)
+          {
+            electionName = _electionGuid.ToString();
+          }
+          else
+          {
+            electionName = "";
+          }
         }
       }
+
+      info["value2"] = electionName;
+
       info["value3"] = message;
 
       var url = "https://maker.ifttt.com/trigger/{0}/with/key/{1}".FilledWith("TallyJ", iftttKey);

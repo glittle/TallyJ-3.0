@@ -43,6 +43,7 @@
         checkingWhatsApp: false,
         whatsAppChecked: false,
         whatsAppResults: {},
+        queueToken: null,
         editor: ClassicEditor,
         emailEditorConfig: {
           toolbar: ['undo', 'redo', '|', 'bold', 'italic', 'bulletedList', 'link'],
@@ -341,7 +342,18 @@
 
           var list = vue.whatsAppToSend.map(function (p) { return p.C_RowId });
           vue.sending = true;
-          let getLog = setInterval(() => vue.getContactLog(), 2500);
+
+          // need to keep checking log to see when messages are sent since can take a while for WhatsApp
+          // go until we get no more updates for a while to be sure done
+          let timesToCheck = list.length * 3;
+          let getLog = setInterval(() => {
+            vue.getContactLog();
+            timesToCheck--;
+            if (timesToCheck <= 0) {
+              clearInterval(getLog);
+              vue.queueToken = null;
+            }
+          }, 2500);
 
           var form = {
             list: JSON.stringify(list),
@@ -352,10 +364,10 @@
             },
             function (info) {
               vue.sending = false;
-              clearInterval(getLog);
 
               if (info.Success) {
-                vue.getContactLog();
+                vue.queueToken = info.QueueToken;
+
                 ShowStatusDone(info.Status);
               }
               else {
@@ -363,6 +375,25 @@
               }
             });
 
+        },
+        abortWhatsAppQueue: function () {
+          if (!this.queueToken) {
+            return;
+          }
+          var vue = this;
+          CallAjax2(publicInterface.controllerUrl + '/AbortWhatsApp', { queueToken: vue.queueToken },
+            {
+              busy: 'Cancelling WhatsApp messages'
+            },
+            function (info) {
+              vue.queueToken = null;
+              if (info.Success) {
+                ShowStatusDone(info.Status);
+              }
+              else {
+                //ShowStatusFailed(info.Status);
+              }
+            });
         },
         loadSamples: function () {
           this.emailSubject = 'Voting in the Riḍván election';

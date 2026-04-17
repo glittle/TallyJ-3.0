@@ -18,7 +18,7 @@
   ContextItems.AddJavascriptForPage("sms", "homeIndexPage.sms={0};".FilledWith(SettingsHelper.HostSupportsOnlineSmsLogin.QuotedForJavascript()));
   ContextItems.AddJavascriptForPage("smsa", "homeIndexPage.smsAvailable={0};".FilledWith(SettingsHelper.SmsAvailable.QuotedForJavascript()));
   ContextItems.AddJavascriptForPage("voicea", "homeIndexPage.voiceAvailable={0};".FilledWith(SettingsHelper.VoiceAvailable.QuotedForJavascript()));
-  ContextItems.AddJavascriptForPage("whatsapp", "homeIndexPage.whatsAppAvailable={0};".FilledWith(SettingsHelper.HostSupportsOnlineWhatsAppLogin.QuotedForJavascript()));
+  ContextItems.AddJavascriptForPage("whatsapp", "homeIndexPage.whatsAppAvailable={0};".FilledWith(SettingsHelper.HostSupportsWhatsAppGreenLogin.QuotedForJavascript()));
 }
 @section Metas {
   <link rel='canonical' href='https://www.tallyj.com/' />
@@ -189,7 +189,7 @@
   </section>
   @if (SettingsHelper.HostSupportsOnlineElections)
   {
-    <section class="featureBig VoterPanel @(SettingsHelper.HostSupportsOnlineSmsLogin ? "Sms" : "") @(SettingsHelper.HostSupportsOnlineWhatsAppLogin ? "WhatsApp" : "")">
+    <section class="featureBig VoterPanel @(SettingsHelper.HostSupportsOnlineSmsLogin ? "Sms" : "") @(SettingsHelper.HostSupportsWhatsAppGreenLogin ? "WhatsApp" : "")">
       <div class="closer">
         <img src="~/Images/close.png" alt="Close" class="closer">
       </div>
@@ -291,7 +291,7 @@
                          placeholder="+__________"
                          required autocomplete="tel">
                   <div>Send me a login code via:</div>
-                  @if (SettingsHelper.HostSupportsOnlineWhatsAppLogin)
+                  @if (SettingsHelper.HostSupportsWhatsAppGreenLogin)
                   {
                     <button class="btn" :disabled="sending || !okayToSend" v-on:click.passive="sendPhone('whatsapp')">WhatsApp</button>
                   }

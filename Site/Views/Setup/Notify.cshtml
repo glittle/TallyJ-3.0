@@ -31,16 +31,16 @@
 }
 <div id="notifyBody" v-cloak class="@(SettingsHelper.HostSupportsOnlineSmsLogin ? "Sms" : "") @(SettingsHelper.HostSupportsWhatsAppGreenNotification ? "WhatsApp" : "")">
   <p>
-    Use this page to send emails <span class="forPhoneInline">and/or phone (SMS/WhatsApp) messages</span> to voters with registered email addresses<span class="forPhoneInline"> or mobile phone numbers</span>.
+    Use this page to send emails <span class="forPhoneInline">and/or phone (SMS<span v-if="whatsApp">/WhatsApp</span>) messages</span> to voters with registered email addresses<span class="forPhoneInline"> or mobile phone numbers</span>.
   </p>
   <p>If you have a "normal" way to send emails or messages to your community, that should be your first choice. Send emails from this page only if other methods will not work.</p>
 
-  <p>
-    Here are some replaceable templates that can be used in the text:
-    <span class="template">{PersonName}</span> <span class="templateComment">(their full name)</span>,
-    <span class="template">{FirstName}</span> <span class="templateComment">(just their first name)</span>,
-    <span class="template">{VoterContact}</span> <span class="templateComment">(their email or phone number, as appropriate)</span>,
-    <span class="template">{hostSite}</span> <span class="templateComment">(a link to TallyJ)</span>.
+  <p class="withTemplates">
+    Here are the replaceable templates that can be used in the text:
+    <span><span class="template">{PersonName}</span> <span class="templateComment">(their full name)</span></span>
+    <span><span class="template">{FirstName}</span> <span class="templateComment">(just their first name)</span></span>
+    <span><span class="template">{VoterContact}</span> <span class="templateComment">(their email or phone number, as appropriate)</span></span>
+    <span><span class="template">{hostSite}</span> <span class="templateComment">(a link to TallyJ)</span></span>
   </p>
   <p v-if="@(((election.ElectionType == ElectionTypeEnum.LSA || election.ElectionType == ElectionTypeEnum.LSA2) && election.ElectionMode == ElectionModeEnum.Normal).QuotedForJavascript())">
     Remember! For a Local Spiritual Assembly, the election must be held on the first day of Riḍván (the 13th day of Jalál / Glory),
@@ -78,13 +78,16 @@
 
     </div>
 
-    <h2 class="shead">SMS</h2>
+    <h2 class="shead">SMS <i v-if="whatsApp">or WhatsApp</i></h2>
 
     <div class="smsHost">
-      <p>SMS should be as short as possible and not use special characters. Caution: some providers block messages with weblinks.</p>
+      <p>SMS should be as short as possible and not use special characters. Caution: some phone companies block messages with weblinks.</p>
       <div class="ckHost">
         <ckeditor :editor="editor" :config="smsEditorConfig" v-model="smsText" v-on:input="checkSms"></ckeditor>
       </div>
+      <el-button size="small" :type="smsChanged ? 'primary' : ''" v-on:click.passive="saveSms">
+        Save text template
+      </el-button>
       <p v-if="smsText">
         About {{smsText.length}} characters after template expansion.<br />
         About {{ smsSegments === 1 ? '1 segment' : (smsSegments + ' segments') }} per SMS.
@@ -95,15 +98,12 @@
         <span class="forPhoneInline">SMS messages will be sent from TallyJ's SMS account.</span>
       </p>
 
-      <el-button size="small" :type="smsChanged ? 'primary' : ''" v-on:click.passive="saveSms">
-        Save SMS Changes
-      </el-button>
 
       <p class="estSmsCost" v-if="smsCost">Estimated cost to send {{numWithSms}} SMS message{{plural(numWithSms)}}: <b>USD ${{smsCost.toFixed(2)}}</b></p>
       @if (!SettingsHelper.HideSmsCostAppeal)
       {
         <p class="estSmsCostComment" v-if="smsCost">
-          This SMS service is kindly funded by donations. If you've found it helpful, please consider contributing via PayPal <a href="https://www.paypal.com/donate/?hosted_button_id=Q9Q89LFSS547J" target="paypal"><img src="https://www.paypalobjects.com/en_US/i/btn/btn_donate_SM.gif" /></a> or 
+          This SMS service is kindly funded by donations. If you've found it helpful, please consider contributing via PayPal <a href="https://www.paypal.com/donate/?hosted_button_id=Q9Q89LFSS547J" target="paypal"><img src="https://www.paypalobjects.com/en_US/i/btn/btn_donate_SM.gif" /></a> or
           <a href="https://www.patreon.com/glenlittle" target="patreon">
             <svg xmlns="http://www.w3.org/2000/svg" class="patreon" xml:space="preserve" style="enable-background:new 0 0 1826.3 619.9" viewBox="0 0 1826.3 619.9" class="wordmark"><path d="M202.5 226c0-10 7.4-16.8 19-16.8H277c50.3 0 84.5 27.7 84.5 68.4 0 40-33.9 69.7-84.5 69.7h-7.7c-19.4 0-29.4 10-29.4 26.1V419c0 12.9-7.4 21-18.7 21-11.3 0-18.7-8.1-18.7-21V226zm37.4 57.8c0 20.3 10.3 30 30 30h4.8c27.7 0 48.1-11.3 48.1-36.1s-20.3-36.1-48.1-36.1H270c-19.7 0-30 9.7-30 30v12.2zm121.7 138.4c0 10.6 7.4 17.7 18.7 17.7 7.4 0 14.2-4.8 18.1-14.8l6.8-18.1c5.5-14.5 15.2-21.3 25.8-21.3h61.3c10.6 0 20.3 6.8 25.8 21.3l6.8 18.1c3.9 10 10.6 14.8 18.1 14.8 11.3 0 18.7-7.1 18.7-17.7 0-2.9-.6-6.5-1.9-10l-73.2-190.4c-4.5-11.6-14.8-17.4-24.8-17.4s-20.3 5.8-24.8 17.4l-73.2 190.4c-1.6 3.6-2.2 7.1-2.2 10zm71.3-86.5c0-3.5 1-6.8 2.6-11.6l13.9-38.4c2.6-7.4 7.1-11 12.3-11s9.7 3.5 12.3 11l13.9 38.4c1.6 4.8 2.6 8.1 2.6 11.6 0 9.7-5.5 16.5-20 16.5h-17.4c-14.7 0-20.2-6.8-20.2-16.5zm116.5-109c0-10.3 7.4-17.4 19.4-17.4h148.4c11.9 0 19.4 7.1 19.4 17.4s-7.4 17.4-19.4 17.4h-24.8c-19.7 0-30.3 10-30.3 32.9v141.7c0 13.2-7.4 21.3-19 21.3s-19-8.1-19-21.3V277c0-22.9-10.6-32.9-30.3-32.9H569c-12.2 0-19.6-7.1-19.6-17.4zm222 192.3c0 12.9 7.4 21 18.7 21s18.7-8.1 18.7-21v-51.3c0-14.5 8.4-20.7 18.7-20.7h2.6c6.8 0 13.6 4.2 17.7 10.3l49 72c4.5 6.8 10.3 10.6 17.7 10.6 9.7 0 17.4-8.1 17.4-17.7 0-3.9-1.3-8.1-4.2-12.3l-32.6-45.8c-3.9-5.5-5.5-10-5.5-13.9 0-8.1 7.1-13.9 15.5-20 15.2-11.3 31.6-26.1 31.6-54.5 0-39.7-31-66.5-82-66.5h-64.9c-11.6 0-18.7 6.8-18.7 16.8v193zm37.4-138.1v-9.7c0-21 11-29.7 27.7-29.7h16.1c27.7 0 45.5 10.3 45.5 34.2s-18.7 34.8-46.5 34.8h-15.2c-16.6.1-27.6-8.6-27.6-29.6zm175.9 137.4V226c0-10 7.1-16.8 18.7-16.8h122c11.6 0 18.7 6.8 18.7 16.8s-7.1 16.8-18.7 16.8h-77.1c-15.2 0-26.1 9-26.1 26.1v7.1c0 17.1 11 26.1 26.1 26.1h59.7c11.6 0 18.7 6.8 18.7 16.8s-7.1 16.8-18.7 16.8h-57.4c-15.2 0-28.4 9.4-28.4 28.4v9c0 19 13.2 28.4 28.4 28.4h74.9c11.6 0 18.7 6.8 18.7 16.8s-7.1 16.8-18.7 16.8h-122c-11.7 0-18.8-6.8-18.8-16.8zm181.6-96.1c0-69.7 52.3-117.8 113.6-117.8s113.6 48.1 113.6 117.8S1341.2 440 1279.9 440s-113.6-48.1-113.6-117.8zm42.6 0c0 49 29 80.3 71 80.3 41.9 0 71-31.3 71-80.3 0-49.4-29-80.3-71-80.3-41.9-.1-71 30.9-71 80.3zm229.4 96.8c0 12.9 7.4 21 18.7 21s18.7-8.1 18.7-21v-98.7c0-11.9 7.1-17.7 14.5-17.7 5.8 0 10.6 3.2 14.2 9l61.9 103.6c8.4 14.2 16.1 24.8 31.9 24.8 15.2 0 26.1-11 26.1-28.7V225.4c0-12.9-7.4-21-18.7-21-11.3 0-18.7 8.1-18.7 21v98.7c0 11.9-7.1 17.7-14.5 17.7-5.8 0-10.7-3.2-14.2-9l-61.9-103.6c-8.4-14.2-16.1-24.8-31.9-24.8-15.2 0-26.1 11-26.1 28.7V419z"></path></svg>
           </a>
@@ -113,8 +113,8 @@
       }
       <div class="messageBtns whatsapp" v-if="whatsApp">
         <h2>WhatsApp</h2>
-        <p><em>There is no cost for sending WhatsApp messages.</em></p>
-        <p><em>WhatsApp will use the same message text as SMS above.</em></p>
+        <p>WhatsApp will use the same message text as SMS above. It takes a few seconds or more to send each message.</p>
+        <p><em>The cost for sending WhatsApp messages is included in the monthly cost of running the site.</em></p>
 
         <div class="bottom">
           <el-button size="small"
@@ -124,7 +124,7 @@
             <span v-if="!checkingWhatsApp">Check if {{peopleWithUnknownWhatsApp.length}} {{plural(peopleWithUnknownWhatsApp.length, 'people have', 'person has')}} WhatsApp</span>
             <span v-if="checkingWhatsApp">Checking...</span>
           </el-button>
-    </div>
+        </div>
       </div>
     </div>
 
@@ -173,13 +173,13 @@
           </el-button>
         </div>
         <div>
-        <el-button size="small"
-                   :type="enableSmsSend  ? 'warning' : ''"
-                   v-on:click.passive="sendSms(true)"
-                   :disabled="!enableSmsSend">
+          <el-button size="small"
+                     :type="enableSmsSend  ? 'warning' : ''"
+                     v-on:click.passive="sendSms(true)"
+                     :disabled="!enableSmsSend">
             Send the message by SMS to {{numWithSms}} voter{{plural(numWithSms)}}{{ pendingSms ? '':'...'}}
-        </el-button>
-      </div>
+          </el-button>
+        </div>
         <div class="pending" v-if="pendingSms || pendingWhatsApp">Are you sure? Click again to send now.</div>
       </div>
       <p class="isSaveNeeded" v-if="smsChanged">Save changes before sending the message.</p>
@@ -218,7 +218,7 @@
     <div class="emailListing" :class="{loading:loadingContacts}">
       <el-table stripe
                 size="mini"
-                max-height="250"
+                max-height="500"
                 ref="wholeList"
                 :row-class-name="tableRowClassName"
                 :row-key="function (row) {return row.C_RowId;}"
@@ -271,6 +271,7 @@
 
   <div class="sideBySide">
     <h3>Recent Message Log</h3>
+    <button class="btn btn-small btn-danger" v-if="queueToken" v-on:click.passive="abortWhatsAppQueue">Stop Sending WhatsApp Messages</button>
     <span>
       <button class="btn btn-mini" v-on:click.passive="downloadCompleteLog">Download Complete Log</button>
       <button class="btn btn-mini" v-on:click.passive="getContactLog(0)">Refresh Log</button>

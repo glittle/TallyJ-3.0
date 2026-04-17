@@ -9,8 +9,10 @@ using System.Threading.Tasks;
 using System.Web.Mvc;
 using Newtonsoft.Json;
 using TallyJ.Code;
+using TallyJ.Code.Data;
 using TallyJ.Code.Session;
 using TallyJ.EF;
+using static TallyJ.CoreModels.ImportBallotsModel;
 
 namespace TallyJ.CoreModels.Helper
 {
@@ -45,7 +47,7 @@ namespace TallyJ.CoreModels.Helper
         newCode = code
       });
 
-      return SendWhatsAppMessage(phone, text, personGuid, out error, electionGuid, "WhatsApp - Login");
+      return SendWhatsAppMessage(UserSession.GetNewDbContext, phone, text, personGuid, out error, electionGuid, "WhatsApp - Login");
     }
 
     public JsonResult SendHeadTellerMessage(string idList)
@@ -97,6 +99,7 @@ namespace TallyJ.CoreModels.Helper
       var cancellationToken = cts.Token;
 
       var electionGuid = election.ElectionGuid;
+      var electionName = election.Name;
 
       // Start background task to process the queue
       Task.Run(async () =>
@@ -107,6 +110,12 @@ namespace TallyJ.CoreModels.Helper
         var rand = new Random();
         var aborted = false;
         string errorMessage;
+
+        // Create a dedicated DbContext for the background task. The normal
+        // UserSession.GetNewDbContext path cannot be used here because Unity's
+        // IDbContextFactory registration is PerWebRequest and there is no
+        // HTTP request on this thread.
+        var bgDb = new DbContextFactory().GetNewDbContext;
 
         try
         {
@@ -130,7 +139,7 @@ namespace TallyJ.CoreModels.Helper
               p.VoterContact,
             });
 
-            var ok = SendWhatsAppMessage(phoneNumber, messageText, p.PersonGuid, out errorMessage, electionGuid, "WhatsApp - message sent");
+            var ok = SendWhatsAppMessage(bgDb, phoneNumber, messageText, p.PersonGuid, out errorMessage, electionGuid, "WhatsApp - message sent");
 
             if (ok)
               numSent++;
@@ -171,7 +180,30 @@ namespace TallyJ.CoreModels.Helper
           ? $"WhatsApp: Aborted. Sent to {numSent} {numSent.Plural("people", "person")}. {remaining} not sent. {timeTakenDisplay}"
           : $"WhatsApp: Sent to {numSent} {numSent.Plural("people", "person")}. {timeTakenDisplay}";
         if (errors.Count > 0) msg2 += $" - {errors.Count} failed to send. First error: {errors[0]}";
-        LogHelper.Add(msg2, true);
+
+        // We're on a background thread with no HTTP request, so the normal
+        // LogHelper path (which resolves a PerWebRequest DbContext via Unity)
+        // cannot write to the database. Log directly using our background context.
+        try
+        {
+          bgDb.C_Log.Add(new C_Log
+          {
+            ElectionGuid = electionGuid,
+            Details = msg2,
+            AsOf = DateTime.UtcNow,
+            HostAndVersion = $"{Environment.MachineName} / WhatsApp queue"
+          });
+          bgDb.SaveChanges();
+          LogHelper.SendToRemoteLog(msg2, true, electionName);
+        }
+        catch
+        {
+          // swallow — the send queue itself already completed
+        }
+        finally
+        {
+          try { bgDb.Dispose(); } catch { /* ignore */ }
+        }
       });
 
       return new
@@ -182,7 +214,7 @@ namespace TallyJ.CoreModels.Helper
       }.AsJsonResult();
     }
 
-    private bool SendWhatsAppMessage(string phoneNumber, string message, Guid personGuid, out string errorMessage, Guid openElectionGuid, string logMsg)
+    private bool SendWhatsAppMessage(ITallyJDbContext dbContext, string phoneNumber, string message, Guid personGuid, out string errorMessage, Guid openElectionGuid, string logMsg)
     {
       var idInstance = SettingsHelper.Get("greenapi-IdInstance", "");
       var apiToken = SettingsHelper.Get("greenapi-ApiTokenInstance", "");
@@ -235,7 +267,6 @@ namespace TallyJ.CoreModels.Helper
           return false;
         }
 
-        var dbContext = UserSession.GetNewDbContext;
         var utcNow = DateTime.UtcNow;
         dbContext.SmsLog.Add(new SmsLog
         {
