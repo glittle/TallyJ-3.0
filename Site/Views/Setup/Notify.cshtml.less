@@ -241,6 +241,13 @@ button.pending {
   }
 }
 
+.withTemplates {
+  > span {
+    display: block;
+    margin: 1px 0 2px 15px;
+  }
+}
+
 .emailBySms {
   display: grid;
   grid-column-gap: 10px;
@@ -251,6 +258,10 @@ button.pending {
 
   .shead {
     grid-area: sh;
+
+    i {
+      font-style: normal; // used as a template tag
+    }
   }
 
   .emailHost {

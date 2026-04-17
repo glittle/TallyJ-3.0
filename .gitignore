@@ -44,3 +44,5 @@ DatabaseScripts/DatabaseScripts.jfm
 node_modules/
 !jstests/screenshots/.gitkeep
 jstests/screenshots/*
+.zenflow
+.zencoder

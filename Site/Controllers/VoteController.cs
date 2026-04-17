@@ -220,9 +220,10 @@ namespace TallyJ.Controllers
     {
       var currentElection = UserSession.CurrentElection;
       var personGuid = UserSession.VoterInElectionPersonGuid;
+      var electionGuid = currentElection.ElectionGuid;
 
       var onlineVotingInfo = Db.OnlineVotingInfo
-        .SingleOrDefault(ovi => ovi.ElectionGuid == currentElection.ElectionGuid && ovi.PersonGuid == personGuid);
+        .SingleOrDefault(ovi => ovi.ElectionGuid == electionGuid && ovi.PersonGuid == personGuid);
 
       if (onlineVotingInfo == null)
       {

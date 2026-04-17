@@ -1,20 +1,44 @@
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Web.Mvc;
 using Newtonsoft.Json;
 using TallyJ.Code;
+using TallyJ.Code.Data;
 using TallyJ.Code.Session;
 using TallyJ.EF;
+using static TallyJ.CoreModels.ImportBallotsModel;
 
 namespace TallyJ.CoreModels.Helper
 {
-  public class WhatsAppHelper : MessageHelperBase
+  public class WhatsAppGreenApiHelper : MessageHelperBase
   {
     private static readonly HttpClient _httpClient = new HttpClient { Timeout = TimeSpan.FromSeconds(30) };
+
+    // Registry of active background send queues, keyed by a token that is returned to the caller.
+    // The caller can use that token to abort an in-progress queue via AbortQueue.
+    private static readonly ConcurrentDictionary<string, CancellationTokenSource> _activeQueues
+      = new ConcurrentDictionary<string, CancellationTokenSource>();
+
+    /// <summary>
+    /// Abort a previously-started queue. Returns true if a matching queue was found and signaled.
+    /// </summary>
+    public static bool AbortQueue(string queueToken)
+    {
+      if (queueToken.HasNoContent()) return false;
+
+      if (_activeQueues.TryRemove(queueToken, out var cts))
+      {
+        try { cts.Cancel(); } catch { /* ignore */ }
+        return true;
+      }
+      return false;
+    }
 
     public bool SendVerifyCodeToVoter(string phone, string code, string hubKey, Guid electionGuid, Guid personGuid, out string error)
     {
@@ -23,7 +47,7 @@ namespace TallyJ.CoreModels.Helper
         newCode = code
       });
 
-      return SendWhatsAppMessage(phone, text, personGuid, out error, electionGuid, "WhatsApp - Login");
+      return SendWhatsAppMessage(UserSession.GetNewDbContext, phone, text, personGuid, out error, electionGuid, "WhatsApp - Login");
     }
 
     public JsonResult SendHeadTellerMessage(string idList)
@@ -50,6 +74,7 @@ namespace TallyJ.CoreModels.Helper
         .Where(p => personIds.Contains(p.C_RowId))
         .ToList()
         .Where(p => p.HasWhatsApp.Value)
+        .Where(p => IsValidPhoneNumber(p.Phone))
         .Select(p => new
         {
           p.Phone,
@@ -60,53 +85,136 @@ namespace TallyJ.CoreModels.Helper
         })
         .ToList();
 
-      var numSent = 0;
-      var errors = new List<string>();
       var numToSend = phoneNumbersToSendTo.Count;
 
-      LogHelper.Add($"WhatsApp: Sending to {numToSend} {numToSend.Plural("people", "person")} (see above)", true);
-      var startTime = DateTime.Now;
+      LogHelper.Add($"WhatsApp: Queuing sends to {numToSend} {numToSend.Plural("people", "person")}", true);
 
-      foreach (var p in phoneNumbersToSendTo)
+      // Build the queue
+      var queue = new Queue<dynamic>(phoneNumbersToSendTo);
+
+      // Register a cancellation token for this queue so the caller can abort it.
+      var queueToken = Guid.NewGuid().ToString("N");
+      var cts = new CancellationTokenSource();
+      _activeQueues[queueToken] = cts;
+      var cancellationToken = cts.Token;
+
+      var electionGuid = election.ElectionGuid;
+      var electionName = election.Name;
+
+      // Start background task to process the queue
+      Task.Run(async () =>
       {
-        var phoneNumber = p.Phone;
+        var batchStart = DateTime.Now;
+        var errors = new List<string>();
+        var numSent = 0;
+        var rand = new Random();
+        var aborted = false;
+        string errorMessage;
 
-        if (!IsValidPhoneNumber(phoneNumber))
+        // Create a dedicated DbContext for the background task. The normal
+        // UserSession.GetNewDbContext path cannot be used here because Unity's
+        // IDbContextFactory registration is PerWebRequest and there is no
+        // HTTP request on this thread.
+        var bgDb = new DbContextFactory().GetNewDbContext;
+
+        try
         {
-          errors.Add("Invalid phone number: " + phoneNumber);
-          continue;
+          while (queue.Count > 0)
+          {
+            if (cancellationToken.IsCancellationRequested)
+            {
+              aborted = true;
+              break;
+            }
+
+            var p = queue.Dequeue();
+            var phoneNumber = (string)p.Phone;
+
+
+            var messageText = text.FilledWithObject(new
+            {
+              hostSite,
+              p.PersonName,
+              p.FirstName,
+              p.VoterContact,
+            });
+
+            var ok = SendWhatsAppMessage(bgDb, phoneNumber, messageText, p.PersonGuid, out errorMessage, electionGuid, "WhatsApp - message sent");
+
+            if (ok)
+              numSent++;
+            else
+              errors.Add(errorMessage);
+
+
+            if (queue.Count == 0) break;
+
+            // Wait 3-15 seconds before next send (cancellable)
+            int delay = rand.Next(3, 16) * 1000;
+            try
+            {
+              await Task.Delay(delay, cancellationToken);
+            }
+            catch (TaskCanceledException)
+            {
+              aborted = true;
+              break;
+            }
+          }
+        }
+        catch (Exception ex)
+        {
+          errors.Add("Queue error: " + ex.GetBaseException().Message);
+        }
+        finally
+        {
+          // Remove from registry if still present (it may have been removed by AbortQueue).
+          _activeQueues.TryRemove(queueToken, out _);
+          cts.Dispose();
         }
 
-        var messageText = text.FilledWithObject(new
+        var timeTaken = DateTime.Now - batchStart;
+        var timeTakenDisplay = $"Time: {(int)timeTaken.TotalMinutes}:{timeTaken.Seconds:D2}";
+        var remaining = queue.Count;
+        var msg2 = aborted
+          ? $"WhatsApp: Aborted. Sent to {numSent} {numSent.Plural("people", "person")}. {remaining} not sent. {timeTakenDisplay}"
+          : $"WhatsApp: Sent to {numSent} {numSent.Plural("people", "person")}. {timeTakenDisplay}";
+        if (errors.Count > 0) msg2 += $" - {errors.Count} failed to send. First error: {errors[0]}";
+
+        // We're on a background thread with no HTTP request, so the normal
+        // LogHelper path (which resolves a PerWebRequest DbContext via Unity)
+        // cannot write to the database. Log directly using our background context.
+        try
         {
-          hostSite,
-          p.PersonName,
-          p.FirstName,
-          p.VoterContact,
-        });
-
-        var ok = SendWhatsAppMessage(phoneNumber, messageText, p.PersonGuid, out var errorMessage, election.ElectionGuid, "WhatsApp - message sent");
-
-        if (ok)
-          numSent++;
-        else
-          errors.Add(errorMessage);
-      }
-
-      var seconds = (DateTime.Now - startTime).TotalSeconds.AsInt();
-
-      var msg2 = $"WhatsApp: Sent to {numSent} {numSent.Plural("people", "person")} in {seconds} second{seconds.Plural()}";
-      if (errors.Count > 0) msg2 += $" - {errors.Count} failed to send. First error: {errors[0]}";
-      LogHelper.Add(msg2, true);
+          bgDb.C_Log.Add(new C_Log
+          {
+            ElectionGuid = electionGuid,
+            Details = msg2,
+            AsOf = DateTime.UtcNow,
+            HostAndVersion = $"{Environment.MachineName} / WhatsApp queue"
+          });
+          bgDb.SaveChanges();
+          LogHelper.SendToRemoteLog(msg2, true, electionName);
+        }
+        catch
+        {
+          // swallow — the send queue itself already completed
+        }
+        finally
+        {
+          try { bgDb.Dispose(); } catch { /* ignore */ }
+        }
+      });
 
       return new
       {
-        Success = numSent > 0,
-        Status = msg2
+        Success = true,
+        QueueToken = queueToken,
+        Status = $"WhatsApp: Queued to send to {numToSend} {numToSend.Plural("people", "person")} over the next few minutes."
       }.AsJsonResult();
     }
 
-    private bool SendWhatsAppMessage(string phoneNumber, string message, Guid personGuid, out string errorMessage, Guid openElectionGuid, string logMsg)
+    private bool SendWhatsAppMessage(ITallyJDbContext dbContext, string phoneNumber, string message, Guid personGuid, out string errorMessage, Guid openElectionGuid, string logMsg)
     {
       var idInstance = SettingsHelper.Get("greenapi-IdInstance", "");
       var apiToken = SettingsHelper.Get("greenapi-ApiTokenInstance", "");
@@ -124,13 +232,15 @@ namespace TallyJ.CoreModels.Helper
         return false;
       }
 
+      var rand = new Random();
       var chatId = FormatPhoneNumberForGreenApi(phoneNumber);
       var url = $"{apiUrl}/waInstance{idInstance}/sendMessage/{apiToken}";
 
       var requestBody = new
       {
         chatId,
-        message
+        message,
+        typingTime = rand.Next(1100, 3200) // simulate typing for better delivery (GreenAPI recommends at least 500ms)
       };
 
       var jsonContent = JsonConvert.SerializeObject(requestBody);
@@ -157,7 +267,6 @@ namespace TallyJ.CoreModels.Helper
           return false;
         }
 
-        var dbContext = UserSession.GetNewDbContext;
         var utcNow = DateTime.UtcNow;
         dbContext.SmsLog.Add(new SmsLog
         {
@@ -255,7 +364,7 @@ namespace TallyJ.CoreModels.Helper
 
       var requestBody = new
       {
-        phoneNumber = numericPhoneNumber
+        phoneNumber = numericPhoneNumber,
       };
 
       var jsonContent = JsonConvert.SerializeObject(requestBody);

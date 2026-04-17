@@ -43,6 +43,7 @@
         checkingWhatsApp: false,
         whatsAppChecked: false,
         whatsAppResults: {},
+        queueToken: null,
         editor: ClassicEditor,
         emailEditorConfig: {
           toolbar: ['undo', 'redo', '|', 'bold', 'italic', 'bulletedList', 'link'],
@@ -341,7 +342,6 @@
 
           var list = vue.whatsAppToSend.map(function (p) { return p.C_RowId });
           vue.sending = true;
-          let getLog = setInterval(() => vue.getContactLog(), 2500);
 
           var form = {
             list: JSON.stringify(list),
@@ -352,17 +352,59 @@
             },
             function (info) {
               vue.sending = false;
-              clearInterval(getLog);
 
               if (info.Success) {
-                vue.getContactLog();
+                vue.queueToken = info.QueueToken;
                 ShowStatusDone(info.Status);
+
+                // Poll the log until no new entries appear for a while (indicating queue is done).
+                // Server delays between messages can be up to 15s, so require 7 consecutive
+                // no-change polls (~17.5s of inactivity) before clearing queueToken.
+                let noChangeCount = 0;
+                let lastKnownLogId = vue.lastLogId;
+                let getLog = setInterval(() => {
+                  if (!vue.queueToken) {
+                    // Queue was aborted externally; stop polling.
+                    clearInterval(getLog);
+                    return;
+                  }
+                  if (vue.lastLogId !== lastKnownLogId) {
+                    noChangeCount = 0;
+                    lastKnownLogId = vue.lastLogId;
+                  } else {
+                    noChangeCount++;
+                    if (noChangeCount >= 7) {
+                      clearInterval(getLog);
+                      vue.queueToken = null;
+                    }
+                  }
+                  vue.getContactLog(vue.lastLogId);
+                }, 2500);
               }
               else {
                 ShowStatusFailed(info.Status);
               }
             });
 
+        },
+        abortWhatsAppQueue: function () {
+          if (!this.queueToken) {
+            return;
+          }
+          var vue = this;
+          CallAjax2(publicInterface.controllerUrl + '/AbortWhatsApp', { queueToken: vue.queueToken },
+            {
+              busy: 'Cancelling WhatsApp messages'
+            },
+            function (info) {
+              if (info.Success) {
+                vue.queueToken = null;
+                ShowStatusDone(info.Status);
+              }
+              else {
+                ShowStatusFailed(info.Status);
+              }
+            });
         },
         loadSamples: function () {
           this.emailSubject = 'Voting in the Riḍván election';

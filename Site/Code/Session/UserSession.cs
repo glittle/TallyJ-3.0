@@ -513,8 +513,6 @@ public static class UserSession
     }
   }
 
-  public static string SiteVersion => Settings.Default.VersionNum;
-
   //        var versionHtml = MvcViewRenderer.RenderRazorViewToString("~/Views/Shared/Version.cshtml", new object());
   //        var regex = Regex.Match(versionHtml, ".*>(?<version>.*)<.*");
   //        var version = regex.Success ? regex.Groups["version"].Value : "?";

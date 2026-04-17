@@ -474,7 +474,7 @@
     <Compile Include="CoreModels\Helper\TwilioHelper.cs" />
     <Compile Include="CoreModels\Helper\SmsOtherInfo.cs" />
     <Compile Include="CoreModels\Helper\VoterCodeHelper.cs" />
-    <Compile Include="CoreModels\Helper\WhatsAppHelper.cs" />
+    <Compile Include="CoreModels\Helper\WhatsAppGreenApiHelper.cs" />
     <Compile Include="CoreModels\Hubs\BallotImportHub.cs" />
     <Compile Include="CoreModels\Hubs\VoterCodeHub.cs" />
     <Compile Include="CoreModels\ImportBallotsModel.cs" />

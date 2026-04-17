@@ -5,6 +5,7 @@ using TallyJ.Code;
 using TallyJ.Code.Enumerations;
 using TallyJ.Code.Session;
 using TallyJ.EF;
+using TallyJ.Properties;
 
 namespace TallyJ.CoreModels.ExportImport
 {
@@ -56,7 +57,7 @@ namespace TallyJ.CoreModels.ExportImport
         ByUser = UserSession.MemberName,
         UserEmail = UserSession.MemberEmail,
         Server = site.ServerName,
-        Version = UserSession.SiteVersion,
+        Version = Settings.Default.VersionNum,
         Environment = site.CurrentEnvironment,
         // elements
         election = ExportElection(_election),
