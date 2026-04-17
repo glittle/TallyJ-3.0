@@ -343,18 +343,6 @@
           var list = vue.whatsAppToSend.map(function (p) { return p.C_RowId });
           vue.sending = true;
 
-          // need to keep checking log to see when messages are sent since can take a while for WhatsApp
-          // go until we get no more updates for a while to be sure done
-          let timesToCheck = list.length * 3;
-          let getLog = setInterval(() => {
-            vue.getContactLog();
-            timesToCheck--;
-            if (timesToCheck <= 0) {
-              clearInterval(getLog);
-              vue.queueToken = null;
-            }
-          }, 2500);
-
           var form = {
             list: JSON.stringify(list),
           };
@@ -367,8 +355,31 @@
 
               if (info.Success) {
                 vue.queueToken = info.QueueToken;
-
                 ShowStatusDone(info.Status);
+
+                // Poll the log until no new entries appear for a while (indicating queue is done).
+                // Server delays between messages can be up to 15s, so require 7 consecutive
+                // no-change polls (~17.5s of inactivity) before clearing queueToken.
+                let noChangeCount = 0;
+                let lastKnownLogId = vue.lastLogId;
+                let getLog = setInterval(() => {
+                  if (!vue.queueToken) {
+                    // Queue was aborted externally; stop polling.
+                    clearInterval(getLog);
+                    return;
+                  }
+                  if (vue.lastLogId !== lastKnownLogId) {
+                    noChangeCount = 0;
+                    lastKnownLogId = vue.lastLogId;
+                  } else {
+                    noChangeCount++;
+                    if (noChangeCount >= 7) {
+                      clearInterval(getLog);
+                      vue.queueToken = null;
+                    }
+                  }
+                  vue.getContactLog(vue.lastLogId);
+                }, 2500);
               }
               else {
                 ShowStatusFailed(info.Status);
