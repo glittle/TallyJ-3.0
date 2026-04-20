@@ -1,0 +1,729 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "TallyJ Election Management API",
+    "version": "1.0.0",
+    "description": "REST API for TallyJ Election Management System. This API provides comprehensive election management capabilities including voter registration, ballot processing, and result tabulation.",
+    "contact": {
+      "name": "TallyJ Development Team",
+      "url": "https://github.com/glittle/TallyJ-3.0",
+      "email": "support@tallyj.com"
+    },
+    "license": {
+      "name": "Apache 2.0",
+      "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
+    }
+  },
+  "servers": [
+    {
+      "url": "/api/v1",
+      "description": "TallyJ API v1"
+    }
+  ],
+  "paths": {
+    "/elections": {
+      "get": {
+        "tags": ["Elections"],
+        "summary": "Get all elections",
+        "description": "Retrieve a paginated list of all elections. Supports filtering and sorting.",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "description": "Page number (1-based)",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "default": 1
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query", 
+            "description": "Number of results per page",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100,
+              "default": 20
+            }
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "description": "Filter by election status",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": ["Setup", "Active", "Closed", "Finalized"]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/ElectionDto"
+                      }
+                    },
+                    "pagination": {
+                      "$ref": "#/components/schemas/PaginationMeta"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - invalid parameters"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        }
+      },
+      "post": {
+        "tags": ["Elections"],
+        "summary": "Create a new election",
+        "description": "Create a new election with the provided details. Returns the created election with assigned GUID.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateElectionRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Election created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ElectionDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input data"
+          },
+          "401": {
+            "description": "Authentication required"
+          },
+          "403": {
+            "description": "Insufficient permissions"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        }
+      }
+    },
+    "/elections/{id}": {
+      "get": {
+        "tags": ["Elections"],
+        "summary": "Get election by ID",
+        "description": "Retrieve detailed information about a specific election by its GUID.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "Election GUID",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ElectionDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Election not found"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        }
+      },
+      "put": {
+        "tags": ["Elections"],
+        "summary": "Update election",
+        "description": "Update an existing election. Only allows updates to certain fields based on election status.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "Election GUID",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateElectionRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Election updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ElectionDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input data"
+          },
+          "404": {
+            "description": "Election not found"
+          },
+          "409": {
+            "description": "Election cannot be updated in current status"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        }
+      },
+      "delete": {
+        "tags": ["Elections"],
+        "summary": "Delete election",
+        "description": "Delete an election and all associated data. This operation cannot be undone.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "Election GUID",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Election deleted successfully"
+          },
+          "404": {
+            "description": "Election not found"
+          },
+          "409": {
+            "description": "Election cannot be deleted in current status"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        }
+      }
+    },
+    "/elections/{id}/people": {
+      "get": {
+        "tags": ["People"],
+        "summary": "Get people in election",
+        "description": "Retrieve all people (voters and candidates) associated with an election.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "Election GUID",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "canVote",
+            "in": "query",
+            "description": "Filter by voting eligibility",
+            "required": false,
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "canReceiveVotes",
+            "in": "query",
+            "description": "Filter by candidacy eligibility",
+            "required": false,
+            "schema": {
+              "type": "boolean"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/PersonDto"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Election not found"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        }
+      },
+      "post": {
+        "tags": ["People"],
+        "summary": "Add person to election",
+        "description": "Add a new person to an election as a voter or candidate.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "Election GUID",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreatePersonRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Person added successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PersonDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input data"
+          },
+          "404": {
+            "description": "Election not found"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        }
+      }
+    },
+    "/docs/openapi.json": {
+      "get": {
+        "tags": ["Documentation"],
+        "summary": "Get OpenAPI specification",
+        "description": "Returns the complete OpenAPI 3.0 specification for this API.",
+        "responses": {
+          "200": {
+            "description": "OpenAPI specification",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/docs/endpoints": {
+      "get": {
+        "tags": ["Documentation"],
+        "summary": "Get available endpoints",
+        "description": "Returns a summary of all available API endpoints.",
+        "responses": {
+          "200": {
+            "description": "Endpoint summary",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "version": {
+                      "type": "string"
+                    },
+                    "baseUrl": {
+                      "type": "string"
+                    },
+                    "endpoints": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "method": {
+                            "type": "string"
+                          },
+                          "path": {
+                            "type": "string"
+                          },
+                          "description": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "ElectionDto": {
+        "type": "object",
+        "description": "Election data transfer object",
+        "properties": {
+          "electionGuid": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Unique identifier for the election"
+          },
+          "name": {
+            "type": "string",
+            "maxLength": 200,
+            "description": "Name of the election"
+          },
+          "convenor": {
+            "type": "string",
+            "maxLength": 100,
+            "description": "Name of the election convenor"
+          },
+          "dateOfElection": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Date when the election is scheduled"
+          },
+          "electionType": {
+            "type": "string",
+            "enum": ["Normal", "ByElection", "Special"],
+            "description": "Type of election"
+          },
+          "electionMode": {
+            "type": "string",
+            "enum": ["InPerson", "Online", "Hybrid"],
+            "description": "Election voting mode"
+          },
+          "numberToElect": {
+            "type": "integer",
+            "minimum": 1,
+            "description": "Number of positions to elect"
+          },
+          "numberExtra": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "Number of extra positions"
+          },
+          "tallyStatus": {
+            "type": "string",
+            "enum": ["Setup", "Active", "Closed", "Finalized"],
+            "description": "Current tally status"
+          },
+          "showFullReport": {
+            "type": "boolean",
+            "description": "Whether to show full report"
+          }
+        },
+        "required": ["electionGuid", "name", "electionType", "tallyStatus"]
+      },
+      "CreateElectionRequest": {
+        "type": "object",
+        "description": "Request to create a new election",
+        "properties": {
+          "name": {
+            "type": "string",
+            "maxLength": 200,
+            "description": "Name of the election"
+          },
+          "convenor": {
+            "type": "string",
+            "maxLength": 100,
+            "description": "Name of the election convenor"
+          },
+          "dateOfElection": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Date when the election is scheduled"
+          },
+          "electionType": {
+            "type": "string",
+            "enum": ["Normal", "ByElection", "Special"],
+            "default": "Normal",
+            "description": "Type of election"
+          },
+          "electionMode": {
+            "type": "string",
+            "enum": ["InPerson", "Online", "Hybrid"],
+            "default": "InPerson",
+            "description": "Election voting mode"
+          },
+          "numberToElect": {
+            "type": "integer",
+            "minimum": 1,
+            "description": "Number of positions to elect"
+          }
+        },
+        "required": ["name"]
+      },
+      "UpdateElectionRequest": {
+        "type": "object",
+        "description": "Request to update an existing election",
+        "properties": {
+          "name": {
+            "type": "string",
+            "maxLength": 200,
+            "description": "Name of the election"
+          },
+          "convenor": {
+            "type": "string",
+            "maxLength": 100,
+            "description": "Name of the election convenor"
+          },
+          "dateOfElection": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Date when the election is scheduled"
+          },
+          "showFullReport": {
+            "type": "boolean",
+            "description": "Whether to show full report"
+          }
+        }
+      },
+      "PersonDto": {
+        "type": "object",
+        "description": "Person data transfer object",
+        "properties": {
+          "personGuid": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Unique identifier for the person"
+          },
+          "electionGuid": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Associated election identifier"
+          },
+          "firstName": {
+            "type": "string",
+            "maxLength": 100,
+            "description": "Person's first name"
+          },
+          "lastName": {
+            "type": "string",
+            "maxLength": 100,
+            "description": "Person's last name"
+          },
+          "otherNames": {
+            "type": "string",
+            "maxLength": 100,
+            "description": "Additional names"
+          },
+          "otherLastNames": {
+            "type": "string",
+            "maxLength": 100,
+            "description": "Additional last names"
+          },
+          "otherInfo": {
+            "type": "string",
+            "maxLength": 500,
+            "description": "Additional information about the person"
+          },
+          "area": {
+            "type": "string",
+            "maxLength": 100,
+            "description": "Geographic area"
+          },
+          "bahaiId": {
+            "type": "string",
+            "maxLength": 50,
+            "description": "Bahai community ID"
+          },
+          "ageGroup": {
+            "type": "string",
+            "enum": ["Youth", "Adult"],
+            "description": "Age group classification"
+          },
+          "canVote": {
+            "type": "boolean",
+            "description": "Whether person is eligible to vote"
+          },
+          "canReceiveVotes": {
+            "type": "boolean",
+            "description": "Whether person is eligible to be voted for"
+          }
+        },
+        "required": ["personGuid", "electionGuid", "firstName", "lastName"]
+      },
+      "CreatePersonRequest": {
+        "type": "object",
+        "description": "Request to create a new person",
+        "properties": {
+          "firstName": {
+            "type": "string",
+            "maxLength": 100,
+            "description": "Person's first name"
+          },
+          "lastName": {
+            "type": "string",
+            "maxLength": 100,
+            "description": "Person's last name"
+          },
+          "otherNames": {
+            "type": "string",
+            "maxLength": 100,
+            "description": "Additional names"
+          },
+          "otherLastNames": {
+            "type": "string",
+            "maxLength": 100,
+            "description": "Additional last names"
+          },
+          "otherInfo": {
+            "type": "string",
+            "maxLength": 500,
+            "description": "Additional information"
+          },
+          "area": {
+            "type": "string",
+            "maxLength": 100,
+            "description": "Geographic area"
+          },
+          "bahaiId": {
+            "type": "string",
+            "maxLength": 50,
+            "description": "Bahai community ID"
+          },
+          "ageGroup": {
+            "type": "string",
+            "enum": ["Youth", "Adult"],
+            "description": "Age group classification"
+          }
+        },
+        "required": ["firstName", "lastName"]
+      },
+      "PaginationMeta": {
+        "type": "object",
+        "description": "Pagination metadata",
+        "properties": {
+          "page": {
+            "type": "integer",
+            "description": "Current page number"
+          },
+          "limit": {
+            "type": "integer",
+            "description": "Number of items per page"
+          },
+          "total": {
+            "type": "integer",
+            "description": "Total number of items"
+          },
+          "pages": {
+            "type": "integer",
+            "description": "Total number of pages"
+          }
+        },
+        "required": ["page", "limit", "total", "pages"]
+      },
+      "ApiError": {
+        "type": "object",
+        "description": "API error response",
+        "properties": {
+          "error": {
+            "type": "string",
+            "description": "Error type"
+          },
+          "message": {
+            "type": "string",
+            "description": "Error message"
+          },
+          "details": {
+            "type": "object",
+            "description": "Additional error details"
+          }
+        },
+        "required": ["error", "message"]
+      }
+    },
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT",
+        "description": "JWT token authentication"
+      },
+      "apiKey": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "X-API-Key",
+        "description": "API key authentication"
+      }
+    }
+  },
+  "tags": [
+    {
+      "name": "Elections",
+      "description": "Election management operations"
+    },
+    {
+      "name": "People", 
+      "description": "Voter and candidate management"
+    },
+    {
+      "name": "Documentation",
+      "description": "API documentation endpoints"
+    }
+  ]
+}
