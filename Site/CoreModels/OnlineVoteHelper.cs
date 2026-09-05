@@ -14,7 +14,13 @@ namespace TallyJ.CoreModels
     /// <param name="newListPoolToEncrypt"></param>
     public void SetListPoolEncrypted(OnlineVotingInfo onlineVotingInfo, string newListPoolToEncrypt = null)
     {
-      var encrypted = EncryptionHelper.Encrypt(newListPoolToEncrypt ?? onlineVotingInfo.ListPool, onlineVotingInfo.C_RowId.ToString());
+      var toEncrypt = newListPoolToEncrypt ?? onlineVotingInfo.ListPool;
+      if (toEncrypt.HasNoContent())
+      {
+        return;
+      }
+
+      var encrypted = EncryptionHelper.Encrypt(toEncrypt, onlineVotingInfo.C_RowId.ToString());
       onlineVotingInfo.ListPool = encrypted;
     }
 
