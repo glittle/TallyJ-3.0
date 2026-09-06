@@ -76,6 +76,7 @@ var vueOptions = {
       searchResultRow: 0,
       loading: true,
       saveDelay: null,
+      savePoolRequest: null,
       activePage: 1,
       keepStatusCurrent: false,
       loadingLoginHistory: true,
@@ -323,24 +324,26 @@ var vueOptions = {
       var vue = this;
       var before = vue.savedLock;
 
-      CallAjaxHandler(GetRootUrl() + 'Vote/LockPool',
-        {
-          locked: locked
-        },
-        function (info) {
-          if (info.success) {
-            vue.savedLock = locked;
-            vue.lockInVotes = locked;
-            vue.updateRegistration(info);
-            ShowStatusDone('Submitted' + (info.notificationType ? `. ${info.notificationType} sent.` : ''));
+      vue.flushSavePool(function () {
+        CallAjaxHandler(GetRootUrl() + 'Vote/LockPool',
+          {
+            locked: locked
+          },
+          function (info) {
+            if (info.success) {
+              vue.savedLock = locked;
+              vue.lockInVotes = locked;
+              vue.updateRegistration(info);
+              ShowStatusDone('Submitted' + (info.notificationType ? `. ${info.notificationType} sent.` : ''));
 
-            window.scrollTo(0, 0);
-          } else {
-            ShowStatusFailed(info.Error);
-            vue.savedLock = before;
-            vue.lockInVotes = before;
-          }
-        });
+              window.scrollTo(0, 0);
+            } else {
+              ShowStatusFailed(info.Error);
+              vue.savedLock = before;
+              vue.lockInVotes = before;
+            }
+          });
+      });
     },
     extendElectionInfo: function (info) {
       info.Type_Display = voterHome.electionTypes[info.ElectionType] || info.ElectionType || '';
@@ -701,30 +704,52 @@ var vueOptions = {
       var vue = this;
       clearTimeout(vue.saveDelay);
       vue.saveDelay = setTimeout(function () {
-        var list = vue.pool.map(function (p) {
-          if (p.Id < 0) {
-            return { Id: p.Id, First: p.First, Last: p.Last, OtherInfo: p.OtherInfo };
-          } else {
-            return { Id: p.Id };
-          }
-        });
-        if (vue.savedPool !== list) {
-          CallAjaxHandler(GetRootUrl() + 'Vote/SavePool',
-            {
-              pool: JSON.stringify(list)
-            },
-            function (info) {
-              if (info.success) {
-                ShowStatusDone('Saved');
-                vue.savedPool = list;
-                vue.election.person.Status = info.newStatus;
-              } else {
-                ShowStatusFailed(info.Error);
-              }
-            });
-        }
+        vue.saveDelay = null;
+        vue.sendSavePool();
       },
         delay);
+    },
+    sendSavePool: function () {
+      var vue = this;
+      var list = vue.pool.map(function (p) {
+        if (p.Id < 0) {
+          return { Id: p.Id, First: p.First, Last: p.Last, OtherInfo: p.OtherInfo };
+        } else {
+          return { Id: p.Id };
+        }
+      });
+      if (vue.savedPool !== list) {
+        vue.savePoolRequest = CallAjaxHandler(GetRootUrl() + 'Vote/SavePool',
+          {
+            pool: JSON.stringify(list)
+          },
+          function (info) {
+            if (info.success) {
+              ShowStatusDone('Saved');
+              vue.savedPool = list;
+              vue.election.person.Status = info.newStatus;
+            } else {
+              ShowStatusFailed(info.Error);
+            }
+          });
+      }
+    },
+    flushSavePool: function (done) {
+      var vue = this;
+      if (vue.saveDelay) {
+        clearTimeout(vue.saveDelay);
+        vue.saveDelay = null;
+        vue.sendSavePool();
+      }
+      var request = vue.savePoolRequest;
+      if (request && typeof request.always === 'function') {
+        request.always(function () {
+          vue.savePoolRequest = null;
+          done();
+        });
+      } else {
+        done();
+      }
     },
     loadPool: function (poolItems) {
       var vue = this;

@@ -248,9 +248,10 @@ namespace TallyJ.Controllers
         var onlineVoteHelper = new OnlineVoteHelper();
         var logHelper = new LogHelper();
 
-        if (!EncryptionHelper.IsEncrypted(onlineVotingInfo.ListPool))
+        if (!EncryptionHelper.IsEncrypted(onlineVotingInfo.ListPool)
+            && onlineVotingInfo.ListPool.HasContent())
         {
-          // upgrade previous record
+          // upgrade leftover plaintext pools; skip null/empty (new records before SavePool)
           onlineVoteHelper.SetListPoolEncrypted(onlineVotingInfo);
         }
 
@@ -258,7 +259,7 @@ namespace TallyJ.Controllers
         {
           // ensure we have enough votes
           var rawPool = onlineVoteHelper.GetDecryptedListPool(onlineVotingInfo, out var errorMessage);
-          if (rawPool == null)
+          if (rawPool.HasNoContent())
           {
             logHelper.Add("LockPool but pool is empty. " + errorMessage, true);
             return new
