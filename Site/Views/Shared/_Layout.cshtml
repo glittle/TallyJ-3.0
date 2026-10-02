@@ -25,6 +25,33 @@
   <meta charset="utf-8">
   <meta http-equiv='content-language' content='en'>
   <title>TallyJ - @(ViewBag.Title ?? currentMenu.CurrentPageTitle ?? ViewBag.Caption)</title>
+  @{
+    var socialPageTitle = ViewBag.Title ?? currentMenu.CurrentPageTitle ?? ViewBag.Caption ?? "Bahá’í Election System";
+    var socialTitle = "TallyJ - " + socialPageTitle;
+    var socialDescription = "Helping tellers run Bahá’í elections since 2001: voter registration, ballot entry, tallying, and online voting.";
+    var requestHost = Request.Url == null ? null : Request.Url.Host;
+    var isLocalHost = string.IsNullOrEmpty(requestHost)
+      || requestHost.Equals("localhost", StringComparison.OrdinalIgnoreCase)
+      || requestHost == "127.0.0.1";
+    var socialOrigin = "https://" + (isLocalHost ? "tallyj.com" : requestHost);
+    var socialPath = Request.Url == null || string.IsNullOrEmpty(Request.Url.AbsolutePath) ? "/" : Request.Url.AbsolutePath;
+    var socialUrl = socialOrigin + socialPath;
+    var socialImage = socialOrigin + Url.Content("~/Images/featured-tallyj.png");
+  }
+  <meta property="og:title" content="@socialTitle" />
+  <meta property="og:description" content="@socialDescription" />
+  <meta property="og:url" content="@socialUrl" />
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="TallyJ" />
+  <meta property="og:image" content="@socialImage" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="627" />
+  <meta property="og:image:alt" content="@socialTitle" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="@socialTitle" />
+  <meta name="twitter:description" content="@socialDescription" />
+  <meta name="twitter:image" content="@socialImage" />
+  <meta name="twitter:creator" content="@@glenlittle" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="msvalidate.01" content="BDA801FC5063E31B10FDB52B7C0ADC14">
   @RenderSection("Metas", false)
