@@ -776,6 +776,7 @@
     <Content Include="Images\google.png" />
     <Content Include="Images\close.png" />
     <Content Include="Images\favicon.ico" />
+    <Content Include="Images\featured-tallyj.png" />
     <Content Include="Images\gplus-16.png" />
     <Content Include="Images\keys.png" />
     <Content Include="Images\Logo150.png" />
