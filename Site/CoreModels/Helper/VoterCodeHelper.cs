@@ -317,10 +317,12 @@ namespace TallyJ.CoreModels.Helper
           return;
         }
 
+        // VerifyAttempts counts codes sent. Wrong guesses are stored separately and cleared here.
         onlineVoter.VerifyCode = newCode;
         onlineVoter.VerifyCodeDate = utcNow;
         onlineVoter.VerifyAttempts = attempts + 1;
         onlineVoter.VerifyAttemptsStart = utcNow;
+        VoterCodeAttempts.Reset(onlineVoter);
       }
 
       db.SaveChanges();
@@ -491,9 +493,15 @@ namespace TallyJ.CoreModels.Helper
 
     public object LoginWithCode(string code)
     {
-      string[] parts;
+      if (code.HasNoContent())
+      {
+        return FailedLogin("Invalid code.");
+      }
 
-      if (code.StartsWith("K_") && code.Length == 8)
+      string[] parts;
+      var isKiosk = code.StartsWith("K_") && code.Length == 8;
+
+      if (isKiosk)
       {
         parts = new[] { "K", code.Substring(2).ToUpper(), "kiosk code" };
         code = parts[1];
@@ -505,26 +513,51 @@ namespace TallyJ.CoreModels.Helper
 
       if (parts == null || parts.Length != 3)
       {
-        return new
-        {
-          Success = false,
-          Message = "Unexpected call"
-        };
+        return FailedLogin("Unexpected call");
       }
 
       var voterIdType = parts[0];
       var voterId = parts[1];
       var method = parts[2];
-
+      var clientIp = ClientIp.Current();
       var db = UserSession.GetNewDbContext;
+
+      // A wrong kiosk code does not identify a voter, so the limit is per IP.
+      // While locked, a correct code is rejected too; another IP is not affected.
+      if (isKiosk && new KioskGuessLimiter(db).IsLocked(clientIp))
+      {
+        return FailedLogin(KioskGuessLimiter.LockedMessage);
+      }
 
       var onlineVoter = db.OnlineVoter.FirstOrDefault(ov => ov.VoterId == voterId && ov.VoterIdType == voterIdType);
       if (onlineVoter == null)
-        return new
+      {
+        if (isKiosk)
         {
-          Success = false,
-          Message = "Unknown code" // + voterId.CleanedForErrorMessages()
-        };
+          var limit = new KioskGuessLimiter(db).RecordFailure(clientIp);
+          if (limit != AttemptLimitResult.Recorded)
+          {
+            return FailedLogin(KioskGuessLimiter.LockedMessage);
+          }
+        }
+        else
+        {
+          LogHelper.Add("Invalid voter signin code", false, voterId);
+        }
+
+        return FailedLogin("Unknown code");
+      }
+
+      if (VoterCodeAttempts.IsExhausted(onlineVoter))
+      {
+        if (onlineVoter.VerifyCode != null)
+        {
+          onlineVoter.VerifyCode = null;
+          db.SaveChanges();
+        }
+
+        return FailedLogin(VoterCodeAttempts.CancelledMessage);
+      }
 
       if (onlineVoter.VerifyCode == code)
       {
@@ -532,11 +565,12 @@ namespace TallyJ.CoreModels.Helper
         var age = DateTime.UtcNow - onlineVoter.VerifyCodeDate.GetValueOrDefault().AsUtc();
         if (age.TotalMinutes > EnterCodeWithinMinutes)
           // too late
-          return new
-          {
-            Success = false,
-            Message = "Code expired."
-          };
+          return FailedLogin("Code expired.");
+
+        if (isKiosk)
+        {
+          new KioskGuessLimiter(db).NoteSuccess(clientIp);
+        }
 
         // login now!
         var uniqueId = "V:" + voterId;
@@ -569,6 +603,7 @@ namespace TallyJ.CoreModels.Helper
 
         onlineVoter.VerifyCode = null;
         onlineVoter.VerifyAttempts = 0;
+        VoterCodeAttempts.Reset(onlineVoter);
 
         db.SaveChanges();
 
@@ -584,12 +619,53 @@ namespace TallyJ.CoreModels.Helper
         };
       }
 
-      LogHelper.Add("Invalid voter signin code", true, voterId);
+      // No live code (already used, or never issued). Do not spend a guess against nothing.
+      if (onlineVoter.VerifyCode.HasNoContent())
+      {
+        return FailedLogin("Invalid code.");
+      }
 
+      var guess = VoterCodeAttempts.RegisterWrongGuess(onlineVoter);
+      db.SaveChanges();
+
+      if (guess.JustCancelled)
+      {
+        // One remote event when the code is cancelled. Individual typos stay in the local log.
+        var cancelMessage = isKiosk
+          ? "Kiosk sign-in code cancelled after failed attempts"
+          : $"Voter sign-in code cancelled after {VoterCodeAttempts.Max} failed attempts";
+        LogHelper.Add(cancelMessage, true, isKiosk ? "" : voterId);
+      }
+      else if (!isKiosk)
+      {
+        LogHelper.Add("Invalid voter signin code", false, voterId);
+      }
+
+      if (isKiosk)
+      {
+        var limit = new KioskGuessLimiter(db).RecordFailure(clientIp);
+        if (limit != AttemptLimitResult.Recorded)
+        {
+          return FailedLogin(guess.JustCancelled
+            ? VoterCodeAttempts.CancelledMessage
+            : KioskGuessLimiter.LockedMessage);
+        }
+      }
+
+      if (guess.JustCancelled)
+      {
+        return FailedLogin(VoterCodeAttempts.CancelledMessage);
+      }
+
+      return FailedLogin("Invalid code.");
+    }
+
+    private static object FailedLogin(string message)
+    {
       return new
       {
         Success = false,
-        Message = "Invalid code."
+        Message = message
       };
     }
 

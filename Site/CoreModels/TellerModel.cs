@@ -11,6 +11,7 @@ using System.Security.Claims;
 using Microsoft.AspNet.Identity;
 using Microsoft.Owin.Security;
 using Microsoft.Owin.Security.Cookies;
+using TallyJ.CoreModels.Helper;
 using TallyJ.EF;
 
 
@@ -21,22 +22,34 @@ namespace TallyJ.CoreModels
         public JsonResult GrantAccessToGuestTeller(Guid electionGuid, string codeToTry, Guid oldComputerGuid)
         {
             var electionModel = new ElectionHelper();
+            var clientIp = ClientIp.Current();
+            var joinLimiter = new GuestTellerJoinLimiter(Db);
 
             var passcode = new PublicElectionLister().GetPasscodeIfAvailable(electionGuid);
-            if (passcode == null)
+            var decision = joinLimiter.Evaluate(electionGuid, passcode, codeToTry, clientIp);
+            if (decision == TellerJoinDecision.UnknownElection)
             {
                 return new
                 {
-                    Error = "Sorry, unknown election id"
+                    Error = GuestTellerJoinLimiter.UnknownElectionMessage
                 }.AsJsonResult();
             }
-            if (passcode != codeToTry)
+            if (decision == TellerJoinDecision.InvalidCode)
             {
                 return new
                 {
-                    Error = "Sorry, invalid code entered"
+                    Error = GuestTellerJoinLimiter.InvalidCodeMessage
                 }.AsJsonResult();
             }
+            if (decision == TellerJoinDecision.Locked)
+            {
+                return new
+                {
+                    Error = GuestTellerJoinLimiter.LockedMessage
+                }.AsJsonResult();
+            }
+
+            joinLimiter.NoteSuccess(electionGuid, clientIp);
 
             if (!UserSession.IsLoggedInTeller)
             {

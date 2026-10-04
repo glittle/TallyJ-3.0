@@ -474,6 +474,11 @@
     <Compile Include="CoreModels\Helper\TwilioHelper.cs" />
     <Compile Include="CoreModels\Helper\SmsOtherInfo.cs" />
     <Compile Include="CoreModels\Helper\VoterCodeHelper.cs" />
+    <Compile Include="CoreModels\Helper\VoterCodeAttempts.cs" />
+    <Compile Include="CoreModels\Helper\ClientIp.cs" />
+    <Compile Include="CoreModels\Helper\SignInAttemptLog.cs" />
+    <Compile Include="CoreModels\Helper\KioskGuessLimiter.cs" />
+    <Compile Include="CoreModels\Helper\GuestTellerJoinLimiter.cs" />
     <Compile Include="CoreModels\Helper\WhatsAppGreenApiHelper.cs" />
     <Compile Include="CoreModels\Hubs\BallotImportHub.cs" />
     <Compile Include="CoreModels\Hubs\VoterCodeHub.cs" />
