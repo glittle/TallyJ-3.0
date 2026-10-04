@@ -301,6 +301,7 @@
       <HintPath>..\packages\System.Threading.Tasks.Extensions.4.6.3\lib\net462\System.Threading.Tasks.Extensions.dll</HintPath>
     </Reference>
     <Reference Include="System.Transactions" />
+    <Reference Include="System.Web" />
     <Reference Include="System.Web.Extensions" />
     <Reference Include="System.Web.Mvc, Version=5.3.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.AspNet.Mvc.5.3.0\lib\net45\System.Web.Mvc.dll</HintPath>
@@ -327,6 +328,7 @@
     <Compile Include="BusinessTests\MiscBallotTests.cs" />
     <Compile Include="BusinessTests\OnlineVoteHelperTests.cs" />
     <Compile Include="BusinessTests\LoginAttemptLimitTests.cs" />
+    <Compile Include="BusinessTests\JsonGetDeniedTests.cs" />
     <Compile Include="BusinessTests\PeopleModelTests.cs" />
     <Compile Include="BusinessTests\TestDbContext.cs" />
     <Compile Include="BusinessTests\TestDbSet.cs" />

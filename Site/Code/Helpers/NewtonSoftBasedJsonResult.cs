@@ -16,9 +16,17 @@ namespace TallyJ.Code.Helpers
       }
 
       if (JsonRequestBehavior == JsonRequestBehavior.DenyGet
-          && context.HttpContext.Request.HttpMethod.ToUpperInvariant() == "GET")
+          && string.Equals(context.HttpContext.Request.HttpMethod, "GET", StringComparison.OrdinalIgnoreCase))
       {
-        base.ExecuteResult(context); // Delegate back to allow the default exception to be thrown
+        // A scanner GET must not throw. The exception became a 500, and Application_Error
+        // logged it and sent IFTTT. 405 ends the request with no exception to handle.
+        var denied = context.HttpContext.Response;
+        denied.StatusCode = 405;
+        denied.TrySkipIisCustomErrors = true;
+        denied.AppendHeader("Allow", "POST");
+        denied.ContentType = "text/plain";
+        denied.Write("Method Not Allowed");
+        return;
       }
 
       var response = context.HttpContext.Response;
