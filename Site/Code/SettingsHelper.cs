@@ -23,6 +23,18 @@ namespace TallyJ.Code
     public static int KioskCodeMaxFailedGuesses => AtLeastOne(Get("KioskCodeMaxFailedGuesses", 5));
     public static int KioskCodeGuessWindowMinutes => AtLeastOne(Get("KioskCodeGuessWindowMinutes", 15));
 
+    /// <summary>
+    /// Wrong kiosk codes from every IP. A wrong code does not identify an election, so this is site-wide.
+    /// Kept well above the per-IP limit so one polling place does not trip it.
+    /// </summary>
+    public static int KioskCodeMaxFailedSitewide => AtLeastOne(Get("KioskCodeMaxFailedSitewide", 200));
+
+    /// <summary>
+    /// Comma-separated addresses of reverse proxies allowed to supply X-Forwarded-For.
+    /// Empty means the header is ignored and the TCP peer (UserHostAddress) is used.
+    /// </summary>
+    public static string TrustedProxyIps => Get("TrustedProxyIps", "");
+
     /// <summary>Wrong guest-teller codes from one IP for one election.</summary>
     public static int TellerJoinMaxFailedPerIp => AtLeastOne(Get("TellerJoinMaxFailedPerIp", 5));
     public static int TellerJoinIpWindowMinutes => AtLeastOne(Get("TellerJoinIpWindowMinutes", 15));

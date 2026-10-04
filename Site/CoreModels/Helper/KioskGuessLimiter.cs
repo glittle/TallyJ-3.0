@@ -6,7 +6,8 @@ namespace TallyJ.CoreModels.Helper
 {
   /// <summary>
   /// Kiosk login sends the secret as the voter id, so a wrong code never finds a row to cancel.
-  /// Limit those guesses per IP. A correct code from that IP clears the recent misses.
+  /// Limit those guesses per IP, plus a higher site-wide cap so rotating addresses cannot
+  /// guess without limit. A correct code from an IP clears that IP's misses only.
   /// </summary>
   public class KioskGuessLimiter
   {
@@ -17,17 +18,19 @@ namespace TallyJ.CoreModels.Helper
     private readonly ITallyJDbContext _db;
     public int MaxAttempts { get; }
     public int WindowMinutes { get; }
+    public int MaxSitewide { get; }
 
-    public KioskGuessLimiter(ITallyJDbContext db, int? maxAttempts = null, int? windowMinutes = null)
+    public KioskGuessLimiter(ITallyJDbContext db, int? maxAttempts = null, int? windowMinutes = null, int? maxSitewide = null)
     {
       _db = db;
       MaxAttempts = maxAttempts ?? SettingsHelper.KioskCodeMaxFailedGuesses;
       WindowMinutes = windowMinutes ?? SettingsHelper.KioskCodeGuessWindowMinutes;
+      MaxSitewide = maxSitewide ?? SettingsHelper.KioskCodeMaxFailedSitewide;
     }
 
     public bool IsLocked(string clientIp)
     {
-      return FailureCount(clientIp) >= MaxAttempts;
+      return IsIpLocked(clientIp) || IsSitewideLocked();
     }
 
     public AttemptLimitResult RecordFailure(string clientIp)
@@ -40,12 +43,18 @@ namespace TallyJ.CoreModels.Helper
 
       SignInAttemptLog.Write(Guid.Empty, FailurePrefix + ip, false);
 
-      if (!IsLocked(ip))
+      var ipLocked = IsIpLocked(ip);
+      var sitewideLocked = IsSitewideLocked();
+      if (!ipLocked && !sitewideLocked)
       {
         return AttemptLimitResult.Recorded;
       }
 
-      SignInAttemptLog.Write(Guid.Empty, "Kiosk sign-in locked after repeated failures ip=" + ip, true);
+      // One remote event. The site-wide lock is the one that affects every election.
+      var message = sitewideLocked
+        ? "Kiosk sign-in locked site-wide after repeated failures"
+        : "Kiosk sign-in locked after repeated failures ip=" + ip;
+      SignInAttemptLog.Write(Guid.Empty, message, true);
       return AttemptLimitResult.JustLocked;
     }
 
@@ -62,6 +71,18 @@ namespace TallyJ.CoreModels.Helper
       }
 
       SignInAttemptLog.Write(Guid.Empty, SuccessPrefix + ip, false);
+    }
+
+    private bool IsIpLocked(string clientIp)
+    {
+      return FailureCount(clientIp) >= MaxAttempts;
+    }
+
+    private bool IsSitewideLocked()
+    {
+      var since = DateTime.UtcNow.AddMinutes(-WindowMinutes);
+      var count = SignInAttemptLog.CountSince(_db, since, null, FailurePrefix, null);
+      return count >= MaxSitewide;
     }
 
     private int FailureCount(string clientIp)

@@ -49,6 +49,8 @@ namespace Tests.BusinessTests
       SettingsHelper.VoterCodeMaxFailedGuesses.ShouldEqual(5);
       SettingsHelper.KioskCodeMaxFailedGuesses.ShouldEqual(5);
       SettingsHelper.KioskCodeGuessWindowMinutes.ShouldEqual(15);
+      SettingsHelper.KioskCodeMaxFailedSitewide.ShouldEqual(200);
+      SettingsHelper.TrustedProxyIps.ShouldEqual("");
       SettingsHelper.TellerJoinMaxFailedPerIp.ShouldEqual(5);
       SettingsHelper.TellerJoinIpWindowMinutes.ShouldEqual(15);
       SettingsHelper.TellerJoinMaxFailedPerElection.ShouldEqual(30);
@@ -393,6 +395,78 @@ namespace Tests.BusinessTests
       ClientIp.Key("203.0.113.5").ShouldEqual("203.0.113.5");
       ClientIp.Key("bad ip!\r\n").ShouldEqual("badip");
       ClientIp.ReadFromRequest().ShouldEqual("");
+    }
+
+    [TestMethod]
+    public void Client_address_uses_the_peer_unless_that_peer_is_a_trusted_proxy()
+    {
+      // A client can set X-Forwarded-For to anything. With an empty trusted list it is ignored.
+      ClientIp.SelectClientAddress("203.0.113.10", "198.51.100.1, 10.1.1.1", "")
+        .ShouldEqual("203.0.113.10");
+      ClientIp.SelectClientAddress("203.0.113.10", "1.2.3.4", null)
+        .ShouldEqual("203.0.113.10");
+
+      // Trusted peer: the rightmost hop that is not itself a trusted proxy.
+      ClientIp.SelectClientAddress("10.0.0.5", "1.2.3.4, 198.51.100.8", "10.0.0.5")
+        .ShouldEqual("198.51.100.8");
+
+      // A fake address prepended by the client is not the one the proxy appended.
+      ClientIp.SelectClientAddress("10.0.0.5", "8.8.8.8, 198.51.100.8, 10.0.0.6", "10.0.0.5, 10.0.0.6")
+        .ShouldEqual("198.51.100.8");
+
+      ClientIp.SelectClientAddress("10.0.0.5", "", "10.0.0.5").ShouldEqual("10.0.0.5");
+      ClientIp.SelectClientAddress("10.0.0.5", "10.0.0.6", "10.0.0.5; 10.0.0.6")
+        .ShouldEqual("10.0.0.5");
+
+      ClientIp.SelectClientAddress("10.0.0.5:443", "\"198.51.100.9\"", "10.0.0.5")
+        .ShouldEqual("198.51.100.9");
+      ClientIp.SelectClientAddress("2001:DB8::5", "2001:db8::9, 2001:DB8::6", "2001:db8::5 2001:db8::6")
+        .ShouldEqual("2001:db8::9");
+    }
+
+    [TestMethod]
+    public void Kiosk_sitewide_cap_stops_a_new_ip_and_one_ip_cannot_reach_it()
+    {
+      var limiter = new KioskGuessLimiter(_db, maxAttempts: 10, windowMinutes: 15, maxSitewide: 4);
+
+      limiter.RecordFailure("198.51.100.1").ShouldEqual(AttemptLimitResult.Recorded);
+      limiter.RecordFailure("198.51.100.2").ShouldEqual(AttemptLimitResult.Recorded);
+      limiter.RecordFailure("198.51.100.3").ShouldEqual(AttemptLimitResult.Recorded);
+      limiter.RecordFailure("198.51.100.4").ShouldEqual(AttemptLimitResult.JustLocked);
+
+      limiter.IsLocked("198.51.100.9").ShouldEqual(true);
+      var before = _db.C_Log.Count();
+      limiter.RecordFailure("198.51.100.9").ShouldEqual(AttemptLimitResult.AlreadyLocked);
+      _db.C_Log.Count().ShouldEqual(before);
+      CountContaining("Kiosk sign-in locked site-wide").ShouldEqual(1);
+      CountDetails(KioskGuessLimiter.FailurePrefix).ShouldEqual(4);
+
+      // A correct code clears that IP only. The site-wide count stays.
+      limiter.NoteSuccess("198.51.100.1");
+      limiter.IsLocked("198.51.100.1").ShouldEqual(true);
+      limiter.IsLocked("198.51.100.9").ShouldEqual(true);
+
+      foreach (var row in _db.C_Log.ToList())
+      {
+        row.AsOf = DateTime.UtcNow.AddMinutes(-30);
+      }
+
+      limiter.IsLocked("198.51.100.9").ShouldEqual(false);
+    }
+
+    [TestMethod]
+    public void One_kiosk_ip_stops_at_its_own_limit_before_the_sitewide_cap()
+    {
+      var limiter = new KioskGuessLimiter(_db, maxAttempts: 2, windowMinutes: 15, maxSitewide: 5);
+
+      limiter.RecordFailure("198.51.100.1").ShouldEqual(AttemptLimitResult.Recorded);
+      limiter.RecordFailure("198.51.100.1").ShouldEqual(AttemptLimitResult.JustLocked);
+      limiter.RecordFailure("198.51.100.1").ShouldEqual(AttemptLimitResult.AlreadyLocked);
+
+      CountDetails(KioskGuessLimiter.FailurePrefix).ShouldEqual(2);
+      CountContaining("Kiosk sign-in locked site-wide").ShouldEqual(0);
+      limiter.IsLocked("198.51.100.2").ShouldEqual(false);
+      limiter.RecordFailure("198.51.100.2").ShouldEqual(AttemptLimitResult.Recorded);
     }
 
     private void AddVoter(string type, string voterId, string code, DateTime? issuedAt = null)
