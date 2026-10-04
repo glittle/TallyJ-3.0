@@ -45,6 +45,11 @@ namespace TallyJ.CoreModels.Helper
       ElectionWindowMinutes = electionWindowMinutes ?? SettingsHelper.TellerJoinElectionWindowMinutes;
     }
 
+    public static string GateKeyFor(Guid electionGuid)
+    {
+      return "tallyj:teller:" + electionGuid.ToString("N");
+    }
+
     public TellerJoinDecision Evaluate(Guid electionGuid, string actualPasscode, string codeToTry, string clientIp)
     {
       // Closed or unknown elections keep today's message and are not counted.
@@ -53,28 +58,68 @@ namespace TallyJ.CoreModels.Helper
         return TellerJoinDecision.UnknownElection;
       }
 
-      if (IsLocked(electionGuid, clientIp))
+      try
+      {
+        return AttemptGate.Run(_db, GateKeyFor(electionGuid), () =>
+          EvaluateWithinGate(electionGuid, actualPasscode, codeToTry, clientIp));
+      }
+      catch (AttemptGateDeniedException)
+      {
+        return TellerJoinDecision.Locked;
+      }
+    }
+
+    public bool IsLocked(Guid electionGuid, string clientIp)
+    {
+      try
+      {
+        return AttemptGate.Run(_db, GateKeyFor(electionGuid), () => IsLockedWithinGate(electionGuid, clientIp));
+      }
+      catch (AttemptGateDeniedException)
+      {
+        return true;
+      }
+    }
+
+    public void NoteSuccess(Guid electionGuid, string clientIp)
+    {
+      try
+      {
+        AttemptGate.Run(_db, GateKeyFor(electionGuid), () => NoteSuccessWithinGate(electionGuid, clientIp));
+      }
+      catch (AttemptGateDeniedException)
+      {
+        // Leave the streak in place rather than clearing it without the lock.
+      }
+    }
+
+    private TellerJoinDecision EvaluateWithinGate(Guid electionGuid, string actualPasscode, string codeToTry, string clientIp)
+    {
+      if (IsLockedWithinGate(electionGuid, clientIp))
       {
         return TellerJoinDecision.Locked;
       }
 
       if (actualPasscode == codeToTry)
       {
+        // Clear this IP before releasing the lock, so a failure waiting behind us cannot
+        // lock the IP and then have this success wipe that lock from outside the section.
+        NoteSuccessWithinGate(electionGuid, clientIp);
         return TellerJoinDecision.Allow;
       }
 
-      var result = RecordFailure(electionGuid, clientIp);
+      var result = RecordFailureWithinGate(electionGuid, clientIp);
       return result == AttemptLimitResult.Recorded
         ? TellerJoinDecision.InvalidCode
         : TellerJoinDecision.Locked;
     }
 
-    public bool IsLocked(Guid electionGuid, string clientIp)
+    private bool IsLockedWithinGate(Guid electionGuid, string clientIp)
     {
       return IsIpLocked(electionGuid, clientIp) || IsElectionLocked(electionGuid);
     }
 
-    public void NoteSuccess(Guid electionGuid, string clientIp)
+    private void NoteSuccessWithinGate(Guid electionGuid, string clientIp)
     {
       var ip = ClientIp.Key(clientIp);
       if (IpFailureCount(electionGuid, ip) == 0)
@@ -85,10 +130,10 @@ namespace TallyJ.CoreModels.Helper
       SignInAttemptLog.Write(electionGuid, SuccessPrefix + ip, false);
     }
 
-    private AttemptLimitResult RecordFailure(Guid electionGuid, string clientIp)
+    private AttemptLimitResult RecordFailureWithinGate(Guid electionGuid, string clientIp)
     {
       var ip = ClientIp.Key(clientIp);
-      if (IsLocked(electionGuid, ip))
+      if (IsLockedWithinGate(electionGuid, ip))
       {
         return AttemptLimitResult.AlreadyLocked;
       }

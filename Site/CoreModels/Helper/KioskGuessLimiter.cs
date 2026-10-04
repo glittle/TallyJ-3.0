@@ -11,6 +11,7 @@ namespace TallyJ.CoreModels.Helper
   /// </summary>
   public class KioskGuessLimiter
   {
+    public const string GateKey = "tallyj:kiosk";
     public const string FailurePrefix = "Kiosk sign-in failed ip=";
     public const string SuccessPrefix = "Kiosk sign-in succeeded ip=";
     public const string LockedMessage = "Too many attempts. Please wait before trying again.";
@@ -30,13 +31,53 @@ namespace TallyJ.CoreModels.Helper
 
     public bool IsLocked(string clientIp)
     {
-      return IsIpLocked(clientIp) || IsSitewideLocked();
+      try
+      {
+        return AttemptGate.Run(_db, GateKey, () => IsLockedWithinGate(clientIp));
+      }
+      catch (AttemptGateDeniedException)
+      {
+        return true;
+      }
     }
 
     public AttemptLimitResult RecordFailure(string clientIp)
     {
+      try
+      {
+        return AttemptGate.Run(_db, GateKey, () => RecordFailureWithinGate(clientIp));
+      }
+      catch (AttemptGateDeniedException)
+      {
+        return AttemptLimitResult.AlreadyLocked;
+      }
+    }
+
+    /// <summary>
+    /// A right code ends the IP's current miss streak. No log row when there is nothing to clear,
+    /// so a normal kiosk login does not add an event.
+    /// </summary>
+    public void NoteSuccess(string clientIp)
+    {
+      try
+      {
+        AttemptGate.Run(_db, GateKey, () => NoteSuccessWithinGate(clientIp));
+      }
+      catch (AttemptGateDeniedException)
+      {
+        // Leave the streak in place rather than clearing it without the lock.
+      }
+    }
+
+    private bool IsLockedWithinGate(string clientIp)
+    {
+      return IsIpLocked(clientIp) || IsSitewideLocked();
+    }
+
+    private AttemptLimitResult RecordFailureWithinGate(string clientIp)
+    {
       var ip = ClientIp.Key(clientIp);
-      if (IsLocked(ip))
+      if (IsLockedWithinGate(ip))
       {
         return AttemptLimitResult.AlreadyLocked;
       }
@@ -58,11 +99,7 @@ namespace TallyJ.CoreModels.Helper
       return AttemptLimitResult.JustLocked;
     }
 
-    /// <summary>
-    /// A right code ends the IP's current miss streak. No log row when there is nothing to clear,
-    /// so a normal kiosk login does not add an event.
-    /// </summary>
-    public void NoteSuccess(string clientIp)
+    private void NoteSuccessWithinGate(string clientIp)
     {
       var ip = ClientIp.Key(clientIp);
       if (FailureCount(ip) == 0)

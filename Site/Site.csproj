@@ -475,6 +475,7 @@
     <Compile Include="CoreModels\Helper\SmsOtherInfo.cs" />
     <Compile Include="CoreModels\Helper\VoterCodeHelper.cs" />
     <Compile Include="CoreModels\Helper\VoterCodeAttempts.cs" />
+    <Compile Include="CoreModels\Helper\AttemptGate.cs" />
     <Compile Include="CoreModels\Helper\ClientIp.cs" />
     <Compile Include="CoreModels\Helper\SignInAttemptLog.cs" />
     <Compile Include="CoreModels\Helper\KioskGuessLimiter.cs" />

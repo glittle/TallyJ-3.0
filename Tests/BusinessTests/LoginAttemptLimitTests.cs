@@ -2,6 +2,7 @@ using System;
 using System.Collections.Concurrent;
 using System.Linq;
 using System.Reflection;
+using System.Threading;
 using System.Web.Mvc;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using TallyJ.Code;
@@ -183,20 +184,31 @@ namespace Tests.BusinessTests
       helper.LoginWithCode("000000");
       helper.LoginWithCode("000000");
 
-      Exception thrown = null;
-      try
-      {
-        helper.LoginWithCode("123456");
-      }
-      catch (Exception ex)
-      {
-        thrown = ex;
-      }
+      // Stops before cookie sign-in. A match consumes the code and does not add a guess.
+      var decision = helper.DecideLogin("123456");
 
-      // Sign-in needs a web request, which these tests do not have. Reaching it means the guess was accepted.
-      Assert.IsNotNull(thrown, "A right code should get as far as signing in.");
-      Voter().VerifyCode.ShouldEqual("123456");
-      VoterCodeAttempts.Read(Voter()).FailedGuesses.ShouldEqual(2);
+      decision.Accepted.ShouldEqual(true);
+      Assert.IsNull(decision.Failure, "A right code should be accepted.");
+      Voter().VerifyCode.ShouldEqual(null);
+      VoterCodeAttempts.Read(Voter()).FailedGuesses.ShouldEqual(0);
+      CountDetails("Invalid voter signin code").ShouldEqual(2);
+    }
+
+    [TestMethod]
+    public void Parallel_voter_guesses_cancel_the_code_once()
+    {
+      AddVoter("E", "voter@example.com", "123456");
+      UserSession.PendingVoterLogin = "E\tvoter@example.com\temail";
+      var helper = new VoterCodeHelper("hub");
+      var results = new LoginCodeDecision[10];
+
+      RunTogether(10, n => results[n] = helper.DecideLogin("000000"));
+
+      results.Count(d => Message(d.Failure) == "Invalid code.").ShouldEqual(4);
+      results.Count(d => Message(d.Failure) == VoterCodeAttempts.CancelledMessage).ShouldEqual(6);
+      Voter().VerifyCode.ShouldEqual(null);
+      VoterCodeAttempts.Read(Voter()).FailedGuesses.ShouldEqual(5);
+      CountContaining("Voter sign-in code cancelled").ShouldEqual(1);
     }
 
     [TestMethod]
@@ -469,6 +481,35 @@ namespace Tests.BusinessTests
       limiter.RecordFailure("198.51.100.2").ShouldEqual(AttemptLimitResult.Recorded);
     }
 
+    [TestMethod]
+    public void Parallel_kiosk_guesses_from_one_ip_stop_at_the_limit()
+    {
+      var limiter = new KioskGuessLimiter(_db, maxAttempts: 5, windowMinutes: 15, maxSitewide: 50);
+      var results = new AttemptLimitResult[12];
+
+      RunTogether(12, n => results[n] = limiter.RecordFailure("198.51.100.40"));
+
+      CountDetails(KioskGuessLimiter.FailurePrefix).ShouldEqual(5);
+      results.Count(r => r == AttemptLimitResult.Recorded || r == AttemptLimitResult.JustLocked).ShouldEqual(5);
+      results.Count(r => r == AttemptLimitResult.AlreadyLocked).ShouldEqual(7);
+      limiter.IsLocked("198.51.100.41").ShouldEqual(false);
+    }
+
+    [TestMethod]
+    public void Parallel_teller_guesses_from_one_ip_stop_at_the_limit()
+    {
+      var electionGuid = Guid.NewGuid();
+      var limiter = new GuestTellerJoinLimiter(_db, maxPerIp: 5, ipWindowMinutes: 15, maxPerElection: 100, electionWindowMinutes: 5);
+      var results = new TellerJoinDecision[12];
+
+      RunTogether(12, n => results[n] = limiter.Evaluate(electionGuid, "secret", "wrong", "203.0.113.77"));
+
+      CountDetails(GuestTellerJoinLimiter.FailurePrefix).ShouldEqual(5);
+      results.Count(r => r == TellerJoinDecision.InvalidCode).ShouldEqual(4);
+      results.Count(r => r == TellerJoinDecision.Locked).ShouldEqual(8);
+      results.Count(r => r == TellerJoinDecision.Allow).ShouldEqual(0);
+    }
+
     private void AddVoter(string type, string voterId, string code, DateTime? issuedAt = null)
     {
       _db.OnlineVoter.Add(new OnlineVoter
@@ -534,6 +575,53 @@ namespace Tests.BusinessTests
     private static string Error(JsonResult result)
     {
       return Prop<string>(result.Data, "Error");
+    }
+
+    private static void RunTogether(int count, Action<int> action)
+    {
+      var barrier = new Barrier(count);
+      var errors = new ConcurrentQueue<Exception>();
+      var threads = new Thread[count];
+      for (var i = 0; i < count; i++)
+      {
+        var n = i;
+        threads[n] = new Thread(() =>
+        {
+          var entered = false;
+          try
+          {
+            barrier.SignalAndWait();
+            entered = true;
+            action(n);
+          }
+          catch (Exception ex)
+          {
+            errors.Enqueue(ex);
+            if (!entered)
+            {
+              try
+              {
+                barrier.RemoveParticipant();
+              }
+              catch (Exception)
+              {
+                // The barrier may already have moved on.
+              }
+            }
+          }
+        });
+        threads[n].Start();
+      }
+
+      foreach (var thread in threads)
+      {
+        thread.Join();
+      }
+
+      if (!errors.IsEmpty)
+      {
+        Assert.Fail(errors.First().ToString());
+      }
     }
 
     private static T Prop<T>(object source, string name)

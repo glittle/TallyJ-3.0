@@ -186,8 +186,23 @@ namespace TallyJ.CoreModels.Helper
     /// <param name="method">Method used for verification (e.g., "whatsapp", "sms", "voice")</param>
     private void CreateOrUpdateOnlineVoter(VoterIdTypeEnum voterIdType, string voterId, string newCode, out string errorMessage, ref Guid? openElectionGuid, ref Guid? personGuid, bool reset = false, string method = null)
     {
-      // find or make this OnlineVoter record
+      var write = new VoterCodeWrite
+      {
+        ElectionGuid = openElectionGuid,
+        PersonGuid = personGuid
+      };
+      var gateKey = voterIdType == VoterIdTypeEnum.Kiosk
+        ? KioskGuessLimiter.GateKey
+        : VoterCodeAttempts.GateKey(voterIdType.Value, voterId);
       var db = UserSession.GetNewDbContext;
+      AttemptGate.Run(db, gateKey, () => WriteOnlineVoter(db, voterIdType, voterId, newCode, write, reset, method));
+      errorMessage = write.Error;
+      openElectionGuid = write.ElectionGuid;
+      personGuid = write.PersonGuid;
+    }
+
+    private void WriteOnlineVoter(ITallyJDbContext db, VoterIdTypeEnum voterIdType, string voterId, string newCode, VoterCodeWrite write, bool reset, string method)
+    {
       OnlineVoterOtherInfo electionInfoForDb = null;
       var totalElections = 0;
       var openElectionsCount = 0;
@@ -195,9 +210,9 @@ namespace TallyJ.CoreModels.Helper
       if (voterIdType == VoterIdTypeEnum.Kiosk)
       {
         // for kiosk, we expect to have the electionGuid and personGuid passed in
-        if (openElectionGuid == null || personGuid == null)
+        if (write.ElectionGuid == null || write.PersonGuid == null)
         {
-          errorMessage = "Invalid kiosk code.";
+          write.Error = "Invalid kiosk code.";
           return;
         }
       }
@@ -227,19 +242,19 @@ namespace TallyJ.CoreModels.Helper
 
         // get the first open election guid
         var firstElectionPersonMatch = openElectionInfos.FirstOrDefault();
-        openElectionGuid = firstElectionPersonMatch?.ElectionGuid;
-        personGuid = firstElectionPersonMatch?.PersonGuid;
+        write.ElectionGuid = firstElectionPersonMatch?.ElectionGuid;
+        write.PersonGuid = firstElectionPersonMatch?.PersonGuid;
 
-        if (openElectionGuid == Guid.Empty)
+        if (write.ElectionGuid == Guid.Empty)
         {
-          openElectionGuid = null;
+          write.ElectionGuid = null;
         }
 
         // don't proceed if not in any open elections
-        if (openElectionGuid == null)
+        if (write.ElectionGuid == null)
         {
           //errorMessage = "NoneOpen";
-          errorMessage = GenericResultMsg;
+          write.Error = GenericResultMsg;
           return;
         }
 
@@ -313,7 +328,7 @@ namespace TallyJ.CoreModels.Helper
 
         if (attempts >= UserAttemptMax)
         {
-          errorMessage = "Too many attempts. Please wait before trying again.";
+          write.Error = "Too many attempts. Please wait before trying again.";
           return;
         }
 
@@ -327,9 +342,7 @@ namespace TallyJ.CoreModels.Helper
 
       db.SaveChanges();
 
-      errorMessage = "";
-
-      return;
+      write.Error = "";
     }
 
     private void CheckSiteUsageThresholds(out string message)
@@ -493,9 +506,28 @@ namespace TallyJ.CoreModels.Helper
 
     public object LoginWithCode(string code)
     {
+      var decision = DecideLogin(code);
+      if (!decision.Accepted)
+      {
+        return decision.Failure;
+      }
+
+      SignIn(decision);
+      return new
+      {
+        Success = true
+      };
+    }
+
+    /// <summary>
+    /// Decides a voter-code attempt and records the result. Stops before cookie sign-in.
+    /// A matching code is consumed here, inside the same critical section as the guess count.
+    /// </summary>
+    public LoginCodeDecision DecideLogin(string code)
+    {
       if (code.HasNoContent())
       {
-        return FailedLogin("Invalid code.");
+        return RejectLogin("Invalid code.");
       }
 
       string[] parts;
@@ -513,7 +545,7 @@ namespace TallyJ.CoreModels.Helper
 
       if (parts == null || parts.Length != 3)
       {
-        return FailedLogin("Unexpected call");
+        return RejectLogin("Unexpected call");
       }
 
       var voterIdType = parts[0];
@@ -521,12 +553,26 @@ namespace TallyJ.CoreModels.Helper
       var method = parts[2];
       var clientIp = ClientIp.Current();
       var db = UserSession.GetNewDbContext;
+      var gateKey = isKiosk ? KioskGuessLimiter.GateKey : VoterCodeAttempts.GateKey(voterIdType, voterId);
 
+      try
+      {
+        return AttemptGate.Run(db, gateKey, () =>
+          DecideWithinGate(db, code, isKiosk, voterIdType, voterId, method, clientIp));
+      }
+      catch (AttemptGateDeniedException)
+      {
+        return RejectLogin(AttemptGate.BusyMessage);
+      }
+    }
+
+    private LoginCodeDecision DecideWithinGate(ITallyJDbContext db, string code, bool isKiosk, string voterIdType, string voterId, string method, string clientIp)
+    {
       // A wrong kiosk code does not identify a voter, so the limit is per IP.
       // While locked, a correct code is rejected too; another IP is not affected.
       if (isKiosk && new KioskGuessLimiter(db).IsLocked(clientIp))
       {
-        return FailedLogin(KioskGuessLimiter.LockedMessage);
+        return RejectLogin(KioskGuessLimiter.LockedMessage);
       }
 
       var onlineVoter = db.OnlineVoter.FirstOrDefault(ov => ov.VoterId == voterId && ov.VoterIdType == voterIdType);
@@ -537,7 +583,7 @@ namespace TallyJ.CoreModels.Helper
           var limit = new KioskGuessLimiter(db).RecordFailure(clientIp);
           if (limit != AttemptLimitResult.Recorded)
           {
-            return FailedLogin(KioskGuessLimiter.LockedMessage);
+            return RejectLogin(KioskGuessLimiter.LockedMessage);
           }
         }
         else
@@ -545,7 +591,7 @@ namespace TallyJ.CoreModels.Helper
           LogHelper.Add("Invalid voter signin code", false, voterId);
         }
 
-        return FailedLogin("Unknown code");
+        return RejectLogin("Unknown code");
       }
 
       if (VoterCodeAttempts.IsExhausted(onlineVoter))
@@ -556,73 +602,43 @@ namespace TallyJ.CoreModels.Helper
           db.SaveChanges();
         }
 
-        return FailedLogin(VoterCodeAttempts.CancelledMessage);
+        return RejectLogin(VoterCodeAttempts.CancelledMessage);
       }
 
       if (onlineVoter.VerifyCode == code)
       {
-        // check if it was done in time
         var age = DateTime.UtcNow - onlineVoter.VerifyCodeDate.GetValueOrDefault().AsUtc();
         if (age.TotalMinutes > EnterCodeWithinMinutes)
-          // too late
-          return FailedLogin("Code expired.");
+        {
+          return RejectLogin("Code expired.");
+        }
 
         if (isKiosk)
         {
           new KioskGuessLimiter(db).NoteSuccess(clientIp);
         }
 
-        // login now!
-        var uniqueId = "V:" + voterId;
-        var claims = new List<Claim>
-        {
-          new("UniqueID", uniqueId),
-          new("VoterId", voterId),
-          new("VoterIdType", voterIdType),
-          new("IsVoter", "true")
-        };
-
-        var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationType);
-
-        var utcNow = DateTime.UtcNow;
-        var authenticationProperties = new AuthenticationProperties
-        {
-          AllowRefresh = true,
-          IsPersistent = false,
-          ExpiresUtc = utcNow.AddHours(1)
-        };
-
-        HttpContext.Current.GetOwinContext().Authentication.SignIn(authenticationProperties, identity);
-
-        UserSession.VoterLastLogin = onlineVoter.WhenLastLogin.AsUtc() ?? DateTime.MinValue;
-        UserSession.VoterLoginSource = method;
-        UserSession.PendingVoterLogin = null;
-
-        // update the db
-        onlineVoter.WhenLastLogin = utcNow;
-
+        // Consume the code before releasing the gate, so a parallel guess cannot reuse it.
         onlineVoter.VerifyCode = null;
         onlineVoter.VerifyAttempts = 0;
         VoterCodeAttempts.Reset(onlineVoter);
-
         db.SaveChanges();
 
-        var logHelper = new LogHelper();
-
-        logHelper.Add($"Voter login via {method} {voterId}", true);
-
-        new VoterPersonalHub().Login(voterId); // in case same voterId is logged into a different computer
-
-        return new
+        return new LoginCodeDecision
         {
-          Success = true
+          Accepted = true,
+          Db = db,
+          Voter = onlineVoter,
+          VoterId = voterId,
+          VoterIdType = voterIdType,
+          Method = method
         };
       }
 
       // No live code (already used, or never issued). Do not spend a guess against nothing.
       if (onlineVoter.VerifyCode.HasNoContent())
       {
-        return FailedLogin("Invalid code.");
+        return RejectLogin("Invalid code.");
       }
 
       var guess = VoterCodeAttempts.RegisterWrongGuess(onlineVoter);
@@ -646,7 +662,7 @@ namespace TallyJ.CoreModels.Helper
         var limit = new KioskGuessLimiter(db).RecordFailure(clientIp);
         if (limit != AttemptLimitResult.Recorded)
         {
-          return FailedLogin(guess.JustCancelled
+          return RejectLogin(guess.JustCancelled
             ? VoterCodeAttempts.CancelledMessage
             : KioskGuessLimiter.LockedMessage);
         }
@@ -654,10 +670,51 @@ namespace TallyJ.CoreModels.Helper
 
       if (guess.JustCancelled)
       {
-        return FailedLogin(VoterCodeAttempts.CancelledMessage);
+        return RejectLogin(VoterCodeAttempts.CancelledMessage);
       }
 
-      return FailedLogin("Invalid code.");
+      return RejectLogin("Invalid code.");
+    }
+
+    private void SignIn(LoginCodeDecision decision)
+    {
+      var uniqueId = "V:" + decision.VoterId;
+      var claims = new List<Claim>
+      {
+        new("UniqueID", uniqueId),
+        new("VoterId", decision.VoterId),
+        new("VoterIdType", decision.VoterIdType),
+        new("IsVoter", "true")
+      };
+
+      var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationType);
+      var utcNow = DateTime.UtcNow;
+      var authenticationProperties = new AuthenticationProperties
+      {
+        AllowRefresh = true,
+        IsPersistent = false,
+        ExpiresUtc = utcNow.AddHours(1)
+      };
+
+      HttpContext.Current.GetOwinContext().Authentication.SignIn(authenticationProperties, identity);
+
+      UserSession.VoterLastLogin = decision.Voter.WhenLastLogin.AsUtc() ?? DateTime.MinValue;
+      UserSession.VoterLoginSource = decision.Method;
+      UserSession.PendingVoterLogin = null;
+
+      decision.Voter.WhenLastLogin = utcNow;
+      decision.Db.SaveChanges();
+
+      new LogHelper().Add($"Voter login via {decision.Method} {decision.VoterId}", true);
+      new VoterPersonalHub().Login(decision.VoterId);
+    }
+
+    private static LoginCodeDecision RejectLogin(string message)
+    {
+      return new LoginCodeDecision
+      {
+        Failure = FailedLogin(message)
+      };
     }
 
     private static object FailedLogin(string message)
@@ -728,5 +785,23 @@ namespace TallyJ.CoreModels.Helper
 
       return kioskCode;
     }
+  }
+
+  public class LoginCodeDecision
+  {
+    public bool Accepted { get; set; }
+    public object Failure { get; set; }
+    internal ITallyJDbContext Db { get; set; }
+    internal OnlineVoter Voter { get; set; }
+    internal string VoterId { get; set; }
+    internal string VoterIdType { get; set; }
+    internal string Method { get; set; }
+  }
+
+  class VoterCodeWrite
+  {
+    public string Error { get; set; }
+    public Guid? ElectionGuid { get; set; }
+    public Guid? PersonGuid { get; set; }
   }
 }

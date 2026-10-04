@@ -49,7 +49,7 @@ namespace TallyJ.CoreModels
                 }.AsJsonResult();
             }
 
-            joinLimiter.NoteSuccess(electionGuid, clientIp);
+            // A right code already cleared this IP inside Evaluate, while the lock was held.
 
             if (!UserSession.IsLoggedInTeller)
             {

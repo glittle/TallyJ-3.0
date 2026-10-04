@@ -16,6 +16,11 @@ namespace TallyJ.CoreModels.Helper
 
     public static int Max => SettingsHelper.VoterCodeMaxFailedGuesses;
 
+    public static string GateKey(string voterIdType, string voterId)
+    {
+      return "tallyj:voter:" + (voterIdType ?? "") + ":" + (voterId ?? "");
+    }
+
     public static bool IsExhausted(OnlineVoter voter)
     {
       return Read(voter).FailedGuesses >= Max;
@@ -59,6 +64,10 @@ namespace TallyJ.CoreModels.Helper
       Write(voter, info);
     }
 
+    /// <summary>
+    /// Increments the counter on this row. Callers serialize this with the following save
+    /// under <see cref="AttemptGate"/>, using <see cref="GateKey"/>.
+    /// </summary>
     public static VoterCodeGuessResult RegisterWrongGuess(OnlineVoter voter)
     {
       var info = Read(voter);
