@@ -1,0 +1,120 @@
+@{
+    ViewBag.Title = "TallyJ API Documentation";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>TallyJ API Documentation</h2>
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">REST API Endpoints</h3>
+            </div>
+            <div class="panel-body">
+                <p>Welcome to the TallyJ Election Management System REST API documentation. This API provides programmatic access to election management functionality.</p>
+                
+                <h4>Base URL</h4>
+                <code>/api/v1</code>
+                
+                <h4>Quick Links</h4>
+                <ul>
+                    <li><a href="/api/v1/docs/openapi.json" target="_blank">OpenAPI Specification (JSON)</a></li>
+                    <li><a href="/api/v1/docs/endpoints" target="_blank">Available Endpoints</a></li>
+                    <li><a href="#swagger-ui">Interactive API Explorer</a></li>
+                </ul>
+                
+                <h4>Available Endpoints</h4>
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Method</th>
+                                <th>Endpoint</th>
+                                <th>Description</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><span class="label label-success">GET</span></td>
+                                <td><code>/api/v1/elections</code></td>
+                                <td>Get all elections</td>
+                            </tr>
+                            <tr>
+                                <td><span class="label label-primary">POST</span></td>
+                                <td><code>/api/v1/elections</code></td>
+                                <td>Create a new election</td>
+                            </tr>
+                            <tr>
+                                <td><span class="label label-success">GET</span></td>
+                                <td><code>/api/v1/elections/{id}</code></td>
+                                <td>Get election by ID</td>
+                            </tr>
+                            <tr>
+                                <td><span class="label label-warning">PUT</span></td>
+                                <td><code>/api/v1/elections/{id}</code></td>
+                                <td>Update election</td>
+                            </tr>
+                            <tr>
+                                <td><span class="label label-danger">DELETE</span></td>
+                                <td><code>/api/v1/elections/{id}</code></td>
+                                <td>Delete election</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row" id="swagger-ui">
+    <div class="col-md-12">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">Interactive API Explorer</h3>
+            </div>
+            <div class="panel-body">
+                <div id="swagger-ui-container"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://unpkg.com/swagger-ui-dist@3.52.5/swagger-ui-bundle.js"></script>
+    <link rel="stylesheet" type="text/css" href="https://unpkg.com/swagger-ui-dist@3.52.5/swagger-ui.css" />
+    
+    <script>
+        window.onload = function() {
+            const ui = SwaggerUIBundle({
+                url: '/api/v1/docs/openapi.json',
+                dom_id: '#swagger-ui-container',
+                deepLinking: true,
+                presets: [
+                    SwaggerUIBundle.presets.apis,
+                    SwaggerUIBundle.presets.standalone
+                ],
+                plugins: [
+                    SwaggerUIBundle.plugins.DownloadUrl
+                ],
+                layout: "StandaloneLayout"
+            });
+        };
+    </script>
+}
+
+<style>
+    .swagger-ui .topbar {
+        display: none;
+    }
+    
+    #swagger-ui-container {
+        min-height: 400px;
+    }
+    
+    .label {
+        font-size: 11px;
+        padding: 3px 6px;
+    }
+</style>
