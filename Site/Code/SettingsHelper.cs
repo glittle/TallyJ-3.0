@@ -14,7 +14,40 @@ namespace TallyJ.Code
     public static bool SmsAvailable => Get("SmsAvailable", true) && HostSupportsOnlineSmsLogin; // if Phone is supported, assume sms is available
     public static bool HideSmsCostAppeal => Get("HideSmsCostAppeal", false);
     public static bool VoiceAvailable => Get("VoiceAvailable", true) && HostSupportsOnlineSmsLogin; // if Phone is supported, assume voice is available
-    public static int UserAttemptMax => Get("UserAttemptMax", 3); // max in 15 minutes
+    public static int UserAttemptMax => Get("UserAttemptMax", 3); // max code sends in 15 minutes
+
+    /// <summary>Wrong guesses of one voter code before that code is cancelled. Not the send limit.</summary>
+    public static int VoterCodeMaxFailedGuesses => AtLeastOne(Get("VoterCodeMaxFailedGuesses", 5));
+
+    /// <summary>Wrong kiosk codes from one IP before that IP must wait. Shared by every kiosk code.</summary>
+    public static int KioskCodeMaxFailedGuesses => AtLeastOne(Get("KioskCodeMaxFailedGuesses", 5));
+    public static int KioskCodeGuessWindowMinutes => AtLeastOne(Get("KioskCodeGuessWindowMinutes", 15));
+
+    /// <summary>
+    /// Wrong kiosk codes from every IP. A wrong code does not identify an election, so this is site-wide.
+    /// Kept well above the per-IP limit so one polling place does not trip it.
+    /// </summary>
+    public static int KioskCodeMaxFailedSitewide => AtLeastOne(Get("KioskCodeMaxFailedSitewide", 200));
+
+    /// <summary>
+    /// Comma-separated addresses of reverse proxies allowed to supply X-Forwarded-For.
+    /// Empty means the header is ignored and the TCP peer (UserHostAddress) is used.
+    /// </summary>
+    public static string TrustedProxyIps => Get("TrustedProxyIps", "");
+
+    /// <summary>Wrong guest-teller codes from one IP for one election.</summary>
+    public static int TellerJoinMaxFailedPerIp => AtLeastOne(Get("TellerJoinMaxFailedPerIp", 5));
+    public static int TellerJoinIpWindowMinutes => AtLeastOne(Get("TellerJoinIpWindowMinutes", 15));
+
+    /// <summary>
+    /// Wrong guest-teller codes for one election, from every IP.
+    /// Higher than the per-IP limit so one person's typos cannot lock every teller for long.
+    /// </summary>
+    public static int TellerJoinMaxFailedPerElection => AtLeastOne(Get("TellerJoinMaxFailedPerElection", 30));
+    public static int TellerJoinElectionWindowMinutes => AtLeastOne(Get("TellerJoinElectionWindowMinutes", 5));
+
+    private static int AtLeastOne(int value) => value < 1 ? 1 : value;
+
     public static bool HostSupportsWhatsAppGreenLogin => Get("SupportWhatsAppGreenLogin", false);
     public static bool HostSupportsWhatsAppGreenNotification => Get("SupportWhatsAppGreenNotification", false);
     public static string GreenApiIdInstance => Get("greenapi-IdInstance", "");
