@@ -460,7 +460,7 @@ var vueOptions = {
             vue.numToElect = info.NumberToElect;
             vue.registration = info.registration;
             vue.selectionProcess = info.OnlineSelectionProcess;
-            vue.randomize = info.RandomizeVotersList,
+            vue.randomize = info.RandomizeVotersList;
               vue.voterName = info.voterName;
 
             voterHome.peopleHelper.Prepare(function () {

@@ -742,8 +742,19 @@ namespace TallyJ.CoreModels
       Db.SaveChanges();
       new LocationCacher(Db).UpdateItemAndSaveCache(mainLocation);
 
-      //      var computerModel = new ComputerModel();
-      //      computerModel.CreateComputerForMe();
+      // Swap the dashboard's temp computer (ElectionGuid empty, stale AllMyElections) for a real
+      // computer in this new election, as JoinIntoElection does. Otherwise the new election is
+      // never "active", so it is missing from the teller join list and the Tellers badge is red.
+      var tempComputer = SessionKey.CurrentComputer.FromSession<Computer>(null); // not UserSession.CurrentComputer, which would create one
+      if (tempComputer != null)
+      {
+        new ComputerCacher().RemoveItemAndSaveCache(tempComputer);
+      }
+
+      UserSession.CurrentLocationGuid = mainLocation.LocationGuid;
+      new ComputerModel().GetComputerForMe(Guid.Empty);
+
+      new PublicHub().TellPublicAboutVisibleElections();
 
       return new
       {
