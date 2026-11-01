@@ -385,7 +385,8 @@ namespace TallyJ.CoreModels
         election.ListedForPublicAsOf = DateTime.UtcNow;
       }
 
-      election.DateOfElection = election.DateOfElection.HasValue ? election.DateOfElection.Value.ToUniversalTime() : (DateTime?)null;
+      // DateOfElection is a date only - keep the date as entered, no UTC shift
+      election.DateOfElection = election.DateOfElection.HasValue ? DateTime.SpecifyKind(election.DateOfElection.Value.Date, DateTimeKind.Utc) : (DateTime?)null;
       election.OnlineWhenOpen = election.OnlineWhenOpen.HasValue ? election.OnlineWhenOpen.Value.ToUniversalTime() : (DateTime?)null;
       election.OnlineWhenClose = election.OnlineWhenClose.HasValue ? election.OnlineWhenClose.Value.ToUniversalTime() : (DateTime?)null;
 

@@ -565,7 +565,7 @@
       var value = election[dataName] || '';
       switch (input.attr('type')) {
         case 'date':
-          var dateString = value ? moment(value).format('YYYY-MM-DD') : ''; // ('' + value).parseJsonDateForInput();
+          var dateString = value ? moment.utc(value).format('YYYY-MM-DD') : ''; // ('' + value).parseJsonDateForInput();
           input.val(dateString);
           break;
         case 'checkbox':
@@ -573,7 +573,7 @@
           break;
         default:
           if (input.attr('id') === 'txtDate' && value) {
-            value = moment(value).toISOString(true);
+            value = moment.utc(value).format('YYYY-MM-DD');
           }
           input.val(value);
           break;
@@ -667,7 +667,7 @@
           value = input.prop('checked');
           break;
         case 'date':
-          value = moment(input.val()).toISOString();
+          value = input.val(); // date only, as entered (yyyy-mm-dd)
           break;
         default:
           value = input.val();

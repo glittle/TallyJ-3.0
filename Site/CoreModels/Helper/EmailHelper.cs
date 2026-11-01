@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Mail;
+using System.Text;
 using System.Text.RegularExpressions;
 using System.Web.Mvc;
 using SendGrid;
@@ -78,7 +79,7 @@ namespace TallyJ.CoreModels.Helper
       var message = new MailMessage();
       message.To.Add(new MailAddress(person.Email, person.C_FullNameFL));
 
-      var htAddress = new MailAddress(election.EmailFromAddressWithDefault, election.EmailFromNameWithDefault);
+      var htAddress = new MailAddress(election.EmailFromAddressWithDefault, election.EmailFromNameWithDefault, Encoding.UTF8);
       // message.From = htAddress;
       message.ReplyToList.Add(htAddress);
 
@@ -214,7 +215,7 @@ namespace TallyJ.CoreModels.Helper
       var message = new MailMessage();
       message.To.Add(new MailAddress(email, p.C_FullNameFL));
 
-      var htAddress = new MailAddress(election.EmailFromAddressWithDefault, election.EmailFromNameWithDefault);
+      var htAddress = new MailAddress(election.EmailFromAddressWithDefault, election.EmailFromNameWithDefault, Encoding.UTF8);
       // message.From = htAddress;
       // message.Sender = htAddress;
       message.ReplyToList.Add(htAddress);
@@ -290,7 +291,7 @@ namespace TallyJ.CoreModels.Helper
         {
           message.To.Add(new MailAddress(p.Email, p.PersonName));
 
-          var htAddress = new MailAddress(election.EmailFromAddressWithDefault, election.EmailFromNameWithDefault);
+          var htAddress = new MailAddress(election.EmailFromAddressWithDefault, election.EmailFromNameWithDefault, Encoding.UTF8);
           // message.From = htAddress;
           // message.Sender = htAddress;
           message.ReplyToList.Add(htAddress);
@@ -416,7 +417,7 @@ namespace TallyJ.CoreModels.Helper
       if (message.Sender == null)
       {
         var senderName = message.ReplyToList.Count > 0 ? message.ReplyToList.First().DisplayName : "TallyJ System";
-        message.Sender = new MailAddress(SettingsHelper.Get("SmtpDefaultFromAddress", "mail@tallyj.com"), senderName);
+        message.Sender = new MailAddress(SettingsHelper.Get("SmtpDefaultFromAddress", "mail@tallyj.com"), senderName, Encoding.UTF8);
       }
 
       message.From ??= message.Sender;
@@ -435,6 +436,11 @@ namespace TallyJ.CoreModels.Helper
       {
         return SendEmailUsingSendGrid(sendGridApiKey, message, htmlBody, plainText, out errorMessage);
       }
+
+      // allow non-ASCII names (e.g. Bahá'í) in From/To headers
+      message.HeadersEncoding = Encoding.UTF8;
+      message.SubjectEncoding = Encoding.UTF8;
+      message.BodyEncoding = Encoding.UTF8;
 
       message.Body = plainText;
       message.IsBodyHtml = false;
