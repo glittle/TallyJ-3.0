@@ -231,10 +231,28 @@ public class ImportCsvModel : DataConnectedModel
     var doAutoMapping = importFile.ColumnsToRead == null;
     if (doAutoMapping)
     {
+      // match on letters/digits only, case-insensitive, plus a few common synonyms
+      Func<string, string> normalize = s => new string((s ?? "").Where(char.IsLetterOrDigit).ToArray()).ToLowerInvariant();
+      var synonyms = new Dictionary<string, string>
+      {
+        { "firstname", "FirstName" }, { "first", "FirstName" }, { "givenname", "FirstName" }, { "forename", "FirstName" },
+        { "lastname", "LastName" }, { "last", "LastName" }, { "surname", "LastName" }, { "familyname", "LastName" },
+        { "emailaddress", "Email" }, { "email", "Email" },
+        { "phonenumber", "Phone" }, { "mobile", "Phone" }, { "cell", "Phone" },
+        { "bahaiid", "BahaiId" }, { "bahiid", "BahaiId" }, { "bahaiidnumber", "BahaiId" }, { "bahiidnumber", "BahaiId" }
+      };
+      var usedDbFields = new HashSet<string>();
+
       foreach (var csvHeader in csvHeaders)
-        // look for exact match or match with spaces removed
-        if (dbFields.Contains(csvHeader.Replace(" ", "")))
-          currentMappings.Add(new[] { csvHeader, csvHeader });
+      {
+        var key = normalize(csvHeader);
+        var dbField = dbFields.FirstOrDefault(f => normalize(f) == key);
+        if (dbField == null && synonyms.TryGetValue(key, out var synonym) && dbFields.Contains(synonym))
+          dbField = synonym;
+
+        if (dbField != null && usedDbFields.Add(dbField))
+          currentMappings.Add(new[] { csvHeader, dbField });
+      }
 
       // if we found any, save them
       if (currentMappings.Any())

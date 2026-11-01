@@ -50,7 +50,10 @@ namespace TallyJ.EF
           .ToList();
 
         return activeComputers
-          .SelectMany(comp => comp.AllMyElections)
+          // AllMyElections is captured when the computer record is created, so also include
+          // the election the computer is currently in (e.g. one created after logging in)
+          .SelectMany(comp => (comp.AllMyElections ?? new List<Guid>()).Append(comp.ElectionGuid))
+          .Where(g => g != Guid.Empty)
           .Distinct()
           .ToList();
       }
