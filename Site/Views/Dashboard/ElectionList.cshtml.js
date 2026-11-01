@@ -90,7 +90,7 @@
           e.onlineOpen = moment(e.OnlineWhenOpen); // if null, will be Now
           e.onlineClose = moment(e.OnlineWhenClose); // if null, will be Now
 
-          var d = moment(e.DateOfElection);
+          var d = moment.utc(e.DateOfElection); // date only
           e.dateDisplay = e.DateOfElection ? d.format(this.formatDateOnly) : '(No date)';
           e.dateSort = e.DateOfElection ? d.toISOString() : '0';
           e.nameDisplay = e.Name + (e.Convenor ? (` (${e.Convenor})`) : '');
