@@ -145,6 +145,18 @@ namespace TallyJ.CoreModels
           issues.Add($"Online ballots waiting to be accepted: {unprocessedOnlineBallots}");
         }
 
+        // submitted online ballots whose person is no longer registered as Online/Kiosk are not counted anywhere
+        var orphanedOnlineBallots = _election.OnlineWhenOpen.HasValue
+          ? Db.OnlineVotingInfo
+            .Where(ovi => ovi.ElectionGuid == UserSession.CurrentElectionGuid && ovi.Status == OnlineBallotStatusEnum.Submitted.Value)
+            .Join(Db.Person.Where(p => p.VotingMethod == null || p.VotingMethod == ""), ovi => ovi.PersonGuid, p => p.PersonGuid, (ovi, p) => p.C_RowId)
+            .Count()
+          : 0;
+        if (orphanedOnlineBallots > 0)
+        {
+          issues.Add($"Online ballots submitted by people with no voting method recorded: {orphanedOnlineBallots}. Check Front Desk.");
+        }
+
         if (resultSummaryFinal.BallotsNeedingReview != 0 || issues.Any())
         {
           var locations = new LocationCacher(Db).AllForThisElection;

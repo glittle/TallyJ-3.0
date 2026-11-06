@@ -734,17 +734,45 @@ namespace TallyJ.CoreModels
       {
         oldVoteLocationGuid = person.VotingLocationGuid;
 
-        // it is already set this way...turn if off
-        person.VotingMethod = null;
-        person.VotingLocationGuid = null;
+        // if this person had submitted an online/kiosk ballot, and is now being de-selected from
+        // another method (e.g. In Person), restore their online ballot rather than leaving it orphaned
+        var restoredMethod = (string)null;
+        var isOnlineMethod = person.VotingMethod == VotingMethodEnum.Online || person.VotingMethod == VotingMethodEnum.Kiosk;
+        if (!isOnlineMethod && person.CanVote.AsBoolean())
+        {
+          var personOnlineInfo = Db.OnlineVotingInfo.FirstOrDefault(ovi =>
+            ovi.PersonGuid == person.PersonGuid && ovi.ElectionGuid == person.ElectionGuid);
+          if (personOnlineInfo != null
+              && (personOnlineInfo.Status == OnlineBallotStatusEnum.Submitted.Value
+                  || personOnlineInfo.Status == OnlineBallotStatusEnum.Processed.Value))
+          {
+            // kiosk voters have a KioskCode; otherwise treat as Online
+            restoredMethod = person.KioskCode.HasContent()
+              ? VotingMethodEnum.Kiosk.Value
+              : VotingMethodEnum.Online.Value;
+          }
+        }
+
+        if (restoredMethod != null)
+        {
+          person.VotingMethod = restoredMethod;
+          person.VotingLocationGuid = locationModel.GetOnlineLocation()?.LocationGuid;
+          newVoteLocationGuid = person.VotingLocationGuid;
+        }
+        else
+        {
+          // it is already set this way...turn if off
+          person.VotingMethod = null;
+          person.VotingLocationGuid = null;
+          votingMethodRemoved = true;
+        }
         person.RegistrationTime = utcNow;
-        votingMethodRemoved = true;
 
         var log = person.RegistrationLog;
         log.Add(new[]
         {
           person.RegistrationTime.AsUtc().AsString("o"),
-          "De-selected",
+          restoredMethod != null ? "De-selected; online ballot restored" : "De-selected",
           ShowTellers(person),
           hasMultiplePhysicalLocations ? LocationName(UserSession.CurrentLocationGuid) : null
         }.JoinedAsString("; ", true));

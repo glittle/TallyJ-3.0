@@ -232,14 +232,23 @@ public class ImportCsvModel : DataConnectedModel
     if (doAutoMapping)
     {
       // match on letters/digits only, case-insensitive, plus a few common synonyms
-      Func<string, string> normalize = s => new string((s ?? "").Where(char.IsLetterOrDigit).ToArray()).ToLowerInvariant();
+      // also match against the display labels shown in the UI (e.g. "Eligibility Status" -> IneligibleReasonGuid)
+      Func<string, string> normalize = s => new string((s ?? "").Replace("\uFEFF", "").Where(char.IsLetterOrDigit).ToArray()).ToLowerInvariant();
       var synonyms = new Dictionary<string, string>
       {
         { "firstname", "FirstName" }, { "first", "FirstName" }, { "givenname", "FirstName" }, { "forename", "FirstName" },
         { "lastname", "LastName" }, { "last", "LastName" }, { "surname", "LastName" }, { "familyname", "LastName" },
         { "emailaddress", "Email" }, { "email", "Email" },
-        { "phonenumber", "Phone" }, { "mobile", "Phone" }, { "cell", "Phone" },
-        { "bahaiid", "BahaiId" }, { "bahiid", "BahaiId" }, { "bahaiidnumber", "BahaiId" }, { "bahiidnumber", "BahaiId" }
+        { "phonenumber", "Phone" }, { "phone", "Phone" }, { "mobile", "Phone" }, { "mobilenumber", "Phone" },
+        { "mobilephone", "Phone" }, { "cell", "Phone" }, { "cellphone", "Phone" },
+        { "bahaiid", "BahaiId" }, { "bahiid", "BahaiId" }, { "bahaiidnumber", "BahaiId" }, { "bahiidnumber", "BahaiId" },
+        { "eligibilitystatus", "IneligibleReasonGuid" }, { "eligibility", "IneligibleReasonGuid" },
+        { "ineligiblereason", "IneligibleReasonGuid" }, { "eligibilitystatusreason", "IneligibleReasonGuid" },
+        { "community", "Area" }, { "locality", "Area" }, { "cluster", "Area" }, { "region", "Area" },
+        { "suburb", "Area" }, { "city", "Area" }, { "town", "Area" },
+        { "othernames", "OtherNames" }, { "nickname", "OtherNames" },
+        { "otherlastnames", "OtherLastNames" }, { "maidenname", "OtherLastNames" },
+        { "notes", "OtherInfo" }, { "otherinfo", "OtherInfo" }
       };
       var usedDbFields = new HashSet<string>();
 
