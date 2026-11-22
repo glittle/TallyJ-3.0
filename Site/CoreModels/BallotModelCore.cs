@@ -59,25 +59,61 @@ namespace TallyJ.CoreModels
 
     public bool SortVotes(List<int> ids, VoteCacher voteCacher)
     {
+      // The ballot page posts {"idList":[]} when no row has a saved vote id.
+      // MVC's JSON value provider stores no key for an empty array, and
+      // DefaultModelBinder.UpdateCollection then returns null. ids.Select
+      // throws ArgumentNullException ("source") on that null.
+      if (ids == null || ids.Count == 0)
+      {
+        return true;
+      }
 
       var ballotGuid = CurrentRawBallot().BallotGuid;
 
       var allVotes = voteCacher.AllForThisElection;
-
-      var votes = allVotes.Where(v => v.BallotGuid == ballotGuid);
-
-      var position = 1;
-      foreach (var vote in ids.Select(id => votes.FirstOrDefault(v => v.C_RowId == id)).Where(vote => vote != null))
+      if (allVotes == null)
       {
-        Db.Vote.Attach(vote);
-        vote.PositionOnBallot = position;
-        position++;
+        return true;
       }
+
+      WritePositionsInPostedOrder(allVotes, ballotGuid, ids, vote => Db.Vote.Attach(vote));
       Db.SaveChanges();
 
       voteCacher.ReplaceEntireCache(allVotes);
 
       return true;
+    }
+
+    /// <summary>
+    /// Set PositionOnBallot (1-based) to the posted id order. Ids that are not
+    /// votes on this ballot are skipped. A null or empty id list, or a null
+    /// vote list, changes nothing. beforeWrite runs before each position is
+    /// stored so the caller can Attach the vote first.
+    /// </summary>
+    public static int WritePositionsInPostedOrder(IEnumerable<Vote> allVotes, Guid ballotGuid, IList<int> ids,
+      Action<Vote> beforeWrite)
+    {
+      if (ids == null || ids.Count == 0 || allVotes == null)
+      {
+        return 0;
+      }
+
+      var onBallot = allVotes.Where(v => v != null && v.BallotGuid == ballotGuid).ToList();
+      var position = 1;
+      foreach (var id in ids)
+      {
+        var vote = onBallot.FirstOrDefault(v => v.C_RowId == id);
+        if (vote == null)
+        {
+          continue;
+        }
+
+        beforeWrite?.Invoke(vote);
+        vote.PositionOnBallot = position;
+        position++;
+      }
+
+      return position - 1;
     }
 
     public abstract JsonResult StartNewBallotJson();

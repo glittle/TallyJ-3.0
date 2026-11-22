@@ -276,6 +276,10 @@
         toUpdate.push(voteHost.find('.VoteNum'));
       }
     });
+    if (!ids.length) {
+      // No saved votes to renumber. Posting idList:[] is bound as null on the server.
+      return;
+    }
     var form = {
       idList: ids
     };

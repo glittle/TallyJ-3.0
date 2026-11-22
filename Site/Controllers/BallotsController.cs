@@ -164,6 +164,14 @@ namespace TallyJ.Controllers
         return new { Message = UserSession.FinalizedNoChangesMessage }.AsJsonResult();
       }
 
+      // Same success payload as a completed reorder. An empty posted list is a
+      // no-op (the client has no saved vote ids to renumber), and MVC binds
+      // {"idList":[]} as null.
+      if (idList == null || idList.Count == 0)
+      {
+        return true.AsJsonResult();
+      }
+
       return CurrentBallotModel.SortVotes(idList, new VoteCacher(Db)).AsJsonResult();
     }
 
