@@ -330,6 +330,7 @@
     <Compile Include="BusinessTests\LoginAttemptLimitTests.cs" />
     <Compile Include="BusinessTests\JsonGetDeniedTests.cs" />
     <Compile Include="BusinessTests\PeopleModelTests.cs" />
+    <Compile Include="BusinessTests\SortVotesTests.cs" />
     <Compile Include="BusinessTests\TestDbContext.cs" />
     <Compile Include="BusinessTests\TestDbSet.cs" />
     <Compile Include="FrameworkTests\ExtensionTests.cs" />
